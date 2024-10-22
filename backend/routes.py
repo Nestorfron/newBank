@@ -20,7 +20,7 @@ def create_master_token(master_user):
 #REGISTER
 
 @api_blueprint.route('/signup', methods=['POST'])
-@jwt_required()
+#@jwt_required()
 def signup():
     body=request.json
     user_name = body.get("user_name", None)
@@ -33,15 +33,15 @@ def signup():
     role = body.get("role", None) 
 
     #ROLE VALIDATION#
-    user_data = get_jwt_identity()
-    current_user_role = user_data["role"]
+    #user_data = get_jwt_identity()
+    #current_user_role = user_data["role"]
 
-    if current_user_role != "Master" and role == "Master":
-        return jsonify({"error": "Solo el usuario master puede crear Masters"}), 403
-    if current_user_role != "Master" and role == "Admin":
-        return jsonify({"error": "Solo el usuario master puede crear Administradores"}), 403
-    if current_user_role not in ["Master", "Admin"]:
-        return jsonify({"error": "No tienes permisos para realizar esta acción"}), 403
+    #if current_user_role != "Master" and role == "Master":
+    #    return jsonify({"error": "Solo el usuario master puede crear Masters"}), 403
+    #if current_user_role != "Master" and role == "Admin":
+    #    return jsonify({"error": "Solo el usuario master puede crear Administradores"}), 403
+    #if current_user_role not in ["Master", "Admin"]:
+    #    return jsonify({"error": "No tienes permisos para realizar esta acción"}), 403
     
     #END OF ROLE VALIDATION#
 
