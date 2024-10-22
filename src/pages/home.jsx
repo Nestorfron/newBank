@@ -13,6 +13,7 @@ import {
 import img from "../assets/drapp_logo.png";
 import { useTheme } from "next-themes";
 import "../styles/index.css";
+import { CreateUsers } from "../components/CreateUsers.jsx";
 
 export const Home = () => {
   const { store, actions } = useContext(Context);
@@ -128,82 +129,11 @@ export const Home = () => {
               <Tab
                 key="sign-up"
                 title="Sign up"
-                className={users.id !== 0 ? "hidden" : ""}
-              >
-                <form
-                  className="flex flex-col gap-4 h-[auto]"
-                  onSubmit={handleSubmitSignUp}
-                >
-                  <Input
-                    isRequired
-                    label="Nombre de Usuario"
-                    placeholder=""
-                    type="text"
-                    name="user_name"
-                    onChange={handleChange}
-                  />
-                  <Input
-                    isRequired
-                    label="Nombres"
-                    placeholder=""
-                    type="text"
-                    name="names"
-                    onChange={handleChange}
-                  />
-                  <Input
-                    isRequired
-                    label="Apellidos"
-                    placeholder=""
-                    type="text"
-                    name="last_names"
-                    onChange={handleChange}
-                  />
-                  <Input
-                    isRequired
-                    label="Número de Empleado"
-                    placeholder=""
-                    type="text"
-                    name="employee_number"
-                    onChange={handleChange}
-                  />
-                  <Input
-                    isRequired
-                    label="Sucursal"
-                    placeholder=""
-                    type="text"
-                    name="subzone"
-                    onChange={handleChange}
-                  />
-                  <Input
-                    isRequired
-                    label="Estado"
-                    placeholder=""
-                    type="text"
-                    name="is_active"
-                    onChange={handleChange}
-                  />
-                  <Input
-                    isRequired
-                    label="Rol"
-                    placeholder=""
-                    type="text"
-                    name="role"
-                    onChange={handleChange}
-                  />
-                  <Input
-                    isRequired
-                    label="Contraseña"
-                    placeholder=""
-                    type="password"
-                    name="password"
-                    onChange={handleChange}
-                  />
-                  <div className="flex gap-2 justify-end">
-                    <Button fullWidth color="primary" type="submit">
-                      Sign up
-                    </Button>
-                  </div>
-                </form>
+              > 
+              <div className="flex gap-2 justify-around">
+              <CreateUsers />
+              </div>
+                 
               </Tab>
             </Tabs>
           </CardBody>
