@@ -9,6 +9,9 @@ import { Navbar } from "./components/navbar.jsx";
 import Dashboard from "./pages/dashboard.jsx";
 import { Users } from "./pages/users.jsx";
 import { Branches } from "./pages/branches.jsx";
+import { Providers } from "./pages/providers.jsx";
+import { Assets } from "./pages/assets.jsx";
+import { UsersMB } from "./pages/usersMB.jsx";
 
 function App({ Component, pageProps }) {
   return (
@@ -21,6 +24,9 @@ function App({ Component, pageProps }) {
             <Route path="/dashboard" element={<Dashboard/>}/>
             <Route path="/users" element={<Users/>}/>
             <Route path="/branches" element={<Branches/>}/>
+            <Route path="/providers" element={<Providers/>}/>
+            <Route path="/assets" element={<Assets/>}/>
+            <Route path="/usersMB" element={<UsersMB/>}/>
             <Route element={<h1>Not found!</h1>} />
           </Routes>
         </BrowserRouter>

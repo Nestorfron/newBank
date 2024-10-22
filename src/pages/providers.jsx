@@ -1,11 +1,11 @@
-import React, { useContext, useState, useMemo, useEffect } from "react";
+import React, { useContext, useMemo, useState, useEffect } from "react";
 import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { CreateProviders } from "../components/CreateProviders.jsx";
+import { EditProviders } from "../components/EditProviders.jsx";
 import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
 import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
-import { CreateBranches } from "../components/CreateBranches.jsx";
-import { EditBranches } from "../components/EditBranches.jsx";
 import {
   Button,
   Table,
@@ -17,55 +17,49 @@ import {
   Input,
   Pagination,
 } from "@nextui-org/react";
-import useTokenExpiration from "../hooks/useTokenExpitarion.jsx";
 
-export const Branches = () => {
+export const Providers = () => {
   const { store, actions } = useContext(Context);
   const navigate = useNavigate();
   const [filterValue, setFilterValue] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(1);
 
-  useTokenExpiration();
-
-  const filteredItems = useMemo(() => {
-    let filteredBranches = [...store.branchs];
+  const filteredProviders = useMemo(() => {
+    let filteredProviders = [...store.providers];
 
     if (filterValue) {
-      filteredBranches = filteredBranches.filter((branch) =>
-        branch.branch_cr.toLowerCase().includes(filterValue.toLowerCase())
+      filteredProviders = filteredProviders.filter((provider) =>
+        provider.company_name.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
-
-    // Asegúrate de que 'status' esté en tus datos para filtrar adecuadamente
     if (statusFilter !== "all") {
-      filteredBranches = filteredBranches.filter(
-        (branch) => branch.status === statusFilter // Cambia según tus datos
+      filteredProviders = filteredProviders.filter(
+        (provider) => provider.status === statusFilter // Cambia según tus datos
       );
     }
+    return filteredProviders;
+  }, [store.providers, filterValue, statusFilter]);
 
-    return filteredBranches;
-  }, [store.branchs, filterValue, statusFilter]);
-
-  const pages = Math.ceil(filteredItems.length / rowsPerPage);
+  const pages = Math.ceil(filteredProviders.length / rowsPerPage);
   const items = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
-    return filteredItems.slice(start, start + rowsPerPage);
-  }, [page, filteredItems, rowsPerPage]);
+    return filteredProviders.slice(start, start + rowsPerPage);
+  }, [page, filteredProviders, rowsPerPage]);
 
-  const deleteBranch = (id) => {
+  const deleteProvider = (id) => {
     Swal.fire({
       title: "Advertencia",
-      text: "¿Desea eliminar la Sucursal?",
+      text: "¿Desea eliminar el Proveedor?",
       icon: "warning",
       showDenyButton: true,
       denyButtonText: "No",
       confirmButtonText: "Sí",
     }).then((click) => {
       if (click.isConfirmed) {
-        actions.deleteBranch(id).then(() => {
-          Swal.fire("Sucursal eliminada correctamente", "", "success");
+        actions.deleteProvider(id).then(() => {
+          Swal.fire("Proveedor eliminado correctamente", "", "success");
         });
       }
     });
@@ -75,13 +69,13 @@ export const Branches = () => {
     <div className="flex justify-between gap-3 items-center">
       <div className="flex justify-start gap-3 items-center">
         <span className="text-default-400 text-lg">
-          Total de Sucursales : {store.branchs.length}
+          Total de Proveedores : {store.providers.length}
         </span>
       </div>
       <div className="flex gap-2 items-center">
         <Input
           isClearable
-          placeholder="Buscar por Sucursal..."
+          placeholder="Buscar por Proveedor..."
           value={filterValue}
           onClear={() => setFilterValue("")}
           onValueChange={setFilterValue}
@@ -89,7 +83,7 @@ export const Branches = () => {
           startContent={<SearchIcon />}
         />
         <div>
-          <CreateBranches />
+          <CreateProviders />
         </div>
       </div>
     </div>
@@ -108,52 +102,49 @@ export const Branches = () => {
       return;
     }
     actions.getMe();
-    actions.getBranchs()
+    actions.getProviders()
   }, []);
 
   return (
     <div className="m-5">
       <div className="flex justify-start gap-4 mt-4 mb-4">
-        <span className="text-lg font-bold">Gestor de Sucursales</span>
+        <span className="text-lg font-bold">Gestor de Provedores</span>
       </div>
       <Table
-        aria-label="Tabla de sucursales"
-        isStriped
+        aria-label="Tabla de proveedores"
         isHeaderSticky
+        isStriped
         topContent={topContent}
         bottomContent={bottomContent}
         classNames={{
-          td: "text-center w-32",
+          td: "text-center",
           th: "text-center",
         }}
       >
         <TableHeader>
-          <TableColumn>ID</TableColumn>
-          <TableColumn>Cr</TableColumn>
-          <TableColumn>Zona</TableColumn>
-          <TableColumn>SubZona</TableColumn>
-          <TableColumn>Dirección</TableColumn>
+          <TableColumn>#</TableColumn>
+          <TableColumn>Nombre</TableColumn>
+          <TableColumn>RFC</TableColumn>
+          <TableColumn>Servicio</TableColumn>
           <TableColumn>Acciones</TableColumn>
         </TableHeader>
         <TableBody>
-          {items.map((branch) => (
-            <TableRow key={branch.id}>
-              <TableCell>{branch.id}</TableCell>
-              <TableCell>{branch.branch_cr}</TableCell>
-              <TableCell>{branch.branch_zone}</TableCell>
-              <TableCell>{branch.branch_subzone}</TableCell>
-              <TableCell>{branch.branch_address}</TableCell>
+          {items.map((provider) => (
+            <TableRow key={provider.id}>
+              <TableCell>{provider.id}</TableCell>
+              <TableCell>{provider.company_name}</TableCell>
+              <TableCell>{provider.rfc}</TableCell>
+              <TableCell>{provider.service}</TableCell>
               <TableCell>
                 <div className="flex justify-center">
-                  <Button variant="link" color="danger">
-                    <span
-                      className="text-lg text-danger cursor-pointer"
-                      onClick={() => deleteBranch(branch.id)}
-                    >
-                      <DeleteIcon />
-                    </span>
+                  <Button
+                    variant="link"
+                    className="text-lg text-danger cursor-pointer"
+                    onClick={() => deleteProvider(provider.id)}
+                  >
+                    <DeleteIcon />
                   </Button>
-                  <EditBranches branch={branch} />
+                  <EditProviders provider={provider} />
                 </div>
               </TableCell>
             </TableRow>

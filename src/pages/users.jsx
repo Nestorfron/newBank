@@ -123,7 +123,7 @@ export const Users = () => {
   }, []);
 
   return (
-    <>
+    <div className="m-5">
       <div className="flex justify-start gap-4 mt-4 mb-4">
         <span className="text-lg font-bold"> Gestor de Usuarios</span>
       </div>
@@ -174,6 +174,6 @@ export const Users = () => {
           ))}
         </TableBody>
       </Table>
-    </>
+    </div>
   );
 };

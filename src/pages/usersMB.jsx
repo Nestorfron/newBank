@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
 import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
-import { CreateBranches } from "../components/CreateBranches.jsx";
-import { EditBranches } from "../components/EditBranches.jsx";
+import { CreateUsersMB } from "../components/CreateUsersMB.jsx";
+import { EditUsersMB } from "../components/EditUsersMB.jsx";
 import {
   Button,
   Table,
@@ -18,8 +18,9 @@ import {
   Pagination,
 } from "@nextui-org/react";
 import useTokenExpiration from "../hooks/useTokenExpitarion.jsx";
+import { div } from "framer-motion/client";
 
-export const Branches = () => {
+export const UsersMB = () => {
   const { store, actions } = useContext(Context);
   const navigate = useNavigate();
   const [filterValue, setFilterValue] = useState("");
@@ -30,23 +31,31 @@ export const Branches = () => {
   useTokenExpiration();
 
   const filteredItems = useMemo(() => {
-    let filteredBranches = [...store.branchs];
+    let filteredUsersMB = [...store.usersMB];
 
     if (filterValue) {
-      filteredBranches = filteredBranches.filter((branch) =>
-        branch.branch_cr.toLowerCase().includes(filterValue.toLowerCase())
+      filteredUsersMB = filteredUsersMB.filter(
+        (userMB) =>
+          userMB.user_name_MB
+            .toLowerCase()
+            .includes(filterValue.toLowerCase()) ||
+          userMB.names.toLowerCase().includes(filterValue.toLowerCase()) ||
+          userMB.last_names.toLowerCase().includes(filterValue.toLowerCase()) ||
+          userMB.employee_number
+            .toLowerCase()
+            .includes(filterValue.toLowerCase())
       );
     }
 
     // Asegúrate de que 'status' esté en tus datos para filtrar adecuadamente
     if (statusFilter !== "all") {
-      filteredBranches = filteredBranches.filter(
-        (branch) => branch.status === statusFilter // Cambia según tus datos
+      filteredUsersMB = filteredUsersMB.filter(
+        (userMB) => userMB.status === statusFilter // Cambia según tus datos
       );
     }
 
-    return filteredBranches;
-  }, [store.branchs, filterValue, statusFilter]);
+    return filteredUsersMB;
+  }, [store.usersMB, filterValue, statusFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
   const items = useMemo(() => {
@@ -54,18 +63,18 @@ export const Branches = () => {
     return filteredItems.slice(start, start + rowsPerPage);
   }, [page, filteredItems, rowsPerPage]);
 
-  const deleteBranch = (id) => {
+  const deleteUserMB = (id) => {
     Swal.fire({
       title: "Advertencia",
-      text: "¿Desea eliminar la Sucursal?",
+      text: "¿Desea eliminar Usuario MB?",
       icon: "warning",
       showDenyButton: true,
       denyButtonText: "No",
       confirmButtonText: "Sí",
     }).then((click) => {
       if (click.isConfirmed) {
-        actions.deleteBranch(id).then(() => {
-          Swal.fire("Sucursal eliminada correctamente", "", "success");
+        actions.deleteUserMB(id).then(() => {
+          Swal.fire("Usuario MB eliminado correctamente", "", "success");
         });
       }
     });
@@ -75,13 +84,13 @@ export const Branches = () => {
     <div className="flex justify-between gap-3 items-center">
       <div className="flex justify-start gap-3 items-center">
         <span className="text-default-400 text-lg">
-          Total de Sucursales : {store.branchs.length}
+          Total de Usuarios MB : {store.usersMB.length}
         </span>
       </div>
       <div className="flex gap-2 items-center">
         <Input
           isClearable
-          placeholder="Buscar por Sucursal..."
+          placeholder="Buscar por Usuario MB..."
           value={filterValue}
           onClear={() => setFilterValue("")}
           onValueChange={setFilterValue}
@@ -89,7 +98,7 @@ export const Branches = () => {
           startContent={<SearchIcon />}
         />
         <div>
-          <CreateBranches />
+          <CreateUsersMB />
         </div>
       </div>
     </div>
@@ -107,53 +116,59 @@ export const Branches = () => {
       navigate("/");
       return;
     }
+    actions.getUsersMB();
     actions.getMe();
-    actions.getBranchs()
   }, []);
 
   return (
     <div className="m-5">
       <div className="flex justify-start gap-4 mt-4 mb-4">
-        <span className="text-lg font-bold">Gestor de Sucursales</span>
+        <span className="text-lg font-bold">Gestor de Usuarios MB</span>
       </div>
       <Table
-        aria-label="Tabla de sucursales"
-        isStriped
+        aria-label="Tabla de Usuarios MB"
         isHeaderSticky
+        isStriped
         topContent={topContent}
         bottomContent={bottomContent}
         classNames={{
-          td: "text-center w-32",
+          td: "text-center",
           th: "text-center",
         }}
       >
         <TableHeader>
           <TableColumn>ID</TableColumn>
-          <TableColumn>Cr</TableColumn>
-          <TableColumn>Zona</TableColumn>
-          <TableColumn>SubZona</TableColumn>
-          <TableColumn>Dirección</TableColumn>
+          <TableColumn>Nombre de Usuario MB</TableColumn>
+          <TableColumn>Estado</TableColumn>
+          <TableColumn>Nombres</TableColumn>
+          <TableColumn>Apellidos</TableColumn>
+          <TableColumn>Numero de Empleado</TableColumn>
+          <TableColumn>Sucursal</TableColumn>
+          <TableColumn>Activos Adjudicados</TableColumn>
           <TableColumn>Acciones</TableColumn>
         </TableHeader>
         <TableBody>
-          {items.map((branch) => (
-            <TableRow key={branch.id}>
-              <TableCell>{branch.id}</TableCell>
-              <TableCell>{branch.branch_cr}</TableCell>
-              <TableCell>{branch.branch_zone}</TableCell>
-              <TableCell>{branch.branch_subzone}</TableCell>
-              <TableCell>{branch.branch_address}</TableCell>
+          {items.map((userMB) => (
+            <TableRow key={userMB.id}>
+              <TableCell>{userMB.id}</TableCell>
+              <TableCell>{userMB.user_name_MB}</TableCell>
+              <TableCell>{userMB.is_active}</TableCell>
+              <TableCell>{userMB.names}</TableCell>
+              <TableCell>{userMB.last_names}</TableCell>
+              <TableCell>{userMB.employee_number}</TableCell>
+              <TableCell>{userMB.branch_id}</TableCell>
+              <TableCell>{userMB.asset_id}</TableCell>
               <TableCell>
                 <div className="flex justify-center">
                   <Button variant="link" color="danger">
                     <span
                       className="text-lg text-danger cursor-pointer"
-                      onClick={() => deleteBranch(branch.id)}
+                      onClick={() => deleteUserMB(userMB.id)}
                     >
                       <DeleteIcon />
                     </span>
                   </Button>
-                  <EditBranches branch={branch} />
+                  <EditUsersMB userMB={userMB} />
                 </div>
               </TableCell>
             </TableRow>

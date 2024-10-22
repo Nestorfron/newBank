@@ -146,7 +146,7 @@ export const Navbar = () => {
           <li>
             <Button
               disabled={!jwt}
-              onClick={() => navigate("/provider")}
+              onClick={() => navigate("/providers")}
               variant="link"
             >
               Proveedores

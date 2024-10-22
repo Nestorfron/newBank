@@ -1,11 +1,7 @@
 import React, { useContext, useState, useMemo, useEffect } from "react";
-import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
+import { Context } from "../store/appContext";
 import Swal from "sweetalert2";
-import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
-import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
-import { CreateBranches } from "../components/CreateBranches.jsx";
-import { EditBranches } from "../components/EditBranches.jsx";
 import {
   Button,
   Table,
@@ -17,9 +13,13 @@ import {
   Input,
   Pagination,
 } from "@nextui-org/react";
+import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
+import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
+import { CreateAssets } from "../components/CreateAsset.jsx";
+import { EditAssets } from "../components/EditAssets.jsx";
 import useTokenExpiration from "../hooks/useTokenExpitarion.jsx";
 
-export const Branches = () => {
+export const Assets = () => {
   const { store, actions } = useContext(Context);
   const navigate = useNavigate();
   const [filterValue, setFilterValue] = useState("");
@@ -30,23 +30,33 @@ export const Branches = () => {
   useTokenExpiration();
 
   const filteredItems = useMemo(() => {
-    let filteredBranches = [...store.branchs];
+    let filteredAssets = [...store.assets];
 
     if (filterValue) {
-      filteredBranches = filteredBranches.filter((branch) =>
-        branch.branch_cr.toLowerCase().includes(filterValue.toLowerCase())
+      filteredAssets = filteredAssets.filter(
+        (asset) =>
+          asset.asset_type.toLowerCase().includes(filterValue.toLowerCase()) ||
+          asset.asset_brand.toLowerCase().includes(filterValue.toLowerCase()) ||
+          asset.asset_model.toLowerCase().includes(filterValue.toLowerCase()) ||
+          asset.asset_serial
+            .toLowerCase()
+            .includes(filterValue.toLowerCase()) ||
+          asset.asset_inventory_number
+            .toLowerCase()
+            .includes(filterValue.toLowerCase()) ||
+          asset.asset_provider.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
 
     // Asegúrate de que 'status' esté en tus datos para filtrar adecuadamente
     if (statusFilter !== "all") {
-      filteredBranches = filteredBranches.filter(
-        (branch) => branch.status === statusFilter // Cambia según tus datos
+      filteredAssets = filteredAssets.filter(
+        (asset) => asset.asset_type === statusFilter
       );
     }
 
-    return filteredBranches;
-  }, [store.branchs, filterValue, statusFilter]);
+    return filteredAssets;
+  }, [store.assets, filterValue, statusFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
   const items = useMemo(() => {
@@ -54,18 +64,18 @@ export const Branches = () => {
     return filteredItems.slice(start, start + rowsPerPage);
   }, [page, filteredItems, rowsPerPage]);
 
-  const deleteBranch = (id) => {
+  const deleteAsset = (id) => {
     Swal.fire({
       title: "Advertencia",
-      text: "¿Desea eliminar la Sucursal?",
+      text: "¿Desea eliminar el Activo?",
       icon: "warning",
       showDenyButton: true,
       denyButtonText: "No",
       confirmButtonText: "Sí",
     }).then((click) => {
       if (click.isConfirmed) {
-        actions.deleteBranch(id).then(() => {
-          Swal.fire("Sucursal eliminada correctamente", "", "success");
+        actions.deleteAsset(id).then(() => {
+          Swal.fire("Activo eliminado correctamente", "", "success");
         });
       }
     });
@@ -75,13 +85,13 @@ export const Branches = () => {
     <div className="flex justify-between gap-3 items-center">
       <div className="flex justify-start gap-3 items-center">
         <span className="text-default-400 text-lg">
-          Total de Sucursales : {store.branchs.length}
+          Total de Activos : {store.assets.length}
         </span>
       </div>
       <div className="flex gap-2 items-center">
         <Input
           isClearable
-          placeholder="Buscar por Sucursal..."
+          placeholder="Buscar por Activo..."
           value={filterValue}
           onClear={() => setFilterValue("")}
           onValueChange={setFilterValue}
@@ -89,7 +99,7 @@ export const Branches = () => {
           startContent={<SearchIcon />}
         />
         <div>
-          <CreateBranches />
+          <CreateAssets />
         </div>
       </div>
     </div>
@@ -101,6 +111,13 @@ export const Branches = () => {
     </div>
   );
 
+  const getProviderById = (providerId) => {
+    const Provider = store.providers.find(
+      (provider) => provider.id === providerId
+    );
+    return Provider;
+  };
+
   useEffect(() => {
     const jwt = localStorage.getItem("token");
     if (!jwt) {
@@ -108,52 +125,54 @@ export const Branches = () => {
       return;
     }
     actions.getMe();
-    actions.getBranchs()
+    actions.getAssets();
   }, []);
 
   return (
     <div className="m-5">
       <div className="flex justify-start gap-4 mt-4 mb-4">
-        <span className="text-lg font-bold">Gestor de Sucursales</span>
+        <span className="text-lg font-bold">Gestor de Activos</span>
       </div>
       <Table
-        aria-label="Tabla de sucursales"
-        isStriped
+        aria-label="Tabla de activos"
         isHeaderSticky
+        isStriped
         topContent={topContent}
         bottomContent={bottomContent}
         classNames={{
-          td: "text-center w-32",
+          td: "text-center",
           th: "text-center",
         }}
       >
         <TableHeader>
-          <TableColumn>ID</TableColumn>
-          <TableColumn>Cr</TableColumn>
-          <TableColumn>Zona</TableColumn>
-          <TableColumn>SubZona</TableColumn>
-          <TableColumn>Dirección</TableColumn>
+          <TableColumn>Tipo</TableColumn>
+          <TableColumn>Marca</TableColumn>
+          <TableColumn>Modelo</TableColumn>
+          <TableColumn>No. Serial</TableColumn>
+          <TableColumn>No. Inventario</TableColumn>
+          <TableColumn>Proveedor</TableColumn>
           <TableColumn>Acciones</TableColumn>
         </TableHeader>
         <TableBody>
-          {items.map((branch) => (
-            <TableRow key={branch.id}>
-              <TableCell>{branch.id}</TableCell>
-              <TableCell>{branch.branch_cr}</TableCell>
-              <TableCell>{branch.branch_zone}</TableCell>
-              <TableCell>{branch.branch_subzone}</TableCell>
-              <TableCell>{branch.branch_address}</TableCell>
+          {items.map((asset) => (
+            <TableRow key={asset.id}>
+              <TableCell>{asset.asset_type}</TableCell>
+              <TableCell>{asset.asset_brand}</TableCell>
+              <TableCell>{asset.asset_model}</TableCell>
+              <TableCell>{asset.asset_serial}</TableCell>
+              <TableCell>{asset.asset_inventory_number}</TableCell>
+              <TableCell>{asset.provider_id}</TableCell>
               <TableCell>
                 <div className="flex justify-center">
                   <Button variant="link" color="danger">
                     <span
                       className="text-lg text-danger cursor-pointer"
-                      onClick={() => deleteBranch(branch.id)}
+                      onClick={() => deleteAsset(asset.id)}
                     >
                       <DeleteIcon />
                     </span>
                   </Button>
-                  <EditBranches branch={branch} />
+                  <EditAssets asset={asset} />
                 </div>
               </TableCell>
             </TableRow>
