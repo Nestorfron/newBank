@@ -6,7 +6,7 @@ from backend.routes import api_blueprint
 from backend.config import Config
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from backend.models import User, Provider, Branch, Assets, Migration, UserMB
+from backend.models import User, Provider, Branch, Assets, Migration, UserMB, Message
 from dotenv import load_dotenv
 from sqlalchemy import text
 from flask_jwt_extended import JWTManager
@@ -28,10 +28,11 @@ def create_app():
     migrate = Migrate(app, db)
 
     # Verificar la conexión a la base de datos
+    
     with app.app_context():
         try:
             with db.session.begin():
-                db.session.execute(text("SELECT 1"))  # Consulta simple para verificar la conexión
+                db.session.execute(text("SELECT 1")) 
         except Exception as e:
             print(f"Error al conectar a la base de datos: {e}")
 
@@ -49,6 +50,7 @@ def create_app():
     admin.add_view(ModelView(Assets, db.session))
     admin.add_view(ModelView(UserMB, db.session))
     admin.add_view(ModelView(Migration, db.session))
+    admin.add_view(ModelView(Message, db.session))
 
     # Ruta para el frontend
     @app.route('/')

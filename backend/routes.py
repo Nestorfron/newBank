@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from backend.models import User, Provider, Branch, Assets, UserMB, Migration
+from backend.models import User, Provider, Branch, Assets, UserMB, Migration, Message
 from backend.extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
@@ -139,6 +139,26 @@ def get_migrations():
     migrations_data = [migration.serialize() for migration in migrations]
     return jsonify({"migrations": migrations_data}), 200
 
+#GET ALL MESSAGES
+
+@api_blueprint.route('/messages', methods=['GET'])
+def get_messages():
+    messages = Message.query.order_by(Message.id.asc()).all()
+    messages_data = [message.serialize() for message in messages]
+    return jsonify({"messages": messages_data}), 200
+
+
+
+#####################   GETS  BY USER ID  ########################################
+
+#GET ALL MESSAGES BY USER ID
+@api_blueprint.route('/messages/<int:user_id>', methods=['GET'])
+def get_messages_by_user_id(user_id):
+    messages = Message.query.filter_by(user_id=user_id).order_by(Message.id.asc()).all()
+    messages_data = [message.serialize() for message in messages]
+    return jsonify({"messages": messages_data}), 200
+
+
 #####################   GETS  BY ID  ########################################
 
 #GET BRANCH BY ID
@@ -185,6 +205,15 @@ def get_migration_by_id(id):
     if migration is None:
         return jsonify({"error": "Migration not found"}), 404
     return jsonify({"migration": migration.serialize()}), 200   
+
+#GET MESSAGE BY ID
+
+@api_blueprint.route('/message/<int:id>', methods=['GET'])
+def get_message_by_id(id):
+    message = Message.query.get(id)
+    if message is None:
+        return jsonify({"error": "Message not found"}), 404
+    return jsonify({"message": message.serialize()}), 200
 
 #####################  ADD ###################################
 
@@ -339,6 +368,39 @@ def add_migration():
         db.session.add(new_migration)
         db.session.commit()
         return jsonify({"new_migration": new_migration.serialize()}), 201
+    except Exception as error:
+        db.session.rollback()
+        return jsonify({"error": f"{error}"}), 500
+    
+#ADD MESSAGE
+
+@api_blueprint.route('/add_message', methods=['POST'])
+@jwt_required()
+def add_message():
+    body=request.json
+    user_data = get_jwt_identity()
+    message = body.get("message", None)
+    provider_id = body.get("provider_id", None)
+    branch_id = body.get("branch_id", None)
+    migration_id = body.get("migration_id", None)
+
+    if Message.query.filter_by(message=message).first() is not None:
+        return jsonify({"error": "Message ya existe"}), 400
+    provider = Provider.query.get(provider_id)
+    if provider is None:
+        return jsonify({"error": "proveedor no encontrado"}), 404 
+    branch = Branch.query.get(branch_id)
+    if branch is None:
+        return jsonify({"error": "branch no encontrado"}), 404 
+    migration = Migration.query.get(migration_id)
+    if migration is None:
+        return jsonify({"error": "migracion no encontrado"}), 404 
+    
+    try:
+        new_message = Message(message=message, provider_id=provider.id, branch_id=branch.id, migration_id=migration.id, user_id=user_data["id"])
+        db.session.add(new_message)
+        db.session.commit()
+        return jsonify({"new_message": new_message.serialize()}), 201
     except Exception as error:
         db.session.rollback()
         return jsonify({"error": f"{error}"}), 500
@@ -527,6 +589,30 @@ def edit_migration():
         return jsonify({"message": "Migration updated successfully"}), 200
     except Exception as error:
         return jsonify({"error": f"{error}"}), 500
+    
+
+# EDIT MESSAGE
+@api_blueprint.route('/edit_message', methods=['PUT'])
+@jwt_required()
+def edit_message():
+    try:
+        body = request.json
+        user_data = get_jwt_identity()
+        message_id = body.get("id")
+        
+        if not message_id:
+            return jsonify({'error': 'Missing message ID'}), 400
+        
+        message = Message.query.filter_by(id=message_id, user_id=user_data["id"]).first()
+        if message is None:
+            return jsonify({'error': 'Message no found'}), 404
+        
+        message.message = body.get("message", message.message)
+        
+        db.session.commit()
+        return jsonify({"message": "Message updated successfully"}), 200
+    except Exception as error:
+        return jsonify({"error": f"{error}"}), 500
 
 
 
@@ -627,3 +713,27 @@ def delete_migration():
         return jsonify({"message": "Migration removed"}), 200
     except Exception as error:
         return jsonify({"error": f"{error}"}), 500
+    
+
+# DELETE MESSAGE
+@api_blueprint.route('/delete_message', methods=['DELETE'])
+@jwt_required()
+def delete_message():
+    try:
+        body = request.json
+        user_data = get_jwt_identity()
+        message_id = body.get("id", None)
+        
+        message = Message.query.filter_by(id=message_id).first()
+        if message is None:
+            return jsonify({'error': 'Message no found'}), 404
+        
+        db.session.delete(message)
+        db.session.commit()
+        return jsonify({"message": "Message removed"}), 200
+    except Exception as error:    
+        return jsonify({"error": f"{error}"}), 500
+    
+
+
+
