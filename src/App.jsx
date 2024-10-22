@@ -7,6 +7,8 @@ import injectContext from "../src/store/appContext.jsx";
 import { Home } from "./pages/home.jsx";
 import { Navbar } from "./components/navbar.jsx";
 import Dashboard from "./pages/dashboard.jsx";
+import { Users } from "./pages/users.jsx";
+import { Branches } from "./pages/branches.jsx";
 
 function App({ Component, pageProps }) {
   return (
@@ -17,6 +19,8 @@ function App({ Component, pageProps }) {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/dashboard" element={<Dashboard/>}/>
+            <Route path="/users" element={<Users/>}/>
+            <Route path="/branches" element={<Branches/>}/>
             <Route element={<h1>Not found!</h1>} />
           </Routes>
         </BrowserRouter>
