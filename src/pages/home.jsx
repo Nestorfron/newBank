@@ -1,57 +1,214 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext.jsx";
+import {
+  Tabs,
+  Tab,
+  Input,
+  Link,
+  Button,
+  Card,
+  CardBody,
+} from "@nextui-org/react";
+import img from "../assets/drapp_logo.png";
 import { useTheme } from "next-themes";
-import { Button } from "@nextui-org/react";
+import "../styles/index.css";
 
-function Home() {
+export const Home = () => {
   const { store, actions } = useContext(Context);
-  const { theme, setTheme } = useTheme();
-  const [id, setId] = useState(0);
+  const { setTheme } = useTheme();
+  const [selected, setSelected] = useState("login");
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
+  const [user, setUser] = useState({
+    user_name: "",
+    password: "",
+    names: "",
+    last_names: "",
+    employee_number: "",
+    subzone: "",
+    is_active: "",
+    role: "",
+  });
 
-  const createItem = async (item) => {
-    const response = await actions.createItem(item);
-    console.log(response);
-    actions.getItems();
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const users = store.users;
+
+  const handleSubmitLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+    const success = await actions.login(userName, password);
+
+    if (success) {
+      navigate("/dashboard");
+    } else {
+      setError("Nombre de usuario o contraseña incorrectos");
+    }
   };
 
-  const deleteItem = async (item_id) => {
-    const response = await actions.deleteItem(item_id);
-    console.log(response);
-    actions.getItems();
+  const handleChange = (e) => {
+    setUser({ ...user, [e.target.name]: e.target.value });
+    console.log(user);
+  };
+
+  const handleSubmitSignUp = async (e) => {
+    e.preventDefault();
+    setError("");
+    const success = await actions.register(
+      user.user_name,
+      user.password,
+      user.names,
+      user.last_names,
+      user.employee_number,
+      user.subzone,
+      user.is_active,
+      user.role
+    );
+
+    if (success) {
+      navigate("/");
+    } else {
+      setError("Error al crear el usuario");
+    }
   };
 
   useEffect(() => {
-    actions.getItems();
+    const jwt = localStorage.getItem("token");
+    if (!jwt) {
+      navigate("/");
+      return;
+    }
+    actions.getMe();
+    actions.getUsers();
   }, []);
 
   return (
-    <div>
-      <div>
-        The current theme is: {theme}
-        <Button color="primary" onClick={() => setTheme("light")}>
-          Light Mode
-        </Button>
-        <Button color="primary" onClick={() => setTheme("dark")}>
-          Dark Mode
-        </Button>
+    <>
+      <div className="flex-col w-full mt-10">
+        <Card className="m-auto min-w-[280px] max-w-[320px] h-[auto]">
+          <div className="img-container m-auto pb-5">
+            <img src={img} alt="DR-App" height={200} width={200} />
+          </div>
+          <CardBody className="overflow-hidden">
+            <Tabs
+              fullWidth
+              size="md"
+              aria-label="Tabs form"
+              selectedKey={selected}
+              onSelectionChange={setSelected}
+            >
+              <Tab key="login" title="Iniciar Sesión">
+                <form
+                  className="flex flex-col gap-4"
+                  onSubmit={handleSubmitLogin}
+                >
+                  <Input
+                    isRequired
+                    label="Nombre de Usuario"
+                    placeholder=""
+                    type="text"
+                    onChange={(e) => setUserName(e.target.value)}
+                  />
+                  <Input
+                    isRequired
+                    label="Constraseña"
+                    placeholder=""
+                    type="password"
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <div className="flex gap-2 justify-end">
+                    <Button fullWidth color="primary" type="submit">
+                      Enviar
+                    </Button>
+                  </div>
+                </form>
+              </Tab>
+              <Tab
+                key="sign-up"
+                title="Sign up"
+                className={users.id !== 0 ? "hidden" : ""}
+              >
+                <form
+                  className="flex flex-col gap-4 h-[auto]"
+                  onSubmit={handleSubmitSignUp}
+                >
+                  <Input
+                    isRequired
+                    label="Nombre de Usuario"
+                    placeholder=""
+                    type="text"
+                    name="user_name"
+                    onChange={handleChange}
+                  />
+                  <Input
+                    isRequired
+                    label="Nombres"
+                    placeholder=""
+                    type="text"
+                    name="names"
+                    onChange={handleChange}
+                  />
+                  <Input
+                    isRequired
+                    label="Apellidos"
+                    placeholder=""
+                    type="text"
+                    name="last_names"
+                    onChange={handleChange}
+                  />
+                  <Input
+                    isRequired
+                    label="Número de Empleado"
+                    placeholder=""
+                    type="text"
+                    name="employee_number"
+                    onChange={handleChange}
+                  />
+                  <Input
+                    isRequired
+                    label="Sucursal"
+                    placeholder=""
+                    type="text"
+                    name="subzone"
+                    onChange={handleChange}
+                  />
+                  <Input
+                    isRequired
+                    label="Estado"
+                    placeholder=""
+                    type="text"
+                    name="is_active"
+                    onChange={handleChange}
+                  />
+                  <Input
+                    isRequired
+                    label="Rol"
+                    placeholder=""
+                    type="text"
+                    name="role"
+                    onChange={handleChange}
+                  />
+                  <Input
+                    isRequired
+                    label="Contraseña"
+                    placeholder=""
+                    type="password"
+                    name="password"
+                    onChange={handleChange}
+                  />
+                  <div className="flex gap-2 justify-end">
+                    <Button fullWidth color="primary" type="submit">
+                      Sign up
+                    </Button>
+                  </div>
+                </form>
+              </Tab>
+            </Tabs>
+          </CardBody>
+        </Card>
       </div>
-      <h1>{store.saludo}</h1>
-      <button onClick={() => createItem({ name: "Hola" })}>Create</button>
-      <select
-        onChange={(e) => {
-          setId(e.target.value);
-        }}
-      >
-        {store.items.length > 0 &&
-          store.items.map((item) => (
-            <option key={item.id} value={item.id}>
-              {item.name}
-            </option>
-          ))}
-      </select>
-      <button onClick={() => deleteItem(id)}>Delete</button>
-    </div>
+    </>
   );
-}
-
-export default Home;
+};

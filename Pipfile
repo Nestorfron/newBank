@@ -24,6 +24,7 @@ typing-extensions = "==4.12.2"
 werkzeug = "==3.0.4"
 wtforms = "==3.2.1"
 flask-migrate = "*"
+flask-jwt-extended = "*"
 
 [dev-packages]
 
