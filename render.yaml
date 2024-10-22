@@ -4,7 +4,7 @@
 services:
   - type: web
     region: ohio
-    name: ViteCHGTP
+    name: newBank
     env: python
     buildCommand: "./render_build.sh && python initialize_db.py"  # Modificado para apuntar al script correcto
     startCommand: "gunicorn wsgi:application"
