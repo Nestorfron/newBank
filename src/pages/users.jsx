@@ -37,7 +37,7 @@ export const Users = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(1);
 
-  useTokenExpiration();
+  //useTokenExpiration();
 
   const filteredItems = useMemo(() => {
     let filteredUsers = [...store.users];
@@ -113,11 +113,11 @@ export const Users = () => {
   );
 
   useEffect(() => {
-    const jwt = localStorage.getItem("token");
+  /*   const jwt = localStorage.getItem("token");
     if (!jwt) {
       navigate("/");
       return;
-    }
+    } */
     actions.getMe();
     actions.getUsers();
   }, []);

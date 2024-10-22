@@ -100,11 +100,11 @@ export const FormUsers = ({ id, btnUser, user: initialUser }) => {
   };
 
   useEffect(() => {
-    const jwt = localStorage.getItem("token");
-    if (!jwt) {
-      navigate("/");
-      return;
-    }
+    // const jwt = localStorage.getItem("token");
+    // if (!jwt) {
+    //   navigate("/");
+    //   return;
+    // }
     actions.getUsers();
     if (initialUser) {
       setUser({

@@ -13,7 +13,6 @@ import {
 import img from "../assets/drapp_logo.png";
 import { useTheme } from "next-themes";
 import "../styles/index.css";
-import { CreateUsers } from "../components/CreateUsers.jsx";
 
 export const Home = () => {
   const { store, actions } = useContext(Context);
@@ -125,15 +124,6 @@ export const Home = () => {
                     </Button>
                   </div>
                 </form>
-              </Tab>
-              <Tab
-                key="sign-up"
-                title="Sign up"
-              > 
-              <div className="flex gap-2 justify-around">
-              <CreateUsers />
-              </div>
-                 
               </Tab>
             </Tabs>
           </CardBody>
