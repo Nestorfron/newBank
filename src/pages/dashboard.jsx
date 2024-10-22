@@ -23,7 +23,7 @@ import {
   ListboxItem,
 } from "@nextui-org/react";
 import Map from "../components/Map.jsx";
-//import BranchDetails from "../component/branchDetails.jsx";
+import BranchDetails from "../components/branchDetails.jsx";
 
 const Dashboard = () => {
   const { store, actions } = useContext(Context);
@@ -72,7 +72,7 @@ const Dashboard = () => {
             {store.branchs.map((branch) => {
               return (
                 <ListboxItem className="p-0 m-0" value={branch.branch_cr}>
-                  {/* <BranchDetails branch={branch} /> */}
+                  <BranchDetails branch={branch} /> 
                 </ListboxItem>
               );
             })}

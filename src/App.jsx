@@ -12,6 +12,7 @@ import { Branches } from "./pages/branches.jsx";
 import { Providers } from "./pages/providers.jsx";
 import { Assets } from "./pages/assets.jsx";
 import { UsersMB } from "./pages/usersMB.jsx";
+import { Migrations } from "./pages/migrations.jsx";
 
 function App({ Component, pageProps }) {
   return (
@@ -27,6 +28,7 @@ function App({ Component, pageProps }) {
             <Route path="/providers" element={<Providers/>}/>
             <Route path="/assets" element={<Assets/>}/>
             <Route path="/usersMB" element={<UsersMB/>}/>
+            <Route path="/migrations" element={<Migrations/>}/>            
             <Route element={<h1>Not found!</h1>} />
           </Routes>
         </BrowserRouter>
