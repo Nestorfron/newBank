@@ -1,8 +1,12 @@
+
+
 const getState = ({ getStore, getActions, setStore }) => {
   // import.meta.env.VITE_API_URL;
 
   return {
     store: {
+      me: [],
+      user: [],
       users: [],
       providers: [],
       branchs: [],
@@ -103,6 +107,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       //GET ME
 
       getMe: async () => {
+        const actions = getActions();
         const jwt = localStorage.getItem("token");
 
         try {
@@ -114,8 +119,8 @@ const getState = ({ getStore, getActions, setStore }) => {
           });
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ me: data });
+            actions.getUserById(data.id);
           }
         } catch (error) {
           console.log(error);
@@ -323,6 +328,31 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
 
       ////////////  GET BY ID SECTION //////////////////
+
+      //GET USER BY ID
+
+      getUserById: async (id) => {
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/user/" + id,
+            {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${jwt}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            console.log(data.user);
+            setStore({ user: data.user });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
 
       //GET BRANCH BY ID
 
@@ -668,6 +698,8 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
           const data = await response.json();
           actions.getMigrations();
+          console.log(data);
+          actions.add_message(data.new_migration.migration_description, data.new_migration.provider_id, data.new_migration.branch_id, data.new_migration.id);
           return data;
         } catch (error) {
           console.log(error);
@@ -963,12 +995,13 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
           const data = await response.json();
           actions.getMigrations();
+          console.log(data);
+          actions.add_message(data.new_migration.migration_description, data.new_migration.provider_id, data.new_migration.branch_id, data.new_migration.id);          
           return data;
         } catch (error) {
           console.log(error);
         }
       },
-
 
       //EDIT MESSAGE
 

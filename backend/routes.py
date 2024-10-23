@@ -161,6 +161,15 @@ def get_messages_by_user_id(user_id):
 
 #####################   GETS  BY ID  ########################################
 
+# GET USER BY ID
+
+@api_blueprint.route('/user/<int:id>', methods=['GET'])
+def get_user_by_id(id):
+    user = User.query.get(id)
+    if user is None:
+        return jsonify({"error": "User not found"}), 404
+    return jsonify({"user": user.serialize()}), 200
+
 #GET BRANCH BY ID
 
 @api_blueprint.route('/branch/<int:id>', methods=['GET'])
@@ -586,7 +595,7 @@ def edit_migration():
         migration.migration_status = body.get("migration_status", migration.migration_status)
         
         db.session.commit()
-        return jsonify({"message": "Migration updated successfully"}), 200
+        return jsonify({"new_migration": migration.serialize()}), 200
     except Exception as error:
         return jsonify({"error": f"{error}"}), 500
     

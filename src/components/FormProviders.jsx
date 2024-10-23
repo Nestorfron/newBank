@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 import Swal from "sweetalert2";
 import { Button, Input, Select, SelectItem, Textarea } from "@nextui-org/react";
+import { g, p } from "framer-motion/client";
 
 export const FormProviders = ({
   id,
@@ -17,6 +18,8 @@ export const FormProviders = ({
     rfc: "",
     service: "",
   });
+  const [branch, setBranch] = useState("");
+
 
   const [loading, setLoading] = useState(false);
 
@@ -81,6 +84,14 @@ export const FormProviders = ({
     }
   };
 
+  const getBranchById = (branchId) => {
+    const Branch = store.branchs.find(
+      (branch) => branch.id === branchId
+    );
+    setBranch(Branch);
+  };
+ 
+
   useEffect(() => {
     const jwt = localStorage.getItem("token");
     if (!jwt) {
@@ -88,7 +99,9 @@ export const FormProviders = ({
       return;
     }
     actions.getProviders();
+    actions.getBranchs();
     if (initialProvider) {
+      getBranchById(initialProvider.branch_id);
       setProvider({
         branch_id: initialProvider.branch_id,
         company_name: initialProvider.company_name || "",
@@ -104,6 +117,7 @@ export const FormProviders = ({
         <Select
           label="Sucursal"
           name="branch_id"
+          placeholder={branch ? branch.branch_cr : ""}
           value={provider.branch_id}
           onChange={(e) =>
             setProvider({ ...provider, branch_id: e.target.value })
