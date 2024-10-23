@@ -26,6 +26,9 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
     asset_id: "",
     is_active: false,
   });
+  const [branch, setBranch] = useState("");
+  const [asset, setAsset] = useState("");
+
 
   const [loading, setLoading] = useState(false);
 
@@ -127,6 +130,21 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
     }
   };
 
+
+  const getBranchById = (branchId) => {
+    const Branch = store.branchs.find(
+      (branch) => branch.id === branchId
+    );
+    setBranch(Branch);
+  };
+
+  const getAssetById = (assetId) => {
+    const Asset = store.assets.find(
+      (asset) => asset.id === assetId
+    );
+    setAsset(Asset);
+  };
+
   useEffect(() => {
     const jwt = localStorage.getItem("token");
     if (!jwt) {
@@ -136,6 +154,8 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
     actions.getUsersMB();
     actions.getAssets();
     if (initialUserMB) {
+      getBranchById(initialUserMB.branch_id);
+      getAssetById(initialUserMB.asset_id);
       setUserMB({
         user_name_MB: initialUserMB.user_name_MB || "",
         is_active: initialUserMB.is_active || "",
@@ -150,7 +170,7 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
   }, []);
 
 
-  
+
   return (
     <form onSubmit={handleSubmit}>
       <div className="flex flex-col gap-4">
@@ -185,7 +205,7 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
 
         <Select
           label="Sucursal"
-          placeholder={userMB.branch_id}
+          placeholder={branch ? branch.branch_cr : ""}
           name="branch_id"
           required
           value={userMB.branch_id}
@@ -200,7 +220,7 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
 
         <Select
           label="Activo"
-          placeholder={userMB.asset_id}
+          placeholder={asset ? asset.asset_inventory_number : ""}
           name="asset_id"
           required
           value={userMB.asset_id}

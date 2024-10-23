@@ -20,6 +20,7 @@ import {
   DropdownItem,
   Avatar,
 } from "@nextui-org/react";
+import BellNotifications from "./bellNotifications.jsx";
 
 export const Navbar = () => {
   const { store, actions } = useContext(Context);
@@ -181,6 +182,9 @@ export const Navbar = () => {
           </li>
         </ul>
       </NavbarMenu>
+      <NavbarItem className={jwt ? "" : "hidden"}>
+        < BellNotifications/>
+      </NavbarItem>
       <NavbarItem>
         <Dropdown placement="bottom-end">
           <DropdownTrigger isDisabled={!jwt}>

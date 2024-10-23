@@ -150,7 +150,7 @@ export const CreateMigrations = () => {
                 <h5 style={{ marginTop: "20px" }}>
                   Formulario de Agregar Migracion
                 </h5>
-                <FormMigrations btnBranch={"Crear"} />
+                <FormMigrations btnMigration={"Crear"} />
               </ModalBody>
             </>
           )}

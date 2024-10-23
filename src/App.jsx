@@ -13,6 +13,7 @@ import { Providers } from "./pages/providers.jsx";
 import { Assets } from "./pages/assets.jsx";
 import { UsersMB } from "./pages/usersMB.jsx";
 import { Migrations } from "./pages/migrations.jsx";
+import { Messages } from "./pages/messages.jsx";
 
 function App({ Component, pageProps }) {
   return (
@@ -28,7 +29,8 @@ function App({ Component, pageProps }) {
             <Route path="/providers" element={<Providers/>}/>
             <Route path="/assets" element={<Assets/>}/>
             <Route path="/usersMB" element={<UsersMB/>}/>
-            <Route path="/migrations" element={<Migrations/>}/>            
+            <Route path="/migrations" element={<Migrations/>}/>  
+            <Route path="/messages" element={<Messages/>}/>
             <Route element={<h1>Not found!</h1>} />
           </Routes>
         </BrowserRouter>

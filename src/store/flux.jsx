@@ -1,9 +1,12 @@
-const getState = ({ getStore, getActions, setStore }) => {
 
+
+const getState = ({ getStore, getActions, setStore }) => {
   // import.meta.env.VITE_API_URL;
 
   return {
     store: {
+      me: [],
+      user: [],
       users: [],
       providers: [],
       branchs: [],
@@ -15,6 +18,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       asset: [],
       userMB: [],
       migration: [],
+      messages: [],
       role: ["Master", "Admin", "Ingeniero de Campo"],
     },
     actions: {
@@ -103,6 +107,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       //GET ME
 
       getMe: async () => {
+        const actions = getActions();
         const jwt = localStorage.getItem("token");
 
         try {
@@ -114,8 +119,8 @@ const getState = ({ getStore, getActions, setStore }) => {
           });
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ me: data });
+            actions.getUserById(data.id);
           }
         } catch (error) {
           console.log(error);
@@ -128,12 +133,15 @@ const getState = ({ getStore, getActions, setStore }) => {
         const jwt = localStorage.getItem("token");
 
         try {
-          const response = await fetch(import.meta.env.VITE_API_URL + "/users", {
-            method: "GET",
-            headers: {
-              authorization: `Bearer ${jwt}`,
-            },
-          });
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/users",
+            {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${jwt}`,
+              },
+            }
+          );
           const data = await response.json();
           if (response.ok) {
             console.log(data);
@@ -269,7 +277,82 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
       },
 
+      //GET ALL MESSAGES
+
+      getMessages: async () => {
+        const jwt = localStorage.getItem("token");
+
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/messages",
+            {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${jwt}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            console.log(data);
+            setStore({ messages: data.messages });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      //GET ALL MESSAGES BY USER ID
+
+      getMessagesByUserId: async (userId) => {
+        const jwt = localStorage.getItem("token");
+
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/messages/" + userId,
+            {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${jwt}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            console.log(data);
+            setStore({ messages: data.messages });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
       ////////////  GET BY ID SECTION //////////////////
+
+      //GET USER BY ID
+
+      getUserById: async (id) => {
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/user/" + id,
+            {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${jwt}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            console.log(data.user);
+            setStore({ user: data.user });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
 
       //GET BRANCH BY ID
 
@@ -390,6 +473,31 @@ const getState = ({ getStore, getActions, setStore }) => {
           if (response.ok) {
             console.log(data);
             setStore({ migration: data.migration });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      //GET MESSAGE BY ID
+
+      getMessageById: async (id) => {
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/message/" + id,
+            {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${jwt}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            console.log(data);
+            setStore({ message: data.message });
           }
         } catch (error) {
           console.log(error);
@@ -590,6 +698,41 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
           const data = await response.json();
           actions.getMigrations();
+          console.log(data);
+          actions.add_message(data.new_migration.migration_description, data.new_migration.provider_id, data.new_migration.branch_id, data.new_migration.id);
+          return data;
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      //ADD MESSAGE
+
+      add_message: async (message, provider_id, branch_id, migration_id) => {
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/add_message",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                authorization: `Bearer ${jwt}`,
+              },
+              body: JSON.stringify({
+                message,
+                provider_id,
+                branch_id,
+                migration_id,
+              }),
+            }
+          );
+          if (!response.ok) {
+            console.log(response);
+          }
+          const data = await response.json();
+          actions.getMessages();
           return data;
         } catch (error) {
           console.log(error);
@@ -852,6 +995,39 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
           const data = await response.json();
           actions.getMigrations();
+          console.log(data);
+          actions.add_message(data.new_migration.migration_description, data.new_migration.provider_id, data.new_migration.branch_id, data.new_migration.id);          
+          return data;
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      //EDIT MESSAGE
+
+      editMessage: async (id, message) => {
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/edit_message",
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                authorization: `Bearer ${jwt}`,
+              },
+              body: JSON.stringify({
+                id,
+                message,
+              }),
+            }
+          );
+          if (!response.ok) {
+            console.log(response);
+          }
+          const data = await response.json();
+          actions.getMessages();
           return data;
         } catch (error) {
           console.log(error);
@@ -1004,6 +1180,36 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
           const data = await response.json();
           actions.getMigrations();
+          return data;
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      //DELETE MESSAGE
+
+      deleteMessage: async (id) => {
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/delete_message",
+            {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+                authorization: `Bearer ${jwt}`,
+              },
+              body: JSON.stringify({
+                id,
+              }),
+            }
+          );
+          if (!response.ok) {
+            console.log(response);
+          }
+          const data = await response.json();
+          actions.getMessages();
           return data;
         } catch (error) {
           console.log(error);
