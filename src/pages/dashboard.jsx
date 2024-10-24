@@ -42,6 +42,7 @@ const Dashboard = () => {
   useEffect(() => {
     actions.getMe();
     actions.getBranchs();
+    actions.getMessages();
   }, []);
 
   return (
@@ -71,8 +72,13 @@ const Dashboard = () => {
           >
             {store.branchs.map((branch) => {
               return (
-                <ListboxItem className="p-0 m-0" value={branch.branch_cr}>
-                  <BranchDetails branch={branch} /> 
+                <ListboxItem
+                  key={branch.id}
+                  className="p-0 m-0"
+                  value={branch.branch_cr}
+                  textValue={branch.branch_cr} 
+                >
+                  <BranchDetails branch={branch} />
                 </ListboxItem>
               );
             })}
@@ -87,6 +93,50 @@ const Dashboard = () => {
             color="primary"
           >
             Sucursales.
+          </Link>
+        </CardFooter>
+      </Card>
+      <Card className="bg-primary-50 col-span-12 sm:col-span-5 h-[300px]">
+        <CardHeader className="flex gap-3">
+          <div className="flex flex-col">
+            <h3 color="primary" className="font-medium text-2xl">
+              Mensajes
+            </h3>
+          </div>
+        </CardHeader>
+        <Divider />
+        <CardBody>
+          <Listbox
+            value={selectedValue}
+            onChange={setSelectedKeys}
+            multiple
+            color="primary"
+            className="w-full"
+            aria-label="Mensajes"
+          >
+            {store.messages.map((message, index) => {
+              return (
+                <ListboxItem
+                  key={index}
+                  className="p-0 m-0"
+                  value={message.message}
+                  textValue={`${index + 1} - ${message.message}`}
+                >
+                  {index + 1} - {message.message}
+                </ListboxItem>
+              );
+            })}
+          </Listbox>
+        </CardBody>
+        <Divider />
+        <CardFooter>
+          <Link
+            className="text-tiny uppercase font-bold"
+            showAnchorIcon
+            href="/messages"
+            color="primary"
+          >
+            Mensajes.
           </Link>
         </CardFooter>
       </Card>

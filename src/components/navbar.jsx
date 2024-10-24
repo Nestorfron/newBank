@@ -19,6 +19,7 @@ import {
   DropdownMenu,
   DropdownItem,
   Avatar,
+  Tooltip,
 } from "@nextui-org/react";
 import BellNotifications from "./bellNotifications.jsx";
 
