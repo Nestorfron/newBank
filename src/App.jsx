@@ -14,6 +14,7 @@ import { Assets } from "./pages/assets.jsx";
 import { UsersMB } from "./pages/usersMB.jsx";
 import { Migrations } from "./pages/migrations.jsx";
 import { Messages } from "./pages/messages.jsx";
+import { History } from "./pages/history.jsx";
 
 function App({ Component, pageProps }) {
   return (
@@ -31,6 +32,7 @@ function App({ Component, pageProps }) {
             <Route path="/usersMB" element={<UsersMB/>}/>
             <Route path="/migrations" element={<Migrations/>}/>  
             <Route path="/messages" element={<Messages/>}/>
+            <Route path="/history" element={<History/>}/>
             <Route element={<h1>Not found!</h1>} />
           </Routes>
         </BrowserRouter>

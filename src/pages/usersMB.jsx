@@ -118,6 +118,8 @@ export const UsersMB = () => {
     }
     actions.getUsersMB();
     actions.getMe();
+    actions.getBranchs();
+    actions.getAssets();
   }, []);
 
   return (
