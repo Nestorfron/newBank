@@ -41,6 +41,7 @@ export const FormMigrations = ({
 
   const handleChange = (e) => {
     setMigration({ ...migration, [e.target.name]: e.target.value });
+    console.log(migration)
   };
 
   const handleSubmit = async (e) => {

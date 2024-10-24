@@ -1,10 +1,16 @@
+import { act } from "react";
 
 
 const getState = ({ getStore, getActions, setStore }) => {
   // import.meta.env.VITE_API_URL;
 
+  const today = new Date();
+
+ 
+
   return {
     store: {
+      new: [],
       me: [],
       user: [],
       users: [],
@@ -19,6 +25,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       userMB: [],
       migration: [],
       messages: [],
+      history: [],
       role: ["Master", "Admin", "Ingeniero de Campo"],
     },
     actions: {
@@ -63,6 +70,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             return false;
           }
           const data = await response.json();
+          actions.add_history("se ha registrado el usuario id N° " + data.new_user.id, null, null,null,null,today);
           actions.getUsers();
 
           return data;
@@ -146,6 +154,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           if (response.ok) {
             console.log(data);
             setStore({ users: data.users });
+
           }
         } catch (error) {
           console.log(error);
@@ -301,6 +310,182 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log(error);
         }
       },
+
+      //GET ALL HISTORY
+
+      getHistory: async () => {
+        const jwt = localStorage.getItem("token");
+
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/history",
+            {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${jwt}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            console.log(data);
+            setStore({ history: data.history });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      //GET ALL HISTORY BY USER ID
+
+      getHistoryByUserId: async (userId) => {
+        const jwt = localStorage.getItem("token");
+
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/history/" + userId,
+            {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${jwt}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            console.log(data);
+            setStore({ history: data.history });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      //GET ALL HISTORY BY PROVIDER ID
+
+      getHistoryByProviderId: async (providerId) => {
+        const jwt = localStorage.getItem("token");
+
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/history/" + providerId,
+            {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${jwt}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            console.log(data);
+            setStore({ history: data.history });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      //GET ALL HISTORY BY BRANCH ID
+
+      getHistoryByBranchId: async (branchId) => {
+        const jwt = localStorage.getItem("token");
+
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/history/" + branchId,
+            {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${jwt}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            console.log(data);
+            setStore({ history: data.history });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      //GET ALL HISTORY BY MIGRATION ID
+
+      getHistoryByMigrationId: async (migrationId) => {
+        const jwt = localStorage.getItem("token");
+
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/history/" + migrationId,
+            {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${jwt}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            console.log(data);
+            setStore({ history: data.history });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      //GET ALL HISTORY BY ASSET ID
+
+      getHistoryByAssetId: async (assetId) => {
+        const jwt = localStorage.getItem("token");
+
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/history/" + assetId,
+            {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${jwt}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            console.log(data);
+            setStore({ history: data.history });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      //GET ALL HISTORY BY MESSAGE ID
+
+      getHistoryByMessageId: async (messageId) => {
+        const jwt = localStorage.getItem("token");
+
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/history/" + messageId,
+            {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${jwt}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            console.log(data);
+            setStore({ history: data.history });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
 
       //GET ALL MESSAGES BY USER ID
 
@@ -504,6 +689,31 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
       },
 
+      //GET HISTORY BY ID
+
+      getHistoryById: async (id) => {
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/history/" + id,
+            {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${jwt}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            console.log(data);
+            setStore({ history: data.history });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
       ////////////  ADD SECTION //////////////////
 
       //ADD BRANCH
@@ -537,6 +747,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             console.log(response);
           }
           const data = await response.json();
+          actions.add_history("se ha creado la sucursal id N° " + data.new_branch.id, null, data.new_branch.id,null,null,today);
           actions.getBranchs();
           return data;
         } catch (error) {
@@ -570,6 +781,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             console.log(response);
           }
           const data = await response.json();
+          actions.add_history("se ha creado el proveedor id N° " + data.new_provider.id, data.new_provider.id, null,null,null,today);
           actions.getProviders();
           return data;
         } catch (error) {
@@ -611,6 +823,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             console.log(response);
           }
           const data = await response.json();
+          actions.add_history("se ha creado el activo id N° " + data.new_asset.id, data.new_asset.provider_id, data.new_asset.branch_id,null,data.new_asset.id,today);
           actions.getAssets();
           return data;
         } catch (error) {
@@ -655,6 +868,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             console.log(response);
           }
           const data = await response.json();
+          actions.add_history("se ha creado el usuarioMB id N° " + data.new_userMB.id, null, data.new_userMB.branch_id,null,null,today);
           actions.getUsersMB();
           return data;
         } catch (error) {
@@ -700,6 +914,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           actions.getMigrations();
           console.log(data);
           actions.add_message(data.new_migration.migration_description, data.new_migration.provider_id, data.new_migration.branch_id, data.new_migration.id);
+          actions.add_history("se ha creado la migracion id N° " + data.new_migration.id, data.new_migration.provider_id, data.new_migration.branch_id,data.new_migration.id,null,today);
           return data;
         } catch (error) {
           console.log(error);
@@ -732,7 +947,50 @@ const getState = ({ getStore, getActions, setStore }) => {
             console.log(response);
           }
           const data = await response.json();
+          actions.add_history("se ha creado el mensaje id N° " + data.new_message.id, data.new_message.provider_id, data.new_message.branch_id,data.new_message.migration_id,null,today);
           actions.getMessages();
+          return data;
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      //ADD HISTORY
+
+      add_history: async (
+        message,
+        provider_id,
+        branch_id,
+        migration_id,
+        asset_id,
+        date
+      ) => {
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/add_history",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                authorization: `Bearer ${jwt}`,
+              },
+              body: JSON.stringify({
+                message,
+                provider_id,
+                branch_id,
+                migration_id,
+                asset_id,
+                date
+              }),
+            }
+          );
+          if (!response.ok) {
+            console.log(response);
+          }
+          const data = await response.json();
+          actions.getHistory();
           return data;
         } catch (error) {
           console.log(error);
@@ -754,6 +1012,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         is_active,
         role
       ) => {
+        const user_id=id
         const jwt = localStorage.getItem("token");
         const actions = getActions();
         try {
@@ -782,6 +1041,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             console.log(response);
           }
           const data = await response.json();
+          actions.add_history("se ha editado el usuario id N° " + user_id, null, null,null,null,today);
           actions.getUsers();
           return data;
         } catch (error) {
@@ -798,6 +1058,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         branch_zone,
         branch_subzone
       ) => {
+        const branch_id=id
         const jwt = localStorage.getItem("token");
         const actions = getActions();
         try {
@@ -822,6 +1083,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             console.log(response);
           }
           const data = await response.json();
+          actions.add_history("se ha editado la sucursal id N° " + branch_id, null, branch_id,null,null,today);
           actions.getBranchs();
           return data;
         } catch (error) {
@@ -832,6 +1094,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       // EDIT PROVIDER
 
       editProvider: async (id, branch, company_name, rfc, service) => {
+        const provider_id=id
         const jwt = localStorage.getItem("token");
         const actions = getActions();
         try {
@@ -856,6 +1119,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             console.log(response);
           }
           const data = await response.json();
+          actions.add_history("se ha editado el proveedor id N° " + provider_id, provider_id, null,null,null,today);
           actions.getProviders();
           return data;
         } catch (error) {
@@ -873,6 +1137,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         asset_serial,
         asset_inventory_number
       ) => {
+        const asset_id=id
         const jwt = localStorage.getItem("token");
         const actions = getActions();
         try {
@@ -898,6 +1163,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             console.log(response);
           }
           const data = await response.json();
+          actions.add_history("se ha editado el activo id N° " + asset_id, null, null,null,asset_id,today);
           actions.getAssets();
           return data;
         } catch (error) {
@@ -917,16 +1183,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         branch_id,
         asset_id
       ) => {
-        console.log(
-          id,
-          user_name_MB,
-          is_active,
-          names,
-          last_names,
-          employee_number,
-          branch_id,
-          asset_id
-        );
+        const userMB_id=id
+        const userMB_branch_id=branch_id
         const jwt = localStorage.getItem("token");
         const actions = getActions();
         try {
@@ -954,6 +1212,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             console.log(response);
           }
           const data = await response.json();
+          actions.add_history("se ha editado el usuarioMB id N° " + userMB_id, null, userMB_branch_id,null,null,today);
           actions.getUsersMB();
           return data;
         } catch (error) {
@@ -970,6 +1229,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         migration_description,
         migration_status
       ) => {
+        
         const jwt = localStorage.getItem("token");
         const actions = getActions();
         try {
@@ -996,7 +1256,8 @@ const getState = ({ getStore, getActions, setStore }) => {
           const data = await response.json();
           actions.getMigrations();
           console.log(data);
-          actions.add_message(data.new_migration.migration_description, data.new_migration.provider_id, data.new_migration.branch_id, data.new_migration.id);          
+          actions.add_message("la migración id N° "+data.new_migration.id+" ha sido actualizada", data.new_migration.provider_id, data.new_migration.branch_id, data.new_migration.id);
+          actions.add_history("se ha editado la migracion id N° " + data.new_migration.id, data.new_migration.provider_id, data.new_migration.branch_id,data.new_migration.id,null,today);
           return data;
         } catch (error) {
           console.log(error);
@@ -1006,6 +1267,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       //EDIT MESSAGE
 
       editMessage: async (id, message) => {
+        const message_id=id
         const jwt = localStorage.getItem("token");
         const actions = getActions();
         try {
@@ -1027,7 +1289,39 @@ const getState = ({ getStore, getActions, setStore }) => {
             console.log(response);
           }
           const data = await response.json();
+          actions.add_history("se ha editado el mensaje id N° " +   message_id, null, null,null,null,today);
           actions.getMessages();
+          return data;
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      // EDIT HISTORY
+
+      editHistory: async (id, message) => {
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/edit_history",
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                authorization: `Bearer ${jwt}`,
+              },
+              body: JSON.stringify({
+                id,
+                message,
+              }),
+            }
+          );
+          if (!response.ok) {
+            console.log(response);
+          }
+          const data = await response.json();
+          actions.getHistory();
           return data;
         } catch (error) {
           console.log(error);
@@ -1210,6 +1504,36 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
           const data = await response.json();
           actions.getMessages();
+          return data;
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      //DELETE HISTORY
+
+      deleteHistory: async (id) => {
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/delete_history",
+            {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+                authorization: `Bearer ${jwt}`,
+              },
+              body: JSON.stringify({
+                id,
+              }),
+            }
+          );
+          if (!response.ok) {
+            console.log(response);
+          }
+          const data = await response.json();
+          actions.getHistory();
           return data;
         } catch (error) {
           console.log(error);

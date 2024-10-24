@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from backend.models import User, Provider, Branch, Assets, UserMB, Migration, Message
+from backend.models import User, Provider, Branch, Assets, UserMB, Migration, Message, History
 from backend.extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
@@ -147,9 +147,17 @@ def get_messages():
     messages_data = [message.serialize() for message in messages]
     return jsonify({"messages": messages_data}), 200
 
+#GET ALL HISTORY
+
+@api_blueprint.route('/history', methods=['GET'])
+def get_history():
+    history = History.query.order_by(History.id.asc()).all()
+    history_data = [history.serialize() for history in history]
+    return jsonify({"history": history_data}), 200
 
 
-#####################   GETS  BY USER ID  ########################################
+
+#####################   GETS  BY ID  ########################################
 
 #GET ALL MESSAGES BY USER ID
 @api_blueprint.route('/messages/<int:user_id>', methods=['GET'])
@@ -158,8 +166,46 @@ def get_messages_by_user_id(user_id):
     messages_data = [message.serialize() for message in messages]
     return jsonify({"messages": messages_data}), 200
 
+#GET ALL HISTORY BY PROVIDER ID
 
-#####################   GETS  BY ID  ########################################
+@api_blueprint.route('/history/<int:provider_id>', methods=['GET'])
+def get_history_by_provider_id(provider_id):
+    history = History.query.filter_by(provider_id=provider_id).order_by(History.id.asc()).all()
+    history_data = [history.serialize() for history in history]
+    return jsonify({"history": history_data}), 200
+
+#GET ALL HISTORY BY BRANCH ID
+
+@api_blueprint.route('/history/<int:branch_id>', methods=['GET'])
+def get_history_by_branch_id(branch_id):
+    history = History.query.filter_by(branch_id=branch_id).order_by(History.id.asc()).all()
+    history_data = [history.serialize() for history in history]
+    return jsonify({"history": history_data}), 200
+
+#GET ALL HISTORY BY MIGRATION ID
+
+@api_blueprint.route('/history/<int:migration_id>', methods=['GET'])
+def get_history_by_migration_id(migration_id):
+    history = History.query.filter_by(migration_id=migration_id).order_by(History.id.asc()).all()
+    history_data = [history.serialize() for history in history]
+    return jsonify({"history": history_data}), 200
+
+#GET ALL HISTORY BY ASSET ID
+
+@api_blueprint.route('/history/<int:asset_id>', methods=['GET'])
+def get_history_by_asset_id(asset_id):
+    history = History.query.filter_by(asset_id=asset_id).order_by(History.id.asc()).all()
+    history_data = [history.serialize() for history in history]
+    return jsonify({"history": history_data}), 200
+
+#GET ALL HISTORY BY MESSAGE ID
+
+@api_blueprint.route('/history/<int:message_id>', methods=['GET'])
+def get_history_by_message_id(message_id):
+    history = History.query.filter_by(message_id=message_id).order_by(History.id.asc()).all()
+    history_data = [history.serialize() for history in history]
+    return jsonify({"history": history_data}), 200
+
 
 # GET USER BY ID
 
@@ -413,6 +459,33 @@ def add_message():
     except Exception as error:
         db.session.rollback()
         return jsonify({"error": f"{error}"}), 500
+    
+#ADD HISTORY
+
+@api_blueprint.route('/add_history', methods=['POST'])
+@jwt_required()
+def add_history():
+    body=request.json
+    user_data = get_jwt_identity()
+    message = body.get("message", None)
+    provider_id = body.get("provider_id", None)
+    branch_id = body.get("branch_id", None)
+    migration_id = body.get("migration_id", None)
+    asset_id = body.get("asset_id", None)
+    date = body.get("date", None)
+
+
+        
+    try:
+        new_history = History(message=message, provider_id=provider_id, branch_id=branch_id, migration_id=migration_id, asset_id=asset_id, date=date, user_id=user_data["id"])
+        db.session.add(new_history)
+        db.session.commit()
+        return jsonify({"new_history": new_history.serialize()}), 201
+    except Exception as error:
+        db.session.rollback()
+        return jsonify({"error": f"{error}"}), 500
+    
+
         
 
 #####################  EDIT ###################################
@@ -622,6 +695,30 @@ def edit_message():
         return jsonify({"message": "Message updated successfully"}), 200
     except Exception as error:
         return jsonify({"error": f"{error}"}), 500
+    
+
+# EDIT HISTORY
+@api_blueprint.route('/edit_history', methods=['PUT'])
+@jwt_required()
+def edit_history():
+    try:
+        body = request.json
+        user_data = get_jwt_identity()
+        message_id = body.get("id")
+        
+        if not message_id:
+            return jsonify({'error': 'Missing message ID'}), 400
+        
+        message = History.query.filter_by(id=message_id, user_id=user_data["id"]).first()
+        if message is None:
+            return jsonify({'error': 'Message no found'}), 404
+        
+        message.message = body.get("message", message.message)
+        
+        db.session.commit()
+        return jsonify({"message": "Message updated successfully"}), 200
+    except Exception as error:  
+        return jsonify({"error": f"{error}"}), 500
 
 
 
@@ -741,6 +838,26 @@ def delete_message():
         db.session.commit()
         return jsonify({"message": "Message removed"}), 200
     except Exception as error:    
+        return jsonify({"error": f"{error}"}), 500
+    
+
+# DELETE HISTORY
+@api_blueprint.route('/delete_history', methods=['DELETE'])
+@jwt_required()
+def delete_history():
+    try:
+        body = request.json
+        user_data = get_jwt_identity()
+        message_id = body.get("id", None)
+        
+        message = History.query.filter_by(id=message_id).first()
+        if message is None:
+            return jsonify({'error': 'Message no found'}), 404
+        
+        db.session.delete(message)
+        db.session.commit()
+        return jsonify({"message": "Message removed"}), 200
+    except Exception as error:
         return jsonify({"error": f"{error}"}), 500
     
 
