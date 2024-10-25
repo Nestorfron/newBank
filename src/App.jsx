@@ -6,7 +6,7 @@ import injectContext from "../src/store/appContext.jsx";
 
 import { Home } from "./pages/home.jsx";
 import { Navbar } from "./components/navbar.jsx";
-import Dashboard from "./pages/dashboard.jsx";
+import { Dashboard } from "./pages/dashboard.jsx";
 import { AllUsers } from "./pages/allUsers.jsx";
 import { Admins } from "./components/admins.jsx";
 import { Branches } from "./pages/branches.jsx";

@@ -1,32 +1,34 @@
-import React, { useContext, useEffect } from "react";
-import { Context } from "../store/appContext.jsx";
+import React, { useContext, useEffect, useState } from "react";
+import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "next-themes";
 import useTokenExpiration from "../hooks/useTokenExpitarion.jsx";
-import "../styles/index.css";
+import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
+import {
+  Wifi,
+  Server,
+  Monitor,
+  Printer,
+  Link as LinkIcon,
+  Users,
+  Building,
+} from "lucide-react";
 import {
   Card,
   CardHeader,
   CardBody,
   CardFooter,
-  Image,
-  Button,
-  Divider,
   Link,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   useDisclosure,
   Listbox,
   ListboxItem,
+  
+  Input,
 } from "@nextui-org/react";
 import Map from "../components/Map.jsx";
 import BranchDetails from "../components/branchDetails.jsx";
-import MigrationChart from "../components/migrationChart.jsx";
 
-const Dashboard = () => {
+export const Dashboard = () => {
   const { store, actions } = useContext(Context);
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
@@ -41,176 +43,191 @@ const Dashboard = () => {
   useTokenExpiration();
 
   useEffect(() => {
+    const jwt = localStorage.getItem("token");
+    if (!jwt) {
+      navigate("/");
+      return;
+    }
     actions.getMe();
     actions.getBranchs();
-    actions.getMessages();
-    actions.getHistory();
-    actions.getMigrations();
   }, []);
 
   return (
-    <div className="gap-2 grid grid-cols-12 grid-rows-2 px-8 mt-5 mb-5 items-center">
-      <Card className="col-span-12 sm:col-span-7 h-full">
-        {" "}
-        <Map />
-      </Card>
-      <Card className="bg-primary-50 col-span-12 sm:col-span-5 h-full">
-        <CardHeader className="flex gap-3">
-          <div className="flex flex-col">
-            <h3 color="primary" className="font-medium text-2xl">
-              Sucursales
-            </h3>
-          </div>
-        </CardHeader>
-        <Divider />
-        <CardBody>
-          <Listbox
-            value={selectedValue}
-            variant="solid"
-            onChange={setSelectedKeys}
-            multiple
-            color="primary"
-            className="w-full"
-            aria-label="Branches"
-          >
-            {store.branchs.map((branch) => {
-              return (
+    <div className="container mx-auto p-4">
+      <div className="flex gap-2 items-center justify-start mt-3 ">
+        <Input
+          isClearable
+          placeholder="Buscar por Cr..."
+          // value={filterValue}
+          // onClear={() => setFilterValue("")}
+          // onValueChange={setFilterValue}
+          className="w-[300px]"
+          startContent={<SearchIcon />}
+        />
+      </div>
+      <div className="flex w-full gap-2 mr-2 mt-3 mb-2">
+        <Card className="bg-gray-800 border-gray-700 border-1  h-[180px]  w-1/4 xs:w-2/6">
+          <CardHeader className="absolute z-10 top-1 flex-col">
+            <div className="flex justify-between w-full">
+              <p className="text-tiny text-white/60 uppercase font-bold text-xl">
+                Servidores
+              </p>
+              <div className="p-2 rounded-full bg-primary-500">
+                <Server className="h-6 w-6" />
+              </div>
+            </div>
+          </CardHeader>
+          <CardBody className="flex justify-end items-start flex w-full">
+            {" "}
+            <div className="ml-5 mb-5 ">
+              <span className="text-white  text-3xl"> 1</span>
+            </div>
+          </CardBody>
+        </Card>
+        <Card className="bg-gray-800 border-gray-700 border-1  h-[180px]  w-1/4 xs:w-2/6">
+          <CardHeader className="absolute z-10 top-1 flex-col">
+            <div className="flex justify-between w-full">
+              <p className="text-tiny text-white/60 uppercase font-bold text-xl">
+                Estaciones de trabajo
+              </p>
+              <div className="p-2 rounded-full bg-success-500 text-whie">
+                <Monitor className="h-6 w-6" />
+              </div>
+            </div>
+          </CardHeader>
+          <CardBody className="flex justify-end items-start flex w-full">
+            {" "}
+            <div className="ml-5 mb-5 ">
+              <span className="text-white  text-3xl"> 20</span>
+            </div>
+          </CardBody>
+        </Card>
+        <Card className="bg-gray-800 border-gray-700 border-1   h-[180px]  w-1/4 xs:w-2/6">
+          <CardHeader className="absolute z-10 top-1 flex-col">
+            <div className="flex justify-between w-full">
+              <p className="text-tiny text-white/60 uppercase font-bold text-xl">
+                Impresoras
+              </p>
+              <div className="p-2 rounded-full bg-secondary-500">
+                <Printer className="h-6 w-6" />
+              </div>
+            </div>
+          </CardHeader>
+          <CardBody className="flex justify-end items-start flex w-full">
+            {" "}
+            <div className="ml-5 mb-5 ">
+              <span className="text-white  text-3xl"> 2</span>
+            </div>
+          </CardBody>
+        </Card>
+        <Card className="bg-gray-800 border-gray-700 border-1   h-[180px]  w-1/4 xs:w-2/6">
+          <CardHeader className="absolute z-10 top-1 flex-col">
+            <div className="flex justify-between w-full">
+              <p className="text-tiny text-white/60 uppercase font-bold text-xl">
+                Wi-Fi
+              </p>
+              <div className="p-2 rounded-full bg-warning-500">
+                <Wifi className="h-6 w-6" />
+              </div>
+            </div>
+          </CardHeader>
+          <CardBody className="flex justify-end items-start flex w-full">
+            {" "}
+            <div className="ml-5 mb-5 ">
+              <span className="text-white  text-3xl"> 2</span>
+            </div>
+          </CardBody>
+        </Card>
+      </div>
+      <div className="flex w-full gap-2">
+        <Card className="bg-gray-800 border-gray-700 border-1  w-1/4 h-[300px]">
+          <CardHeader className="flex gap-3">
+            <div className="flex justify-between w-full">
+              <p className="text-tiny text-white/60 uppercase font-bold text-xl">
+                Sucursales
+              </p>
+              <div className="p-2 rounded-full bg-warning-500">
+                <Building className="h-6 w-6" />
+              </div>
+            </div>
+          </CardHeader>
+
+          <CardBody>
+            <Listbox
+              value={selectedValue}
+              variant="solid"
+              onChange={setSelectedKeys}
+              multiple
+              className="w-full text-white"
+              aria-label="Branches"
+            >
+              {store.branchs.map((branch) => (
                 <ListboxItem
-                  key={branch.id}
+                  key={branch.branch_cr}
                   className="p-0 m-0"
                   value={branch.branch_cr}
-                  textValue={branch.branch_cr}
                 >
                   <BranchDetails branch={branch} />
                 </ListboxItem>
-              );
-            })}
-          </Listbox>
-        </CardBody>
-        <Divider />
-        <CardFooter>
-          <Link
-            className="text-tiny uppercase font-bold"
-            showAnchorIcon
-            href="/branches"
-            color="primary"
-          >
-            Sucursales.
-          </Link>
-        </CardFooter>
-      </Card>
-      <Card className="bg-primary-50 col-span-12 sm:col-span-5 h-full">
-        <CardHeader className="flex gap-3">
-          <div className="flex flex-col">
-            <h3 color="primary" className="font-medium text-2xl">
-              Mensajes
-            </h3>
-          </div>
-        </CardHeader>
-        <Divider />
-        <CardBody>
-          <Listbox
-            value={selectedValue}
-            onChange={setSelectedKeys}
-            multiple
-            color="primary"
-            className="w-full"
-            aria-label="Mensajes"
-          >
-            {store.messages.map((message, index) => {
-              return (
-                <ListboxItem
-                  key={index}
-                  className="p-0 m-0"
-                  value={message.message}
-                  textValue={`${index + 1} - ${message.message}`}
-                >
-                  {index + 1} - {message.message}
-                </ListboxItem>
-              );
-            })}
-          </Listbox>
-        </CardBody>
-        <Divider />
-        <CardFooter>
-          <Link
-            className="text-tiny uppercase font-bold"
-            showAnchorIcon
-            href="/messages"
-            color="primary"
-          >
-            Mensajes.
-          </Link>
-        </CardFooter>
-      </Card>
-      <Card className="col-span-12 sm:col-span-4  overflow-hidden shadow-lg h-full">
-        <div className="flex items-center justify-center h-full py-4">
-          <MigrationChart />
-        </div>
-      </Card>
-      <Card
-        isFooterBlurred
-        className="w-full h-[300px] col-span-12 sm:col-span-5"
-      >
-        <CardHeader className="absolute z-10 top-1 flex-col items-start">
-          <p className="text-tiny text-white/60 uppercase font-bold">New</p>
-          <h4 className="text-black font-medium text-2xl">Acme camera</h4>
-        </CardHeader>
-        <Image
-          removeWrapper
-          alt="Card example background"
-          className="z-0 w-full h-full scale-125 -translate-y-6 object-cover"
-          src="https://nextui.org/images/card-example-6.jpeg"
-        />
-        <CardFooter className="absolute bg-white/30 bottom-0 border-t-1 border-zinc-100/50 z-10 justify-between">
-          <div>
-            <p className="text-black text-tiny">Available soon.</p>
-            <p className="text-black text-tiny">Get notified.</p>
-          </div>
-          <Button className="text-tiny" color="primary" radius="full" size="sm">
-            Notify Me
-          </Button>
-        </CardFooter>
-      </Card>
-      <Card
-        isFooterBlurred
-        className="w-full h-[300px] col-span-12 sm:col-span-7"
-      >
-        <CardHeader className="absolute z-10 top-1 flex-col items-start">
-          <p className="text-tiny text-white/60 uppercase font-bold">
-            Your day your way
-          </p>
-          <h4 className="text-white/90 font-medium text-xl">
-            Your checklist for better sleep
-          </h4>
-        </CardHeader>
-        <Image
-          removeWrapper
-          alt="Relaxing app background"
-          className="z-0 w-full h-full object-cover"
-          src="https://nextui.org/images/card-example-5.jpeg"
-        />
-        <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
-          <div className="flex flex-grow gap-2 items-center">
-            <Image
-              alt="Breathing app icon"
-              className="rounded-full w-10 h-11 bg-black"
-              src="https://nextui.org/images/breathing-app-icon.jpeg"
-            />
-            <div className="flex flex-col">
-              <p className="text-tiny text-white/60">Breathing App</p>
-              <p className="text-tiny text-white/60">
-                Get a good night's sleep.
-              </p>
+              ))}
+            </Listbox>
+          </CardBody>
+          <CardFooter className="absolute bg-black/30 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100 justify-end">
+            <div className="flex justify-end w-full">
+              <Link
+                className="text-tiny uppercase font-bold"
+                showAnchorIcon
+                href="/branches"
+                color="primary"
+              >
+                Sucursales.
+              </Link>
             </div>
-          </div>
-          <Button radius="full" size="sm">
-            Get App
-          </Button>
-        </CardFooter>
-      </Card>
+          </CardFooter>
+        </Card>
+        <Card className="w-1/2 h-[300px] border-gray-700 border-1 ">
+          <Map />
+        </Card>
+        <div className="flex-grow">
+          <Card className="bg-gray-800 border-gray-700 border-1   h-[145px]  w-full mb-2">
+            <CardHeader className="absolute z-10 top-1 flex-col">
+              <div className="flex justify-between w-full">
+                <p className="text-tiny text-white/60 uppercase font-bold text-xl">
+                  Enlaces
+                </p>
+                <div className="p-2 rounded-full bg-secondary-500">
+                  <LinkIcon className="h-6 w-6" />
+                </div>
+              </div>
+            </CardHeader>
+            <CardBody className="flex justify-end items-start flex w-full">
+              {" "}
+              <div className="ml-5 mb-5 ">
+                <span className="text-white  text-3xl"> 2</span>
+              </div>
+            </CardBody>
+          </Card>
+          <Card className="bg-gray-800 border-gray-700 border-1   h-[145px]">
+            <CardHeader className="absolute z-10 top-1 flex-col">
+              <div className="flex justify-between w-full">
+                <p className="text-tiny text-white/60 uppercase font-bold text-xl">
+                  Responsables
+                </p>
+                <div className="p-2 rounded-full bg-success-500">
+                  <Users className="h-6 w-6" />
+                </div>
+              </div>
+            </CardHeader>
+            <CardBody className="flex justify-end items-start flex w-full">
+              {" "}
+              <div className="ml-5 mb-5 ">
+                <span className="text-white  text-3xl"> 2</span>
+              </div>
+            </CardBody>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 };
 
-export default Dashboard;
