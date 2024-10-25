@@ -29,40 +29,35 @@ export const Migrations = () => {
 
   useTokenExpiration();
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  };
+
   const filteredItems = useMemo(() => {
     let filteredMigrations = [...store.migrations];
 
     if (filterValue) {
-      filteredMigrations = filteredMigrations.filter(
-        (migration) =>
-          migration.installation_date
-            .toLowerCase()
-            .includes(filterValue.toLowerCase()) ||
-          migration.migration_date
-            .toLowerCase()
-            .includes(filterValue.toLowerCase()) ||
-          migration.migration_description
-            .toLowerCase()
-            .includes(filterValue.toLowerCase()) ||
-          migration.migration_status
-            .toLowerCase()
-            .includes(filterValue.toLowerCase()) ||
-          migration.provider_id
-            .toLowerCase()
-            .includes(filterValue.toLowerCase()) ||
-          migration.branch_id.toLowerCase().includes(filterValue.toLowerCase())
+      filteredMigrations = filteredMigrations.filter((migration) =>
+        [migration.installation_date, migration.migration_date, migration.migration_description, migration.migration_status, migration.provider_id, migration.branch_id].some(field => 
+          field ? field.toString().toLowerCase().includes(filterValue.toLowerCase()) : false
+        )
       );
     }
 
-    // Asegúrate de que 'status' esté en tus datos para filtrar adecuadamente
     if (statusFilter !== "all") {
       filteredMigrations = filteredMigrations.filter(
-        (migration) => migration.status === statusFilter // Cambia según tus datos
+        (migration) => migration.migration_status === statusFilter
       );
     }
 
     return filteredMigrations;
   }, [store.migrations, filterValue, statusFilter]);
+
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
   const items = useMemo(() => {
@@ -73,7 +68,7 @@ export const Migrations = () => {
   const deleteMigration = (id) => {
     Swal.fire({
       title: "Advertencia",
-      text: "¿Desea eliminar la Migracion?",
+      text: "¿Desea eliminar la Migración?",
       icon: "warning",
       showDenyButton: true,
       denyButtonText: "No",
@@ -81,7 +76,7 @@ export const Migrations = () => {
     }).then((click) => {
       if (click.isConfirmed) {
         actions.deleteMigration(id).then(() => {
-          Swal.fire("Migracion eliminada correctamente", "", "success");
+          Swal.fire("Migración eliminada correctamente", "", "success");
         });
       }
     });
@@ -89,24 +84,20 @@ export const Migrations = () => {
 
   const topContent = (
     <div className="flex justify-between gap-3 items-center">
-      <div className="flex justify-start gap-3 items-center">
-        <span className="text-default-400 text-lg">
-          Total de Migraciones : {store.migrations.length}
-        </span>
-      </div>
+      <span className="text-default-400 text-lg">
+        Total de Migraciones: {store.migrations.length}
+      </span>
       <div className="flex gap-2 items-center">
         <Input
           isClearable
-          placeholder="Buscar por Migracion..."
+          placeholder="Buscar por Migración..."
           value={filterValue}
           onClear={() => setFilterValue("")}
           onValueChange={setFilterValue}
           className="w-full"
           startContent={<SearchIcon />}
         />
-        <div>
-          <CreateMigrations />
-        </div>
+        <CreateMigrations />
       </div>
     </div>
   );
@@ -124,9 +115,10 @@ export const Migrations = () => {
       return;
     }
     actions.getMe();
-    actions.getMigrations()
+    actions.getMigrations();
+    actions.getBranchs();
+    actions.getProviders();
   }, []);
-
 
   return (
     <div className="m-5">
@@ -134,7 +126,7 @@ export const Migrations = () => {
         <span className="text-lg font-bold">Gestor de Migraciones</span>
       </div>
       <Table
-        aria-label="Tabla de sucursales"
+        aria-label="Tabla de migraciones"
         isHeaderSticky
         isStriped
         topContent={topContent}
@@ -159,8 +151,8 @@ export const Migrations = () => {
           {items.map((migration) => (
             <TableRow key={migration.id}>
               <TableCell>{migration.id}</TableCell>
-              <TableCell>{migration.installation_date}</TableCell>
-              <TableCell>{migration.migration_date}</TableCell>
+              <TableCell>{formatDate(migration.installation_date)}</TableCell>
+              <TableCell>{formatDate(migration.migration_date)}</TableCell>
               <TableCell>{migration.migration_description}</TableCell>
               <TableCell>{migration.migration_status}</TableCell>
               <TableCell>{migration.user_id}</TableCell>

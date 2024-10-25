@@ -24,6 +24,7 @@ import {
 } from "@nextui-org/react";
 import Map from "../components/Map.jsx";
 import BranchDetails from "../components/branchDetails.jsx";
+import MigrationChart from "../components/migrationChart.jsx";
 
 const Dashboard = () => {
   const { store, actions } = useContext(Context);
@@ -42,15 +43,18 @@ const Dashboard = () => {
   useEffect(() => {
     actions.getMe();
     actions.getBranchs();
+    actions.getMessages();
+    actions.getHistory();
+    actions.getMigrations();
   }, []);
 
   return (
     <div className="gap-2 grid grid-cols-12 grid-rows-2 px-8 mt-5 mb-5 items-center">
-      <Card className="col-span-12 sm:col-span-7 h-[300px]">
+      <Card className="col-span-12 sm:col-span-7 h-full">
         {" "}
         <Map />
       </Card>
-      <Card className="bg-primary-50 col-span-12 sm:col-span-5 h-[300px]">
+      <Card className="bg-primary-50 col-span-12 sm:col-span-5 h-full">
         <CardHeader className="flex gap-3">
           <div className="flex flex-col">
             <h3 color="primary" className="font-medium text-2xl">
@@ -71,8 +75,13 @@ const Dashboard = () => {
           >
             {store.branchs.map((branch) => {
               return (
-                <ListboxItem className="p-0 m-0" value={branch.branch_cr}>
-                  <BranchDetails branch={branch} /> 
+                <ListboxItem
+                  key={branch.id}
+                  className="p-0 m-0"
+                  value={branch.branch_cr}
+                  textValue={branch.branch_cr}
+                >
+                  <BranchDetails branch={branch} />
                 </ListboxItem>
               );
             })}
@@ -90,21 +99,54 @@ const Dashboard = () => {
           </Link>
         </CardFooter>
       </Card>
-      <Card className="col-span-12 sm:col-span-4 h-[300px]">
-        <CardHeader className="absolute z-10 top-1 flex-col !items-start">
-          <p className="text-tiny text-white/60 uppercase font-bold">
-            Supercharged
-          </p>
-          <h4 className="text-white font-medium text-large">
-            Creates beauty like a beast
-          </h4>
+      <Card className="bg-primary-50 col-span-12 sm:col-span-5 h-full">
+        <CardHeader className="flex gap-3">
+          <div className="flex flex-col">
+            <h3 color="primary" className="font-medium text-2xl">
+              Mensajes
+            </h3>
+          </div>
         </CardHeader>
-        <Image
-          removeWrapper
-          alt="Card background"
-          className="z-0 w-full h-full object-cover"
-          src="https://nextui.org/images/card-example-2.jpeg"
-        />
+        <Divider />
+        <CardBody>
+          <Listbox
+            value={selectedValue}
+            onChange={setSelectedKeys}
+            multiple
+            color="primary"
+            className="w-full"
+            aria-label="Mensajes"
+          >
+            {store.messages.map((message, index) => {
+              return (
+                <ListboxItem
+                  key={index}
+                  className="p-0 m-0"
+                  value={message.message}
+                  textValue={`${index + 1} - ${message.message}`}
+                >
+                  {index + 1} - {message.message}
+                </ListboxItem>
+              );
+            })}
+          </Listbox>
+        </CardBody>
+        <Divider />
+        <CardFooter>
+          <Link
+            className="text-tiny uppercase font-bold"
+            showAnchorIcon
+            href="/messages"
+            color="primary"
+          >
+            Mensajes.
+          </Link>
+        </CardFooter>
+      </Card>
+      <Card className="col-span-12 sm:col-span-4  overflow-hidden shadow-lg h-full">
+        <div className="flex items-center justify-center h-full py-4">
+          <MigrationChart />
+        </div>
       </Card>
       <Card
         isFooterBlurred

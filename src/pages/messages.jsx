@@ -2,6 +2,10 @@ import React, { useContext, useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 import Swal from "sweetalert2";
+import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
+import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
+// import { CreateMessages } from "../components/CreateMessages.jsx";
+// import { EditMessages } from "../components/EditMessages.jsx";
 import {
   Button,
   Table,
@@ -13,45 +17,45 @@ import {
   Input,
   Pagination,
 } from "@nextui-org/react";
-import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
-import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
-import { CreateAssets } from "../components/CreateAsset.jsx";
-import { EditAssets } from "../components/EditAssets.jsx";
 import useTokenExpiration from "../hooks/useTokenExpitarion.jsx";
 
-export const Assets = () => {
+export const Messages = () => {
   const { store, actions } = useContext(Context);
   const navigate = useNavigate();
   const [filterValue, setFilterValue] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(1);
+  const [provider, setProvider] = useState("");
 
   useTokenExpiration();
 
   const filteredItems = useMemo(() => {
-    let filteredAssets = [...store.assets];
+    let filteredMessages = [...store.messages];
 
     if (filterValue) {
-      filteredAssets = filteredAssets.filter((asset) =>
-        (asset.asset_type?.toLowerCase().includes(filterValue.toLowerCase()) || 
-         asset.asset_brand?.toLowerCase().includes(filterValue.toLowerCase()) || 
-         asset.asset_model?.toLowerCase().includes(filterValue.toLowerCase()) || 
-         asset.asset_serial?.toLowerCase().includes(filterValue.toLowerCase()) || 
-         asset.asset_inventory_number?.toLowerCase().includes(filterValue.toLowerCase()) || 
-         asset.asset_provider?.toLowerCase().includes(filterValue.toLowerCase()))
+      filteredMessages = filteredMessages.filter(
+        (message) =>
+          message.message
+            .toLowerCase()
+            .includes(filterValue.toLowerCase()) ||
+          message.user_id.toLowerCase().includes(filterValue.toLowerCase()) ||
+          message.provider_id
+            .toLowerCase()
+            .includes(filterValue.toLowerCase()) ||
+          message.branch_id.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
 
+    // Asegúrate de que 'status' esté en tus datos para filtrar adecuadamente
     if (statusFilter !== "all") {
-      filteredAssets = filteredAssets.filter(
-        (asset) => asset.asset_type === statusFilter
+      filteredMessages = filteredMessages.filter(
+        (message) => message.status === statusFilter // Cambia según tus datos
       );
     }
 
-    return filteredAssets;
-  }, [store.assets, filterValue, statusFilter]);
-
+    return filteredMessages;
+  }, [store.messages, filterValue, statusFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
   const items = useMemo(() => {
@@ -59,42 +63,42 @@ export const Assets = () => {
     return filteredItems.slice(start, start + rowsPerPage);
   }, [page, filteredItems, rowsPerPage]);
 
-  const deleteAsset = (id) => {
+  const deleteMessage = (id) => {
     Swal.fire({
       title: "Advertencia",
-      text: "¿Desea eliminar el Activo?",
+      text: "¿Desea eliminar el Mensaje?",
       icon: "warning",
       showDenyButton: true,
       denyButtonText: "No",
       confirmButtonText: "Sí",
     }).then((click) => {
       if (click.isConfirmed) {
-        actions.deleteAsset(id).then(() => {
-          Swal.fire("Activo eliminado correctamente", "", "success");
+        actions.deleteMessage(id).then(() => {
+          Swal.fire("Mensaje eliminado correctamente", "", "success");
         });
       }
     });
   };
 
   const topContent = (
-    <div className="flex justify-between gap-3 items-center">
+    <div className="flex justify-between gap-3 items-center">      
       <div className="flex justify-start gap-3 items-center">
         <span className="text-default-400 text-lg">
-          Total de Activos : {store.assets.length}
+          Total de Mensajes : {store.messages.length}
         </span>
       </div>
       <div className="flex gap-2 items-center">
         <Input
           isClearable
-          placeholder="Buscar por Activo..."
+          placeholder="Buscar por Mensaje..."
           value={filterValue}
-          onClear={() => setFilterValue("")}
+          onClear={() => setFilterValue("")}          
           onValueChange={setFilterValue}
           className="w-full"
           startContent={<SearchIcon />}
         />
         <div>
-          <CreateAssets />
+          {/* <CreateMessages /> */}
         </div>
       </div>
     </div>
@@ -106,6 +110,13 @@ export const Assets = () => {
     </div>
   );
 
+  const getProviderById = (providerId) => {
+    const Provider = store.providers.find(
+      (provider) => provider.id === providerId
+    );
+    setProvider(Provider);
+  };
+  
 
   useEffect(() => {
     const jwt = localStorage.getItem("token");
@@ -114,16 +125,16 @@ export const Assets = () => {
       return;
     }
     actions.getMe();
-    actions.getAssets();
+    actions.getMessages()
   }, []);
 
   return (
     <div className="m-5">
       <div className="flex justify-start gap-4 mt-4 mb-4">
-        <span className="text-lg font-bold">Gestor de Activos</span>
+        <span className="text-lg font-bold">Gestor de Mensajes</span>
       </div>
       <Table
-        aria-label="Tabla de activos"
+        aria-label="Tabla de mensajes"
         isHeaderSticky
         isStriped
         topContent={topContent}
@@ -134,36 +145,34 @@ export const Assets = () => {
         }}
       >
         <TableHeader>
-          <TableColumn>Tipo</TableColumn>
-          <TableColumn>Marca</TableColumn>
-          <TableColumn>Modelo</TableColumn>
-          <TableColumn>No. Serial</TableColumn>
-          <TableColumn>No. Inventario</TableColumn>
+          <TableColumn>ID</TableColumn>
+          <TableColumn>Mensaje</TableColumn>
           <TableColumn>Proveedor</TableColumn>
+          <TableColumn>Sucursal</TableColumn>
+          <TableColumn>Migracion</TableColumn>
           <TableColumn>Acciones</TableColumn>
         </TableHeader>
         <TableBody>
-          {items.map((asset) => (
-            <TableRow key={asset.id}>
-              <TableCell>{asset.asset_type}</TableCell>
-              <TableCell>{asset.asset_brand}</TableCell>
-              <TableCell>{asset.asset_model}</TableCell>
-              <TableCell>{asset.asset_serial}</TableCell>
-              <TableCell>{asset.asset_inventory_number}</TableCell>
-              <TableCell>{asset.provider_id}</TableCell>
+          {items.map((message) => (
+            <TableRow key={message.id}>
+              <TableCell>{message.id}</TableCell>
+              <TableCell>{message.message}</TableCell>
+              <TableCell>{message.provider_id}</TableCell>
+              <TableCell>{message.branch_id}</TableCell>
+              <TableCell>{message.migration_id}</TableCell>
               <TableCell>
                 <div className="flex justify-center">
                   <Button variant="link" color="danger">
                     <span
                       className="text-lg text-danger cursor-pointer"
-                      onClick={() => deleteAsset(asset.id)}
+                      onClick={() => deleteMessage(message.id)}
                     >
                       <DeleteIcon />
                     </span>
                   </Button>
-                  <EditAssets asset={asset} />
+                  {/* <EditMessages message={message} /> */}
                 </div>
-              </TableCell>
+              </TableCell>              
             </TableRow>
           ))}
         </TableBody>

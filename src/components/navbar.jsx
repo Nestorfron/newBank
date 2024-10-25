@@ -19,7 +19,9 @@ import {
   DropdownMenu,
   DropdownItem,
   Avatar,
+  Tooltip,
 } from "@nextui-org/react";
+import BellNotifications from "./bellNotifications.jsx";
 
 export const Navbar = () => {
   const { store, actions } = useContext(Context);
@@ -46,6 +48,7 @@ export const Navbar = () => {
     <NextUINavbar isBordered maxWidth="xl" position="sticky">
       <NavbarBrand className="gap-3 max-w-fit">
         <button
+          disabled={!jwt}
           className="flex justify-start items-center gap-1 "
           color="foreground"
           onClick={() => navigate("/dashboard")}
@@ -181,14 +184,13 @@ export const Navbar = () => {
           </li>
         </ul>
       </NavbarMenu>
+      <NavbarItem className={jwt ? "" : "hidden"}>
+        <BellNotifications userId={user.id} />
+      </NavbarItem>
       <NavbarItem>
         <Dropdown placement="bottom-end">
           <DropdownTrigger isDisabled={!jwt}>
-            <UserIcon
-              className="h-6 w-6"
-              color="primary"
-              variant="light"
-            />
+            <UserIcon className="h-6 w-6" color="primary" variant="light" />
           </DropdownTrigger>
           <DropdownMenu aria-label="Profile Actions" variant="flat">
             <DropdownItem key="profile" className="h-14 gap-2">

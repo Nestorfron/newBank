@@ -1,37 +1,37 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Context } from "../store/appContext.jsx";
+import { Context } from "../store/appContext";
 import {
   Input,
   Button,
   Spacer,
-  Switch,
   ModalFooter,
   Select,
   SelectItem,
+  Switch,
 } from "@nextui-org/react";
 import Swal from "sweetalert2";
 
-export const FormUsers = ({ id, btnUser, user: initialUser }) => {
+export const FormEngineers = ({ id, btnEngineer, engineer: initialEngineer }) => {
   const { store, actions } = useContext(Context);
   const navigate = useNavigate();
-  const [user, setUser] = useState({
+  const [engineer, setEngineer] = useState({
     user_name: "",
     password: "",
     names: "",
     last_names: "",
     employee_number: "",
     subzone: "",
+    is_active: "",
     role: "",
-    is_active: false,
   });
 
-  const role = ["Master"]
+  const role = ["Engineer"]
 
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
+    setEngineer({ ...engineer, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
@@ -39,8 +39,8 @@ export const FormUsers = ({ id, btnUser, user: initialUser }) => {
     Swal.fire({
       title: "Cargando...",
       text: id
-        ? "Espere mientras se actualiza el usuario"
-        : "Espere mientras se crea el usuario",
+        ? "Espere mientras se actualiza el Engineer"
+        : "Espere mientras se crea el Engineer",
       allowOutsideClick: false,
       showConfirmButton: false,
       didOpen: () => {
@@ -50,44 +50,44 @@ export const FormUsers = ({ id, btnUser, user: initialUser }) => {
 
     try {
       const response = id
-        ? await actions.editUser(
+        ? await actions.editEngineer(
             id,
-            user.user_name,
-            user.password,
-            user.names,
-            user.last_names,
-            user.employee_number,
-            user.subzone,
-            user.is_active,
-            user.role
+            engineer.user_name,
+            engineer.password,
+            engineer.names,
+            engineer.last_names,
+            engineer.employee_number,
+            engineer.subzone,
+            engineer.is_active,
+            engineer.role
           )
-        : await actions.register(
-            user.user_name,
-            user.password,
-            user.names,
-            user.last_names,
-            user.employee_number,
-            user.subzone,
-            user.is_active,
-            user.role
+        : await actions.create_engineer(
+            engineer.user_name,
+            engineer.password,
+            engineer.names,
+            engineer.last_names,
+            engineer.employee_number,
+            engineer.subzone,
+            engineer.is_active,
+            engineer.role
           );
       Swal.fire({
         position: "center",
         icon: "success",
-        title: id ? "Usuario Actualizado" : "Usuario creado correctamente",
+        title: id ? "Engineer Actualizado" : "Engineer creado correctamente",
         showConfirmButton: false,
         timer: 1500,
       });
       if (!id) {
-        setUser({
+        setEngineer({
           user_name: "",
           password: "",
           names: "",
           last_names: "",
           employee_number: "",
           subzone: "",
+          is_active: "",
           role: "",
-          is_active: false,
         });
       }
     } catch (error) {
@@ -107,16 +107,16 @@ export const FormUsers = ({ id, btnUser, user: initialUser }) => {
     //   navigate("/");
     //   return;
     // }
-    actions.getUsers();
-    if (initialUser) {
-      setUser({
-        user_name: initialUser.user_name || "",
-        names: initialUser.names || "",
-        last_names: initialUser.last_names || "",
-        employee_number: initialUser.employee_number || "",
-        subzone: initialUser.subzone || "",
-        role: initialUser.role || "",
-        is_active: initialUser.is_active || false,
+    actions.getEngineers();
+    if (initialEngineer) {
+      setEngineer({
+        user_name: initialEngineer.user_name || "",
+        names: initialEngineer.names || "",
+        last_names: initialEngineer.last_names || "",
+        employee_number: initialEngineer.employee_number || "",
+        subzone: initialEngineer.subzone || "",
+        is_active: initialEngineer.is_active || false,
+        role: initialEngineer.role || "",
       });
     }
   }, []);
@@ -127,7 +127,7 @@ export const FormUsers = ({ id, btnUser, user: initialUser }) => {
         <Input
           label="Nombre de Usuario"
           name="user_name"
-          value={user.user_name}
+          value={engineer.user_name}
           onChange={handleChange}
           required
         />
@@ -135,44 +135,44 @@ export const FormUsers = ({ id, btnUser, user: initialUser }) => {
           label="Contraseña"
           type="password"
           name="password"
-          value={user.password}
+          value={engineer.password}
           onChange={handleChange}
           required
         />
         <Input
           label="Nombres"
           name="names"
-          value={user.names}
+          value={engineer.names}
           onChange={handleChange}
           required
         />
         <Input
           label="Apellidos"
           name="last_names"
-          value={user.last_names}
+          value={engineer.last_names}
           onChange={handleChange}
           required
         />
         <Input
           label="Número de Empleado"
           name="employee_number"
-          value={user.employee_number}
+          value={engineer.employee_number}
           onChange={handleChange}
           required
         />
         <Input
           label="Subzona"
           name="subzone"
-          value={user.subzone}
+          value={engineer.subzone}
           onChange={handleChange}
           required
         />
         <Select
           label="Rol"
-          placeholder={user.role}
+          placeholder={engineer.role}
           name="role"
           required
-          value={user.role}
+          value={engineer.role}
           onChange={handleChange}
         >
           {role.map((role) => (
@@ -184,17 +184,16 @@ export const FormUsers = ({ id, btnUser, user: initialUser }) => {
         <div className="flex items-center">
           <Switch
             name="is_active"
-            isSelected={user.is_active}
-            onChange={(e) => setUser({ ...user, is_active: e.target.checked })}
+            isSelected={engineer.is_active}
+            onChange={(e) => setEngineer({ ...engineer, is_active: e.target.checked })}
           />
           <label className="ml-2">Activo</label>
         </div>
       </div>
       <Spacer />
-
       <ModalFooter>
         <Button type="submit" color="primary" disabled={loading}>
-          {btnUser}
+          {btnEngineer}
         </Button>
       </ModalFooter>
     </form>

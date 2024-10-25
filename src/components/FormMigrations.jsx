@@ -6,7 +6,6 @@ import {
   Button,
   Spacer,
   ModalFooter,
-  user,
   Select,
   SelectItem,
 } from "@nextui-org/react";
@@ -19,6 +18,7 @@ export const FormMigrations = ({
 }) => {
   const { store, actions } = useContext(Context);
   const [provider, setProvider] = useState("");
+  const [branch, setBranch] = useState("");
   const navigate = useNavigate();
   const [migration, setMigration] = useState({
     installation_date: "",
@@ -31,8 +31,17 @@ export const FormMigrations = ({
 
   const [loading, setLoading] = useState(false);
 
+  const parseDateString = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const handleChange = (e) => {
     setMigration({ ...migration, [e.target.name]: e.target.value });
+    console.log(migration)
   };
 
   const handleSubmit = async (e) => {
@@ -46,13 +55,6 @@ export const FormMigrations = ({
       showConfirmButton: false,
       didOpen: () => {
         Swal.showLoading();
-      },
-      customClass: {
-        container: "custom-container",
-        popup: "custom-popup",
-        title: "custom-title",
-        content: "custom-content",
-        confirmButton: "custom-confirm-button",
       },
     });
     try {
@@ -77,16 +79,9 @@ export const FormMigrations = ({
       Swal.fire({
         position: "center",
         icon: "success",
-        title: id ? "Migracion Actualizada" : "Migracion creada correctamente",
+        title: id ? "Migración Actualizada" : "Migración creada correctamente",
         showConfirmButton: false,
         timer: 1500,
-        customClass: {
-          container: "custom-container",
-          popup: "custom-popup",
-          title: "custom-title",
-          content: "custom-content",
-          confirmButton: "custom-confirm-button",
-        },
       });
       if (!id) {
         setMigration({
@@ -104,13 +99,6 @@ export const FormMigrations = ({
         icon: "error",
         title: "Error",
         text: `Hubo un problema: ${error.message}`,
-        customClass: {
-          container: "custom-container",
-          popup: "custom-popup",
-          title: "custom-title",
-          content: "custom-content",
-          confirmButton: "custom-confirm-button",
-        },
       });
     } finally {
       setLoading(false);
@@ -130,6 +118,13 @@ export const FormMigrations = ({
     setProvider(Provider);
   };
 
+  const getBranchById = (branchId) => {
+    const Branch = store.branchs.find(
+      (branch) => branch.id === branchId
+    );
+    setBranch(Branch);
+  };
+
   useEffect(() => {
     const jwt = localStorage.getItem("token");
     if (!jwt) {
@@ -138,9 +133,11 @@ export const FormMigrations = ({
     }
     actions.getMigrations();
     if (initialMigration) {
+      getProviderById(initialMigration.provider_id);
+      getBranchById(initialMigration.branch_id);
       setMigration({
-        installation_date: initialMigration.installation_date || "",
-        migration_date: initialMigration.migration_date || "",
+        installation_date: parseDateString(initialMigration.installation_date) || "",
+        migration_date: parseDateString(initialMigration.migration_date) || "",
         migration_description: initialMigration.migration_description || "",
         migration_status: initialMigration.migration_status || "",
         user_id: initialMigration.user_id || "",
@@ -149,7 +146,6 @@ export const FormMigrations = ({
       });
     }
   }, []);
-  
 
   return (
     <form onSubmit={handleSubmit}>
@@ -180,6 +176,7 @@ export const FormMigrations = ({
         <Select
           label="Estado de la Migración"
           name="migration_status"
+          placeholder={migration.migration_status}
           value={migration.migration_status}
           onChange={handleChange}
           required
@@ -194,6 +191,7 @@ export const FormMigrations = ({
           label="Selecciona un proveedor"
           name="provider_id"
           required
+          placeholder={provider ? provider.company_name : ""}
           value={migration.provider_id}
           onChange={handleChange}
         >
@@ -208,6 +206,7 @@ export const FormMigrations = ({
           label="Sucursal"
           name="branch_id"
           required
+          placeholder={branch ? branch.branch_cr : ""}
           value={migration.branch_id}
           onChange={handleChange}
         >

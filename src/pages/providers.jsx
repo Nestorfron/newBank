@@ -25,6 +25,7 @@ export const Providers = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(1);
+ 
 
   const filteredProviders = useMemo(() => {
     let filteredProviders = [...store.providers];
@@ -95,6 +96,10 @@ export const Providers = () => {
     </div>
   );
 
+
+ 
+
+
   useEffect(() => {
     const jwt = localStorage.getItem("token");
     if (!jwt) {
@@ -103,6 +108,7 @@ export const Providers = () => {
     }
     actions.getMe();
     actions.getProviders()
+    actions.getBranchs();
   }, []);
 
   return (

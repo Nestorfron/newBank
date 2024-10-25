@@ -1,11 +1,11 @@
 import React, { useContext, useState, useMemo, useEffect } from "react";
-import { Context } from "../store/appContext";
+import { Context } from "../store/appContext.jsx";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
 import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
-import { CreateUsersMB } from "../components/CreateUsersMB.jsx";
-import { EditUsersMB } from "../components/EditUsersMB.jsx";
+import { CreateAdmins } from "./CreateAdmins.jsx";
+import { EditAdmins } from "./EditAdmins.jsx";
 import {
   Button,
   Table,
@@ -16,11 +16,21 @@ import {
   TableColumn,
   Input,
   Pagination,
+  Chip,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+
 } from "@nextui-org/react";
 import useTokenExpiration from "../hooks/useTokenExpitarion.jsx";
-import { div } from "framer-motion/client";
 
-export const UsersMB = () => {
+const statusColorMap = {
+    active: "success",
+    inactive: "danger",
+  };
+
+export const Admins = () => {
   const { store, actions } = useContext(Context);
   const navigate = useNavigate();
   const [filterValue, setFilterValue] = useState("");
@@ -30,32 +40,27 @@ export const UsersMB = () => {
 
   useTokenExpiration();
 
+
   const filteredItems = useMemo(() => {
-    let filteredUsersMB = [...store.usersMB];
+    let filteredAdmins = [...store.admins];
 
     if (filterValue) {
-      filteredUsersMB = filteredUsersMB.filter(
-        (userMB) =>
-          userMB.user_name_MB
-            .toLowerCase()
-            .includes(filterValue.toLowerCase()) ||
-          userMB.names.toLowerCase().includes(filterValue.toLowerCase()) ||
-          userMB.last_names.toLowerCase().includes(filterValue.toLowerCase()) ||
-          userMB.employee_number
-            .toLowerCase()
-            .includes(filterValue.toLowerCase())
+      filteredAdmins = filteredAdmins.filter((admin) =>
+        admin.user_name
+          .toLowerCase()
+          .includes(filterValue.toLowerCase())
       );
     }
 
     // Asegúrate de que 'status' esté en tus datos para filtrar adecuadamente
     if (statusFilter !== "all") {
-      filteredUsersMB = filteredUsersMB.filter(
-        (userMB) => userMB.status === statusFilter // Cambia según tus datos
+      filteredAdmins = filteredAdmins.filter(
+        (admin) => admin.is_active ? statusFilter === "active" : statusFilter === "inactive"
       );
     }
 
-    return filteredUsersMB;
-  }, [store.usersMB, filterValue, statusFilter]);
+    return filteredAdmins;
+  }, [store.admins, filterValue, statusFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
   const items = useMemo(() => {
@@ -63,18 +68,18 @@ export const UsersMB = () => {
     return filteredItems.slice(start, start + rowsPerPage);
   }, [page, filteredItems, rowsPerPage]);
 
-  const deleteUserMB = (id) => {
+  const deleteAdmin = (id) => {
     Swal.fire({
       title: "Advertencia",
-      text: "¿Desea eliminar Usuario MB?",
+      text: "¿Desea eliminar el Admins?",
       icon: "warning",
       showDenyButton: true,
       denyButtonText: "No",
       confirmButtonText: "Sí",
     }).then((click) => {
       if (click.isConfirmed) {
-        actions.deleteUserMB(id).then(() => {
-          Swal.fire("Usuario MB eliminado correctamente", "", "success");
+        actions.deleteAdmin(id).then(() => {
+          Swal.fire("Admins eliminado correctamente", "", "success");
         });
       }
     });
@@ -84,21 +89,41 @@ export const UsersMB = () => {
     <div className="flex justify-between gap-3 items-center">
       <div className="flex justify-start gap-3 items-center">
         <span className="text-default-400 text-lg">
-          Total de Usuarios MB : {store.usersMB.length}
+          Total de Adminsistradores : {store.admins.length}
         </span>
       </div>
       <div className="flex gap-2 items-center">
         <Input
           isClearable
-          placeholder="Buscar por Usuario MB..."
+          placeholder="Buscar por Admins..."
           value={filterValue}
           onClear={() => setFilterValue("")}
           onValueChange={setFilterValue}
           className="w-full"
           startContent={<SearchIcon />}
         />
+        <Dropdown>
+          <DropdownTrigger>
+            <Button>Estado</Button>
+          </DropdownTrigger>
+          <DropdownMenu
+            selectedKeys={statusFilter}
+            selectionMode="multiple"
+            onSelectionChange={(e) => setStatusFilter(e)}
+          >
+            <DropdownItem className="capitalize" key="all">
+              Todos
+            </DropdownItem>
+            <DropdownItem className="capitalize" key="active">
+              Activo
+            </DropdownItem>
+            <DropdownItem className="capitalize" key="inactive">
+              Inactivo
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
         <div>
-          <CreateUsersMB />
+          <CreateAdmins />
         </div>
       </div>
     </div>
@@ -111,24 +136,15 @@ export const UsersMB = () => {
   );
 
   useEffect(() => {
-    const jwt = localStorage.getItem("token");
-    if (!jwt) {
-      navigate("/");
-      return;
-    }
-    actions.getUsersMB();
-    actions.getMe();
-    actions.getBranchs();
-    actions.getAssets();
   }, []);
 
   return (
     <div className="m-5">
       <div className="flex justify-start gap-4 mt-4 mb-4">
-        <span className="text-lg font-bold">Gestor de Usuarios MB</span>
+        <span className="text-lg font-bold">Adminsistradores</span>
       </div>
       <Table
-        aria-label="Tabla de Usuarios MB"
+        aria-label="Tabla de Adminsistradores"
         isHeaderSticky
         isStriped
         topContent={topContent}
@@ -140,37 +156,44 @@ export const UsersMB = () => {
       >
         <TableHeader>
           <TableColumn>ID</TableColumn>
-          <TableColumn>Nombre de Usuario MB</TableColumn>
-          <TableColumn>Estado</TableColumn>
+          <TableColumn>Nombre</TableColumn>
           <TableColumn>Nombres</TableColumn>
           <TableColumn>Apellidos</TableColumn>
-          <TableColumn>Numero de Empleado</TableColumn>
-          <TableColumn>Sucursal</TableColumn>
-          <TableColumn>Activos Adjudicados</TableColumn>
+          <TableColumn>N° de Empleado</TableColumn>
+          <TableColumn>Zona</TableColumn>
+          <TableColumn>Rol</TableColumn>
+          <TableColumn>Estado</TableColumn>
           <TableColumn>Acciones</TableColumn>
         </TableHeader>
         <TableBody>
-          {items.map((userMB) => (
-            <TableRow key={userMB.id}>
-              <TableCell>{userMB.id}</TableCell>
-              <TableCell>{userMB.user_name_MB}</TableCell>
-              <TableCell>{userMB.is_active}</TableCell>
-              <TableCell>{userMB.names}</TableCell>
-              <TableCell>{userMB.last_names}</TableCell>
-              <TableCell>{userMB.employee_number}</TableCell>
-              <TableCell>{userMB.branch_id}</TableCell>
-              <TableCell>{userMB.asset_id}</TableCell>
+          {items.map((admin) => (
+            <TableRow key={admin.id}>
+              <TableCell>{admin.id}</TableCell>
+              <TableCell>{admin.user_name}</TableCell>
+              <TableCell>{admin.names}</TableCell>
+              <TableCell>{admin.last_names}</TableCell>
+              <TableCell>{admin.employee_number}</TableCell>
+              <TableCell>{admin.subzone}</TableCell>
+              <TableCell>{admin.role}</TableCell>
+              <TableCell>
+                <Chip
+                  color={statusColorMap[admin.is_active ? "active" : "inactive"]}
+                  status={admin.is_active ? "active" : "inactive"}
+                >
+                  {admin.is_active ? "Activo" : "Inactivo"}
+                </Chip>
+              </TableCell>
               <TableCell>
                 <div className="flex justify-center">
-                  <Button variant="link" color="danger">
+                 {/* <Button variant="link" color="danger">
                     <span
                       className="text-lg text-danger cursor-pointer"
-                      onClick={() => deleteUserMB(userMB.id)}
+                      onClick={() => deleteAdmin(admin.id)}
                     >
-                      <DeleteIcon />
+                       <DeleteIcon /> 
                     </span>
-                  </Button>
-                  <EditUsersMB userMB={userMB} />
+                  </Button>*/}
+                  <EditAdmins admin={admin} />
                 </div>
               </TableCell>
             </TableRow>
