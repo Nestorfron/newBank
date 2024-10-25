@@ -1,12 +1,6 @@
-import { act } from "react";
-
-
 const getState = ({ getStore, getActions, setStore }) => {
-  // import.meta.env.VITE_API_URL;
 
   const today = new Date();
-
- 
 
   return {
     store: {
@@ -14,6 +8,8 @@ const getState = ({ getStore, getActions, setStore }) => {
       me: [],
       user: [],
       users: [],
+      admins: [],
+      engineers: [],
       providers: [],
       branchs: [],
       assets: [],
@@ -73,6 +69,101 @@ const getState = ({ getStore, getActions, setStore }) => {
           actions.add_history("se ha registrado el usuario id N° " + data.new_user.id, null, null,null,null,today);
           actions.getUsers();
 
+          return data;
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      //CREATE ADMINS
+
+      create_admins: async (
+        user_name,
+        password,
+        names,
+        last_names,
+        employee_number,
+        subzone,
+        is_active,
+        role
+      ) => {
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/create_admins",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                authorization: `Bearer ${jwt}`,
+              },
+              body: JSON.stringify({
+                user_name,
+                password,
+                names,
+                last_names,
+                employee_number,
+                subzone,
+                is_active,
+                role
+              }),
+            }
+          );
+          if (!response.ok) {
+            console.log(response);
+          }
+          const data = await response.json();
+          actions.add_history("se ha creado el Admins id N° " + data.new_admins.id, null, data.new_admins.branch_id,null,null,today);
+          actions.getAdmins();
+          return data;
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      //CREATE ENGINEER
+
+      create_engineer: async (
+        user_name,
+        password,
+        names,
+        last_names,
+        employee_number,
+        subzone,
+        is_active,
+        role
+      ) => {
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        const store = getStore();
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/create_engineer",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                authorization: `Bearer ${jwt}`,
+              },
+              body: JSON.stringify({
+                user_name,
+                password,
+                names,
+                last_names,
+                employee_number,
+                subzone,
+                is_active,
+                role,
+              }),
+            }
+          );
+          if (!response.ok) {
+            console.log(response);
+          }
+          const data = await response.json();
+          actions.add_history("se ha creado el Engineer id N° " + data.new_engineer.id, null, data.new_engineer.branch_id,null,null,today);
+          actions.getEngineers();
           return data;
         } catch (error) {
           console.log(error);
@@ -155,6 +246,56 @@ const getState = ({ getStore, getActions, setStore }) => {
             console.log(data);
             setStore({ users: data.users });
 
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      //GET ALL ADMINS
+
+      getAdmins: async () => {
+        const jwt = localStorage.getItem("token");
+
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/adminss",
+            {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${jwt}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            console.log(data);
+            setStore({ admins: data.adminss });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      //GET ALL ENGINEERS
+
+      getEngineers: async () => {
+        const jwt = localStorage.getItem("token");
+
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/engineers",
+            {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${jwt}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            console.log(data);
+            setStore({ engineers: data.engineers });
           }
         } catch (error) {
           console.log(error);
@@ -539,6 +680,82 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
       },
 
+      //GET ADMIN BY ID
+
+      getAdminById: async (id) => {
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/admins/" + id,
+            {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${jwt}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            console.log(data);
+            setStore({ admin: data.admin });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+
+      //GET ADMINS BY ID
+
+      getAdminsById: async (id) => {
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/admins/" + id,
+            {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${jwt}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            console.log(data);
+            setStore({ admin: data.admin });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      //GET ENGINEERS BY ID
+
+      getEngineersById: async (id) => {
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/engineer/" + id,
+            {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${jwt}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            console.log(data);
+            setStore({ engineer: data.engineer });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
       //GET BRANCH BY ID
 
       getBranchById: async (id) => {
@@ -716,120 +933,155 @@ const getState = ({ getStore, getActions, setStore }) => {
 
       ////////////  ADD SECTION //////////////////
 
-      //ADD BRANCH
+      //ADD BRANCH 
 
       add_branch: async (
         branch_cr,
         branch_address,
         branch_zone,
-        branch_subzone
+        branch_subzone,
+        user_id,
+        admins_id,
+        engineer_id
       ) => {
+        const branch_id = id;
         const jwt = localStorage.getItem("token");
         const actions = getActions();
-        try {
-          const response = await fetch(
-            import.meta.env.VITE_API_URL + "/add_branch",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                authorization: `Bearer ${jwt}`,
-              },
-              body: JSON.stringify({
-                branch_cr,
-                branch_address,
-                branch_zone,
-                branch_subzone,
-              }),
-            }
-          );
-          if (!response.ok) {
-            console.log(response);
+        const response = await fetch(
+          import.meta.env.VITE_API_URL + "/add_branch",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${jwt}`,
+            },
+            body: JSON.stringify({
+              branch_cr,
+              branch_address,
+              branch_zone,
+              branch_subzone,
+              user_id,
+              admins_id,
+              engineer_id,
+            }),
           }
-          const data = await response.json();
-          actions.add_history("se ha creado la sucursal id N° " + data.new_branch.id, null, data.new_branch.id,null,null,today);
-          actions.getBranchs();
-          return data;
-        } catch (error) {
-          console.log(error);
+        );
+        if (!response.ok) {
+          console.log(response);
         }
+        const data = await response.json();
+        actions.add_history(
+          "se ha creado la sucursal id N° " + data.new_branch.id,
+          null,
+          data.new_branch.id,
+          null,
+          null,
+          today
+        );
+        actions.getBranchs();
+        return data;
       },
 
       //ADD PROVIDER
 
-      add_provider: async (branch_id, company_name, rfc, service) => {
+      add_provider: async (
+        branch_id,
+        company_name,
+        rfc,
+        service,
+        user_id,
+        admins_id,
+        engineer_id
+      ) => {
         const jwt = localStorage.getItem("token");
         const actions = getActions();
-        try {
-          const response = await fetch(
-            import.meta.env.VITE_API_URL + "/add_provider",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                authorization: `Bearer ${jwt}`,
-              },
-              body: JSON.stringify({
-                branch_id,
-                company_name,
-                rfc,
-                service,
-              }),
-            }
-          );
-          if (!response.ok) {
-            console.log(response);
+        const response = await fetch(
+          import.meta.env.VITE_API_URL + "/add_provider",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${jwt}`,
+            },
+            body: JSON.stringify({
+              branch_id,
+              company_name,
+              rfc,
+              service,
+              user_id,
+              admins_id,
+              engineer_id,
+            }),
           }
-          const data = await response.json();
-          actions.add_history("se ha creado el proveedor id N° " + data.new_provider.id, data.new_provider.id, null,null,null,today);
-          actions.getProviders();
-          return data;
-        } catch (error) {
-          console.log(error);
+        );
+        if (!response.ok) {
+          console.log(response);
         }
+        const data = await response.json();
+        actions.add_history(
+          "se ha creado el proveedor id N° " + data.new_provider.id,
+          data.new_provider.id,
+          null,
+          null,
+          null,
+          today
+        );
+        actions.getProviders();
+        return data;
       },
 
-      // ADD ASSET
+      //ADD ASSET
+
       add_asset: async (
         asset_type,
         asset_brand,
         asset_model,
         asset_serial,
         asset_inventory_number,
-        provider_id
+        provider_id,
+        user_id,
+        admins_id,
+        engineer_id
       ) => {
         const jwt = localStorage.getItem("token");
         const actions = getActions();
-        try {
-          const response = await fetch(
-            import.meta.env.VITE_API_URL + "/add_asset",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                authorization: `Bearer ${jwt}`,
-              },
-              body: JSON.stringify({
-                asset_type,
-                asset_brand,
-                asset_model,
-                asset_serial,
-                asset_inventory_number,
-                provider_id,
-              }),
+        const response = await fetch(
+          import.meta.env.VITE_API_URL + "/add_asset",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${jwt}`,
+            },
+            body: JSON.stringify({
+              asset_type,
+              asset_brand,
+              asset_model,
+              asset_serial,
+              asset_inventory_number,
+              provider_id,
+              user_id,
+              admins_id,
+              engineer_id,
+            }),
             }
-          );
-          if (!response.ok) {
-            console.log(response);
+        );
+        if (!response.ok) {
+          console.log(response)
+          return false;
           }
-          const data = await response.json();
-          actions.add_history("se ha creado el activo id N° " + data.new_asset.id, data.new_asset.provider_id, data.new_asset.branch_id,null,data.new_asset.id,today);
-          actions.getAssets();
-          return data;
-        } catch (error) {
-          console.log(error);
-        }
-      },
+        const data = await response.json();
+        actions.add_history(
+          "se ha creado el activo id N° " + data.new_asset.id,
+          data.new_asset.provider_id,
+          data.new_asset.branch_id,
+          null,
+          data.new_asset.id,
+          today
+        );
+        actions.getAssets();
+        return data;
+        },
 
       //ADD USERMB
 
@@ -840,40 +1092,49 @@ const getState = ({ getStore, getActions, setStore }) => {
         last_names,
         employee_number,
         branch_id,
-        asset_id
+        asset_id,
+        user_id,
+        admins_id,
+        engineer_id
       ) => {
         const jwt = localStorage.getItem("token");
         const actions = getActions();
-        try {
-          const response = await fetch(
-            import.meta.env.VITE_API_URL + "/add_userMB",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                authorization: `Bearer ${jwt}`,
-              },
-              body: JSON.stringify({
-                user_name_MB,
-                is_active,
-                names,
-                last_names,
-                employee_number,
-                branch_id,
-                asset_id,
-              }),
-            }
-          );
-          if (!response.ok) {
-            console.log(response);
+        const response = await fetch(
+          import.meta.env.VITE_API_URL + "/add_userMB",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${jwt}`,
+            },
+            body: JSON.stringify({
+              user_name_MB,
+              is_active,
+              names,
+              last_names,
+              employee_number,
+              branch_id,
+              asset_id,
+              user_id,
+              admins_id,
+              engineer_id,
+            }),
           }
-          const data = await response.json();
-          actions.add_history("se ha creado el usuarioMB id N° " + data.new_userMB.id, null, data.new_userMB.branch_id,null,null,today);
-          actions.getUsersMB();
-          return data;
-        } catch (error) {
-          console.log(error);
+        );
+        if (!response.ok) {
+          console.log(response);
         }
+        const data = await response.json();
+        actions.add_history(
+          "se ha creado el usuarioMB id N° " + data.new_userMB.id,
+          null,
+          data.new_userMB.branch_id,
+          null,
+          null,
+          today
+        );
+        actions.getUsersMB();
+        return data;
       },
 
       //ADD MIGRATION
@@ -884,41 +1145,55 @@ const getState = ({ getStore, getActions, setStore }) => {
         migration_description,
         migration_status,
         provider_id,
-        branch_id
+        branch_id,
+        user_id,
+        admins_id,
+        engineer_id
       ) => {
         const jwt = localStorage.getItem("token");
         const actions = getActions();
-        try {
-          const response = await fetch(
-            import.meta.env.VITE_API_URL + "/add_migration",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                authorization: `Bearer ${jwt}`,
-              },
-              body: JSON.stringify({
-                installation_date,
-                migration_date,
-                migration_description,
-                migration_status,
-                provider_id,
-                branch_id,
+        const response = await fetch(
+          import.meta.env.VITE_API_URL + "/add_migration",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${jwt}`,
+            },
+            body: JSON.stringify({
+              installation_date,
+              migration_date,
+              migration_description,
+              migration_status,
+              provider_id,
+              branch_id,
+              user_id,
+              admins_id,
+              engineer_id,
               }),
             }
-          );
-          if (!response.ok) {
-            console.log(response);
-          }
-          const data = await response.json();
-          actions.getMigrations();
-          console.log(data);
-          actions.add_message(data.new_migration.migration_description, data.new_migration.provider_id, data.new_migration.branch_id, data.new_migration.id);
-          actions.add_history("se ha creado la migracion id N° " + data.new_migration.id, data.new_migration.provider_id, data.new_migration.branch_id,data.new_migration.id,null,today);
-          return data;
-        } catch (error) {
-          console.log(error);
+        );
+        if (!response.ok) {
+          console.log(response);
         }
+        const data = await response.json();
+        actions.getMigrations();
+        console.log(data);
+        actions.add_message(
+          data.new_migration.migration_description,
+          data.new_migration.provider_id,
+          data.new_migration.branch_id,
+          data.new_migration.id
+        );
+        actions.add_history(
+          "se ha creado la migracion id N° " + data.new_migration.id,
+          data.new_migration.provider_id,
+          data.new_migration.branch_id,
+          data.new_migration.id,
+          null,
+          today
+        );
+        return data;
       },
 
       //ADD MESSAGE
@@ -926,33 +1201,36 @@ const getState = ({ getStore, getActions, setStore }) => {
       add_message: async (message, provider_id, branch_id, migration_id) => {
         const jwt = localStorage.getItem("token");
         const actions = getActions();
-        try {
-          const response = await fetch(
-            import.meta.env.VITE_API_URL + "/add_message",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                authorization: `Bearer ${jwt}`,
-              },
-              body: JSON.stringify({
-                message,
-                provider_id,
-                branch_id,
-                migration_id,
-              }),
-            }
-          );
-          if (!response.ok) {
-            console.log(response);
+        const response = await fetch(
+          import.meta.env.VITE_API_URL + "/add_message",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${jwt}`,
+            },
+            body: JSON.stringify({
+              message,
+              provider_id,
+              branch_id,
+              migration_id,
+            }),
           }
-          const data = await response.json();
-          actions.add_history("se ha creado el mensaje id N° " + data.new_message.id, data.new_message.provider_id, data.new_message.branch_id,data.new_message.migration_id,null,today);
-          actions.getMessages();
-          return data;
-        } catch (error) {
-          console.log(error);
+        );
+        if (!response.ok) {
+          console.log(response);
         }
+        const data = await response.json();
+        actions.add_history(
+          "se ha creado el mensaje id N° " + data.new_message.id,
+          data.new_message.provider_id,
+          data.new_message.branch_id,
+          data.new_message.migration_id,
+          null,
+          today
+        );
+        actions.getMessages();
+        return data;
       },
 
       //ADD HISTORY
@@ -967,34 +1245,30 @@ const getState = ({ getStore, getActions, setStore }) => {
       ) => {
         const jwt = localStorage.getItem("token");
         const actions = getActions();
-        try {
-          const response = await fetch(
-            import.meta.env.VITE_API_URL + "/add_history",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                authorization: `Bearer ${jwt}`,
-              },
-              body: JSON.stringify({
-                message,
-                provider_id,
-                branch_id,
-                migration_id,
-                asset_id,
-                date
-              }),
-            }
-          );
-          if (!response.ok) {
-            console.log(response);
+        const response = await fetch(
+          import.meta.env.VITE_API_URL + "/add_history",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${jwt}`,
+            },
+            body: JSON.stringify({
+              message,
+              provider_id,
+              branch_id,
+              migration_id,
+              asset_id,
+              date,
+            }),
           }
-          const data = await response.json();
-          actions.getHistory();
-          return data;
-        } catch (error) {
-          console.log(error);
+        );
+        if (!response.ok) {
+          console.log(response);
         }
+        const data = await response.json();
+        actions.getHistory();
+        return data;
       },
 
       ////////////  EDIT SECTION //////////////////
@@ -1047,6 +1321,98 @@ const getState = ({ getStore, getActions, setStore }) => {
         } catch (error) {
           console.log(error);
         }
+      },
+
+      //EDIT ADMINS
+
+      editAdmins: async (
+        id,
+        user_name,
+        password,
+        names,
+        last_names,
+        employee_number,
+        subzone,
+        is_active,
+        role
+      ) => {
+        const admin_id=id
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        const response = await fetch(
+          import.meta.env.VITE_API_URL + "/edit_admins",
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${jwt}`,
+            },
+            body: JSON.stringify({
+              id,
+              user_name,
+              password,
+              names,
+              last_names,
+              employee_number,
+              subzone,
+              is_active,
+              role,
+            }),
+          }
+        );
+        if (!response.ok) {
+          console.log(response);
+        }
+        const data = await response.json();
+        actions.add_history("se ha editado el Admins id N° " + admin_id, null, null,null,null,today);
+        actions.getAdmins();
+        return data;
+      },
+
+      //EDIT ENGINEER
+
+      editEngineer: async (
+        id,
+        user_name,
+        password,
+        names,
+        last_names,
+        employee_number,
+        subzone,
+        is_active,
+        role
+      ) => {
+        const engineer_id=id
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        const response = await fetch(
+          import.meta.env.VITE_API_URL + "/edit_engineer",
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${jwt}`,
+            },
+            body: JSON.stringify({
+              id,
+              user_name,
+              password,
+              names,
+              last_names,
+              employee_number,
+              subzone,
+              is_active,
+              role,
+            }),
+          }
+        );
+        if (!response.ok) {
+          console.log(response);
+        }
+        const data = await response.json();
+        actions.add_history("se ha editado el Engineer id N° " + engineer_id, null, null,null,null,today);
+        actions.getEngineers();
+        return data;
       },
 
       // EDIT BRANCH

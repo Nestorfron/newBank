@@ -1,12 +1,12 @@
 import React, { useContext, useState, useMemo, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext.jsx";
+import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
 import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
-import { CreateUsers } from "../components/CreateUsers.jsx";
-import { EditUsers } from "../components/EditUsers.jsx";
+import { CreateEngineers } from "./CreateEngineers.jsx";
+import { EditEngineers } from "./EditEngineers.jsx";
 import {
-  Avatar,
   Button,
   Table,
   TableBody,
@@ -15,21 +15,16 @@ import {
   TableRow,
   TableColumn,
   Input,
+  Pagination,
+  Chip,
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
-  Pagination,
-  Chip,
 } from "@nextui-org/react";
 import useTokenExpiration from "../hooks/useTokenExpitarion.jsx";
 
-const statusColorMap = {
-  active: "success",
-  inactive: "danger",
-};
-
-export const Users = () => {
+export const Engineers = () => {
   const { store, actions } = useContext(Context);
   const navigate = useNavigate();
   const [filterValue, setFilterValue] = useState("");
@@ -37,24 +32,33 @@ export const Users = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(1);
 
-  //useTokenExpiration();
+  useTokenExpiration();
+
+  const colorMap = {
+    active: "success",
+    inactive: "danger",
+  };
 
   const filteredItems = useMemo(() => {
-    let filteredUsers = [...store.users];
+    let filteredEngineers = [...store.engineers];
 
     if (filterValue) {
-      filteredUsers = filteredUsers.filter((user) =>
-        user.user_name.toLowerCase().includes(filterValue.toLowerCase())
-      );
-    }
-    if (statusFilter !== "all") {
-      filteredUsers = filteredUsers.filter((user) =>
-        user.is_active ? statusFilter === "active" : statusFilter === "inactive"
+      filteredEngineers = filteredEngineers.filter((engineer) =>
+        engineer.user_name
+          .toLowerCase()
+          .includes(filterValue.toLowerCase())
       );
     }
 
-    return filteredUsers;
-  }, [filterValue, statusFilter, store.users]);
+    // Asegúrate de que 'status' esté en tus datos para filtrar adecuadamente
+    if (statusFilter !== "all") {
+      filteredEngineers = filteredEngineers.filter(
+        (engineer) => engineer.is_active ? statusFilter === "active" : statusFilter === "inactive"
+      );
+    }
+
+    return filteredEngineers;
+  }, [store.engineers, filterValue, statusFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
   const items = useMemo(() => {
@@ -62,21 +66,38 @@ export const Users = () => {
     return filteredItems.slice(start, start + rowsPerPage);
   }, [page, filteredItems, rowsPerPage]);
 
+  const deleteEngineer = (id) => {
+    Swal.fire({
+      title: "Advertencia",
+      text: "¿Desea eliminar el Engineer?",
+      icon: "warning",
+      showDenyButton: true,
+      denyButtonText: "No",
+      confirmButtonText: "Sí",
+    }).then((click) => {
+      if (click.isConfirmed) {
+        actions.deleteEngineer(id).then(() => {
+          Swal.fire("Engineer eliminado correctamente", "", "success");
+        });
+      }
+    });
+  };
+
   const topContent = (
     <div className="flex justify-between gap-3 items-center">
       <div className="flex justify-start gap-3 items-center">
         <span className="text-default-400 text-lg">
-          Total usuarios : {store.users.length}
+          Total de Ingenieros : {store.engineers.length}
         </span>
       </div>
-      <div className="flex gap-3 items-center justify-end">
+      <div className="flex gap-2 items-center">
         <Input
           isClearable
-          placeholder="Buscar por usuario..."
+          placeholder="Buscar por Engineer..."
           value={filterValue}
           onClear={() => setFilterValue("")}
           onValueChange={setFilterValue}
-          className="w-full sm:max-w-[44%]"
+          className="w-full"
           startContent={<SearchIcon />}
         />
         <Dropdown>
@@ -100,7 +121,7 @@ export const Users = () => {
           </DropdownMenu>
         </Dropdown>
         <div>
-          <CreateUsers />
+          <CreateEngineers />
         </div>
       </div>
     </div>
@@ -113,22 +134,17 @@ export const Users = () => {
   );
 
   useEffect(() => {
-  /*   const jwt = localStorage.getItem("token");
-    if (!jwt) {
-      navigate("/");
-      return;
-    } */
-    actions.getMe();
-    actions.getUsers();
   }, []);
+
+  
 
   return (
     <div className="m-5">
       <div className="flex justify-start gap-4 mt-4 mb-4">
-        <span className="text-lg font-bold"> Gestor de Usuarios</span>
+        <span className="text-lg font-bold">Ingenieros</span>
       </div>
       <Table
-        aria-label="Tabla de usuarios"
+        aria-label="Tabla de Engineersistradores"
         isHeaderSticky
         isStriped
         topContent={topContent}
@@ -137,11 +153,11 @@ export const Users = () => {
           td: "text-center",
           th: "text-center",
         }}
-      >
+      > 
         <TableHeader>
           <TableColumn>ID</TableColumn>
-          <TableColumn>Usuario</TableColumn>
-          <TableColumn>Nombre(s)</TableColumn>
+          <TableColumn>Nombre</TableColumn>
+          <TableColumn>Nombres</TableColumn>
           <TableColumn>Apellidos</TableColumn>
           <TableColumn>N° de Empleado</TableColumn>
           <TableColumn>Zona</TableColumn>
@@ -150,25 +166,35 @@ export const Users = () => {
           <TableColumn>Acciones</TableColumn>
         </TableHeader>
         <TableBody>
-          {items.map((user) => (
-            <TableRow key={user.id}>
-              <TableCell>{user.id}</TableCell>
-              <TableCell>{user.user_name}</TableCell>
-              <TableCell>{user.names}</TableCell>
-              <TableCell>{user.last_names}</TableCell>
-              <TableCell>{user.employee_number}</TableCell>
-              <TableCell>{user.subzone}</TableCell>
-              <TableCell>{user.role}</TableCell>
-              <TableCell>
+          {items.map((engineer) => (
+            <TableRow key={engineer.id}>
+              <TableCell>{engineer.id}</TableCell>
+              <TableCell>{engineer.user_name}</TableCell>
+              <TableCell>{engineer.names}</TableCell>
+              <TableCell>{engineer.last_names}</TableCell>
+              <TableCell>{engineer.employee_number}</TableCell>
+              <TableCell>{engineer.subzone}</TableCell>
+              <TableCell>{engineer.role}</TableCell>
+              <TableCell className="capitalize">
                 <Chip
-                  color={statusColorMap[user.is_active ? "active" : "inactive"]}
-                  status={user.is_active ? "active" : "inactive"}
+                  color={colorMap[engineer.is_active ? "active" : "inactive"]}
+                  status={engineer.is_active ? "active" : "inactive"}
                 >
-                  {user.is_active ? "Activo" : "Inactivo"}
+                  {engineer.is_active ? "Activo" : "Inactivo"}
                 </Chip>
               </TableCell>
               <TableCell>
-                <EditUsers user={user} />
+                <div className="flex justify-center">
+                  {/* <Button variant="link" color="danger">
+                    <span
+                      className="text-lg text-danger cursor-pointer"
+                      onClick={() => deleteEngineer(engineer.id)}
+                    >
+                      <DeleteIcon />
+                    </span>
+                  </Button> */}
+                  <EditEngineers engineer={engineer} />
+                </div>
               </TableCell>
             </TableRow>
           ))}

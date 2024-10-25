@@ -6,7 +6,7 @@ from backend.routes import api_blueprint
 from backend.config import Config
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from backend.models import User, Provider, Branch, Assets, Migration, UserMB, Message, History
+from backend.models import User, Provider, Branch, Assets, Migration, UserMB, Message, History, Admins, Engineer
 from dotenv import load_dotenv
 from sqlalchemy import text
 from flask_jwt_extended import JWTManager
@@ -45,6 +45,8 @@ def create_app():
     # Configurar Flask-Admin
     admin = Admin(app, name='Admin', template_mode='bootstrap3')
     admin.add_view(ModelView(User, db.session))
+    admin.add_view(ModelView(Admins, db.session))
+    admin.add_view(ModelView(Engineer, db.session))
     admin.add_view(ModelView(Provider, db.session))
     admin.add_view(ModelView(Branch, db.session))
     admin.add_view(ModelView(Assets, db.session))

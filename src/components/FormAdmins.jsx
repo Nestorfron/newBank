@@ -1,37 +1,36 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Context } from "../store/appContext.jsx";
+import { Context } from "../store/appContext";
 import {
   Input,
   Button,
   Spacer,
-  Switch,
   ModalFooter,
   Select,
   SelectItem,
+  Switch,
 } from "@nextui-org/react";
 import Swal from "sweetalert2";
 
-export const FormUsers = ({ id, btnUser, user: initialUser }) => {
+export const FormAdmins = ({ id, btnAdmins, admin: initialAdmin }) => {
   const { store, actions } = useContext(Context);
   const navigate = useNavigate();
-  const [user, setUser] = useState({
+  const [admin, setAdmin] = useState({
     user_name: "",
     password: "",
     names: "",
     last_names: "",
     employee_number: "",
     subzone: "",
+    is_active: "",
     role: "",
-    is_active: false,
   });
-
-  const role = ["Master"]
-
+  const role = ["Admin"]
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
+    setAdmin({ ...admin, [e.target.name]: e.target.value });
+    console.log(admin);
   };
 
   const handleSubmit = async (e) => {
@@ -39,8 +38,8 @@ export const FormUsers = ({ id, btnUser, user: initialUser }) => {
     Swal.fire({
       title: "Cargando...",
       text: id
-        ? "Espere mientras se actualiza el usuario"
-        : "Espere mientras se crea el usuario",
+        ? "Espere mientras se actualiza el Admins"
+        : "Espere mientras se crea el Admins",
       allowOutsideClick: false,
       showConfirmButton: false,
       didOpen: () => {
@@ -50,44 +49,44 @@ export const FormUsers = ({ id, btnUser, user: initialUser }) => {
 
     try {
       const response = id
-        ? await actions.editUser(
+        ? await actions.editAdmins(
             id,
-            user.user_name,
-            user.password,
-            user.names,
-            user.last_names,
-            user.employee_number,
-            user.subzone,
-            user.is_active,
-            user.role
+            admin.user_name,
+            admin.password,
+            admin.names,
+            admin.last_names,
+            admin.employee_number,
+            admin.subzone,
+            admin.is_active,
+            admin.role
           )
-        : await actions.register(
-            user.user_name,
-            user.password,
-            user.names,
-            user.last_names,
-            user.employee_number,
-            user.subzone,
-            user.is_active,
-            user.role
+        : await actions.create_admins(
+            admin.user_name,
+            admin.password,
+            admin.names,
+            admin.last_names,
+            admin.employee_number,
+            admin.subzone,
+            admin.is_active,
+            admin.role
           );
       Swal.fire({
         position: "center",
         icon: "success",
-        title: id ? "Usuario Actualizado" : "Usuario creado correctamente",
+        title: id ? "Admins Actualizado" : "Admins creado correctamente",
         showConfirmButton: false,
         timer: 1500,
       });
       if (!id) {
-        setUser({
+        setAdmin({
           user_name: "",
           password: "",
           names: "",
           last_names: "",
           employee_number: "",
           subzone: "",
+          is_active: "",
           role: "",
-          is_active: false,
         });
       }
     } catch (error) {
@@ -107,16 +106,16 @@ export const FormUsers = ({ id, btnUser, user: initialUser }) => {
     //   navigate("/");
     //   return;
     // }
-    actions.getUsers();
-    if (initialUser) {
-      setUser({
-        user_name: initialUser.user_name || "",
-        names: initialUser.names || "",
-        last_names: initialUser.last_names || "",
-        employee_number: initialUser.employee_number || "",
-        subzone: initialUser.subzone || "",
-        role: initialUser.role || "",
-        is_active: initialUser.is_active || false,
+    actions.getAdmins();
+    if (initialAdmin) {
+      setAdmin({
+        user_name: initialAdmin.user_name || "",
+        names: initialAdmin.names || "",
+        last_names: initialAdmin.last_names || "",
+        employee_number: initialAdmin.employee_number || "",
+        subzone: initialAdmin.subzone || "",
+        is_active: initialAdmin.is_active || false,
+        role: initialAdmin.role || "",
       });
     }
   }, []);
@@ -127,7 +126,7 @@ export const FormUsers = ({ id, btnUser, user: initialUser }) => {
         <Input
           label="Nombre de Usuario"
           name="user_name"
-          value={user.user_name}
+          value={admin.user_name}
           onChange={handleChange}
           required
         />
@@ -135,44 +134,44 @@ export const FormUsers = ({ id, btnUser, user: initialUser }) => {
           label="Contraseña"
           type="password"
           name="password"
-          value={user.password}
+          value={admin.password}
           onChange={handleChange}
           required
         />
         <Input
           label="Nombres"
           name="names"
-          value={user.names}
+          value={admin.names}
           onChange={handleChange}
           required
         />
         <Input
           label="Apellidos"
           name="last_names"
-          value={user.last_names}
+          value={admin.last_names}
           onChange={handleChange}
           required
         />
         <Input
           label="Número de Empleado"
           name="employee_number"
-          value={user.employee_number}
+          value={admin.employee_number}
           onChange={handleChange}
           required
         />
         <Input
           label="Subzona"
           name="subzone"
-          value={user.subzone}
+          value={admin.subzone}
           onChange={handleChange}
           required
         />
         <Select
           label="Rol"
-          placeholder={user.role}
+          placeholder={admin.role}
           name="role"
           required
-          value={user.role}
+          value={admin.role}
           onChange={handleChange}
         >
           {role.map((role) => (
@@ -184,17 +183,16 @@ export const FormUsers = ({ id, btnUser, user: initialUser }) => {
         <div className="flex items-center">
           <Switch
             name="is_active"
-            isSelected={user.is_active}
-            onChange={(e) => setUser({ ...user, is_active: e.target.checked })}
+            isSelected={admin.is_active}
+            onChange={(e) => setAdmin({ ...admin, is_active: e.target.checked })}
           />
           <label className="ml-2">Activo</label>
         </div>
       </div>
       <Spacer />
-
       <ModalFooter>
         <Button type="submit" color="primary" disabled={loading}>
-          {btnUser}
+          {btnAdmins}
         </Button>
       </ModalFooter>
     </form>
