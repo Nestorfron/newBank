@@ -188,11 +188,11 @@ def get_all_users():
 
 #GET ALL ADMINsS
 
-@api_blueprint.route('/adminss', methods=['GET'])
+@api_blueprint.route('/admins', methods=['GET'])
 def get_all_adminss():
     adminss = Admins.query.order_by(Admins.id.asc()).all()
     adminss_data = [admins.serialize() for admins in adminss]
-    return jsonify({"adminss": adminss_data}), 200
+    return jsonify({"admins": adminss_data}), 200
 
 #GET ALL ENGINEERS
 
