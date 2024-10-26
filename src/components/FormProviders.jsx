@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 import Swal from "sweetalert2";
 import { Button, Input, Select, SelectItem, Textarea } from "@nextui-org/react";
-import { g, p } from "framer-motion/client";
 
 export const FormProviders = ({
   id,
@@ -17,12 +16,26 @@ export const FormProviders = ({
     company_name: "",
     rfc: "",
     service: "",
+    user_id: null,
+    admins_id: null,
+    engineer_id: null,
   });
   const [branch, setBranch] = useState("");
 
+  const me = store.me;
 
   const [loading, setLoading] = useState(false);
 
+  const addId = ()  => {
+    if (me.role === "Master") {
+      setBranch({ ...branch, user_id: me.id });
+    } else if (me.role === "Admin") {
+      setBranch({ ...branch, admins_id: me.id });
+    } else if (me.role === "Ingeniero de Campo") {
+      setBranch({ ...branch, engineer_id: me.id });
+    }
+  }
+  
   const handleChange = (e) => {
     setProvider({ ...provider, [e.target.name]: e.target.value });
   };
@@ -48,13 +61,19 @@ export const FormProviders = ({
             provider.branch_id,
             provider.company_name,
             provider.rfc,
-            provider.service
+            provider.service,
+            provider.user_id,
+            provider.admins_id,
+            provider.engineer_id
           )
         : await actions.add_provider(
             provider.branch_id,
             provider.company_name,
             provider.rfc,
-            provider.service
+            provider.service,
+            provider.user_id,
+            provider.admins_id,
+            provider.engineer_id
           );
 
       Swal.fire({
@@ -71,6 +90,9 @@ export const FormProviders = ({
           company_name: "",
           rfc: "",
           service: "",
+          user_id: null,
+          admins_id: null,
+          engineer_id: null,
         });
       }
     } catch (error) {
@@ -100,6 +122,8 @@ export const FormProviders = ({
     }
     actions.getProviders();
     actions.getBranchs();
+    actions.getMe();
+    addId();
     if (initialProvider) {
       getBranchById(initialProvider.branch_id);
       setProvider({
@@ -107,6 +131,9 @@ export const FormProviders = ({
         company_name: initialProvider.company_name || "",
         rfc: initialProvider.rfc || "",
         service: initialProvider.service || "",
+        user_id: initialProvider.user_id || null,
+        admins_id: initialProvider.admins_id || null,
+        engineer_id: initialProvider.engineer_id || null,
       });
     }
   }, []);

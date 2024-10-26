@@ -79,28 +79,28 @@ export default function BranchDetails({ branch }) {
                     aria-label="Cantidad de Usuarios MB"
                     title="Cantidad de Usuarios MB"
                   >
-                    {branch.usersMB.length}
+                    {branch.users_mb.length ? branch.users_mb.length : "0"}
                   </AccordionItem>
                   <AccordionItem
                     key="5"
                     aria-label="Cantidad de Activos"
                     title="Cantidad de Activos"
                   >
-                    {branch.assets.length}
+                    {branch.assets.length ? branch.assets.length : "0"}
                   </AccordionItem>
                   <AccordionItem
                     key="6"
                     aria-label="Cantidad de Migrationes"
                     title="Cantidad de Migrationes"
                   >
-                    {branch.migrations.length}
+                    {branch.migrations.length ? branch.migrations.length : "0"}
                   </AccordionItem>
                   <AccordionItem
                     key="7"
                     aria-label="Cantidad de proveedores"
                     title="Cantidad de proveedores"
                   >
-                    {branch.providers.length}
+                    {branch.providers.length ? branch.providers.length : "0"}
                   </AccordionItem>
                 </Accordion>
               </ModalBody>

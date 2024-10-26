@@ -16,9 +16,10 @@ import {
   TableColumn,
   Input,
   Pagination,
+  Chip,
 } from "@nextui-org/react";
 import useTokenExpiration from "../hooks/useTokenExpitarion.jsx";
-import { div } from "framer-motion/client";
+
 
 export const UsersMB = () => {
   const { store, actions } = useContext(Context);
@@ -110,6 +111,13 @@ export const UsersMB = () => {
     </div>
   );
 
+  const statusColorMap = {
+    active: "success",
+    inactive: "danger",
+  };
+
+  
+
   useEffect(() => {
     const jwt = localStorage.getItem("token");
     if (!jwt) {
@@ -154,7 +162,14 @@ export const UsersMB = () => {
             <TableRow key={userMB.id}>
               <TableCell>{userMB.id}</TableCell>
               <TableCell>{userMB.user_name_MB}</TableCell>
-              <TableCell>{userMB.is_active}</TableCell>
+              <TableCell>
+                <Chip
+                  color={statusColorMap[userMB.is_active ? "active" : "inactive"]}
+                  status={userMB.is_active ? "active" : "inactive"}
+                >
+                  {userMB.is_active ? "Activo" : "Inactivo"}
+                </Chip>
+              </TableCell>
               <TableCell>{userMB.names}</TableCell>
               <TableCell>{userMB.last_names}</TableCell>
               <TableCell>{userMB.employee_number}</TableCell>
