@@ -26,6 +26,7 @@ export const Assets = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(1);
+  const [provider, setProvider] = useState("");
 
   useTokenExpiration();
 
@@ -105,6 +106,13 @@ export const Assets = () => {
       <Pagination showControls page={page} total={pages} onChange={setPage} />
     </div>
   );
+
+  const getProviderById = (providerId) => {
+    const Provider = store.providers.find(
+      (provider) => provider.id === providerId
+    );
+    setProvider(Provider);
+  };
 
 
   useEffect(() => {

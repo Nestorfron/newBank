@@ -11,6 +11,7 @@ import {
 } from "@nextui-org/react";
 import Swal from "sweetalert2";
 
+
 export const FormAssets = ({ id, btnAsset, asset: initialAsset }) => {
   const { store, actions } = useContext(Context);
   const [provider, setProvider] = useState("");
@@ -22,9 +23,26 @@ export const FormAssets = ({ id, btnAsset, asset: initialAsset }) => {
     asset_serial: "",
     asset_inventory_number: "",
     provider_id: "",
+    branch_id: null,
+    user_id: null,
+    admins_id: null,
+    engineer_id: null,
+    migration_id: null,
   });
 
+  const me = store.me;
+
   const [loading, setLoading] = useState(false);
+
+  const addId = ()  => {
+    if (me.role === "Master") {
+      setAsset({ ...asset, user_id: me.id });
+    } else if (me.role === "Admin") {
+      setAsset({ ...asset, admins_id: me.id });
+    } else if (me.role === "Ingeniero de Campo") {
+      setAsset({ ...asset, engineer_id: me.id });
+    }
+  }
 
   const handleChange = (e) => {
     setAsset({ ...asset, [e.target.name]: e.target.value });
@@ -59,7 +77,12 @@ export const FormAssets = ({ id, btnAsset, asset: initialAsset }) => {
             asset.asset_model,
             asset.asset_serial,
             asset.asset_inventory_number,
-            asset.provider_id
+            asset.provider_id,
+            asset.branch_id,
+            asset.user_id,
+            asset.admins_id,
+            asset.engineer_id,
+            asset.migration_id
           )
         : await actions.add_asset(
             asset.asset_type,
@@ -67,7 +90,12 @@ export const FormAssets = ({ id, btnAsset, asset: initialAsset }) => {
             asset.asset_model,
             asset.asset_serial,
             asset.asset_inventory_number,
-            asset.provider_id
+            asset.provider_id,
+            asset.branch_id,
+            asset.user_id,
+            asset.admins_id,
+            asset.engineer_id,
+            asset.migration_id
           );
       Swal.fire({
         position: "center",
@@ -91,6 +119,11 @@ export const FormAssets = ({ id, btnAsset, asset: initialAsset }) => {
           asset_serial: "",
           asset_inventory_number: "",
           provider_id: "",
+          branch_id: null,
+          user_id: null,
+          admins_id: null,
+          engineer_id: null,
+          migration_id: null,
         });
       }
     } catch (error) {
@@ -126,6 +159,8 @@ export const FormAssets = ({ id, btnAsset, asset: initialAsset }) => {
     }
     actions.getAssets();
     actions.getProviders();
+    actions.getMe();
+    addId();
     if (initialAsset) {
       getProviderById(initialAsset.provider_id);
       setAsset({
@@ -135,7 +170,12 @@ export const FormAssets = ({ id, btnAsset, asset: initialAsset }) => {
         asset_model: initialAsset.asset_model || "",
         asset_serial: initialAsset.asset_serial || "",
         asset_inventory_number: initialAsset.asset_inventory_number || "",
-        provider_id: initialAsset.provider_id,
+        provider_id: initialAsset.provider_id || null,
+        branch_id: initialAsset.branch_id || null,
+        user_id: initialAsset.user_id || null,
+        admins_id: initialAsset.admins_id || null,
+        engineer_id: initialAsset.engineer_id || null,
+        migration_id: initialAsset.migration_id || null,
       });
     }
   }, []);

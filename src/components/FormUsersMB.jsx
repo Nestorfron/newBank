@@ -18,19 +18,33 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
   const [userMB, setUserMB] = useState({
     id: "",
     user_name_MB: "",
-    is_active: "",
+    is_active: false,
     names: "",
     last_names: "",
     employee_number: "",
-    branch_id: "",
-    asset_id: "",
-    is_active: false,
+    user_id: null,
+    branch_id: null,
+    asset_id: null,
+    admins_id: null,
+    engineer_id: null,   
   });
   const [branch, setBranch] = useState("");
   const [asset, setAsset] = useState("");
 
+  
+  const me = store.me;
 
   const [loading, setLoading] = useState(false);
+
+  const addId = ()  => {
+    if (me.role === "Master") {
+      setUserMB({ ...userMB, user_id: me.id });
+    } else if (me.role === "Admin") {
+      setUserMB({ ...userMB, admins_id: me.id });
+    } else if (me.role === "Ingeniero de Campo") {
+      setUserMB({ ...userMB, engineer_id: me.id });
+    }
+  }
 
   const handleChange = (e) => {
     setUserMB({ ...userMB, [e.target.name]: e.target.value });
@@ -71,7 +85,9 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
             userMB.employee_number,
             userMB.branch_id,
             userMB.asset_id,
-            userMB.is_active
+            userMB.user_id,
+            userMB.admins_id,
+            userMB.engineer_id
           )
         : await actions.add_userMB(
             userMB.user_name_MB,
@@ -81,7 +97,9 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
             userMB.employee_number,
             userMB.branch_id,
             userMB.asset_id,
-            userMB.is_active
+            userMB.user_id,
+            userMB.admins_id,
+            userMB.engineer_id
           );
 
       Swal.fire({
@@ -103,13 +121,15 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
       if (!id) {
         setUserMB({
           user_name_MB: "",
-          is_active: "",
+          is_active: false,
           names: "",
           last_names: "",
           employee_number: "",
           branch_id: "",
           asset_id: "",
-          is_active: false,
+          user_id: null,
+          admins_id: null,
+          engineer_id: null,
         });
       }
     } catch (error) {
@@ -129,7 +149,6 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
       setLoading(false);
     }
   };
-
 
   const getBranchById = (branchId) => {
     const Branch = store.branchs.find(
@@ -153,18 +172,22 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
     }
     actions.getUsersMB();
     actions.getAssets();
+    actions.getMe();
+    addId();
     if (initialUserMB) {
       getBranchById(initialUserMB.branch_id);
       getAssetById(initialUserMB.asset_id);
       setUserMB({
         user_name_MB: initialUserMB.user_name_MB || "",
-        is_active: initialUserMB.is_active || "",
+        is_active: initialUserMB.is_active || false,
         names: initialUserMB.names || "",
         last_names: initialUserMB.last_names || "",
         employee_number: initialUserMB.employee_number || "",
         branch_id: initialUserMB.branch_id || "",
         asset_id: initialUserMB.asset_id || "",
-        is_active: initialUserMB.is_active || false,
+        user_id: initialUserMB.user_id || null,
+        admins_id: initialUserMB.admins_id || null,
+        engineer_id: initialUserMB.engineer_id || null,
       });
     }
   }, []);

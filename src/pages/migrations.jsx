@@ -29,6 +29,8 @@ export const Migrations = () => {
 
   useTokenExpiration();
 
+  const me = store.me;
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("es-ES", {
@@ -142,9 +144,6 @@ export const Migrations = () => {
           <TableColumn>Fecha de Migración</TableColumn>
           <TableColumn>Descripción de Migración</TableColumn>
           <TableColumn>Estado de Migración</TableColumn>
-          <TableColumn>ID de Usuario</TableColumn>
-          <TableColumn>Proveedor</TableColumn>
-          <TableColumn>Sucursal</TableColumn>
           <TableColumn>Acciones</TableColumn>
         </TableHeader>
         <TableBody>
@@ -155,19 +154,17 @@ export const Migrations = () => {
               <TableCell>{formatDate(migration.migration_date)}</TableCell>
               <TableCell>{migration.migration_description}</TableCell>
               <TableCell>{migration.migration_status}</TableCell>
-              <TableCell>{migration.user_id}</TableCell>
-              <TableCell>{migration.provider_id}</TableCell>
-              <TableCell>{migration.branch_id}</TableCell>
               <TableCell>
                 <div className="flex justify-center">
-                  <Button variant="link" color="danger">
+                 {store.me.role == "Master" ? 
+                    <Button variant="link" color="danger">
                     <span
                       className="text-lg text-danger cursor-pointer"
                       onClick={() => deleteMigration(migration.id)}
                     >
                       <DeleteIcon />
                     </span>
-                  </Button>
+                  </Button>: null}
                   <EditMigrations migration={migration} />
                 </div>
               </TableCell>

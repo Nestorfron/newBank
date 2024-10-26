@@ -22,7 +22,6 @@ import {
   useDisclosure,
   Listbox,
   ListboxItem,
-  
   Input,
 } from "@nextui-org/react";
 import Map from "../components/Map.jsx";
@@ -54,7 +53,7 @@ export const Dashboard = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="flex gap-2 items-center justify-start mt-3 ">
+      <div className="flex gap-2 items-center justify-center  mb-4 mt-3 ">
         <Input
           isClearable
           placeholder="Buscar por Cr..."
@@ -65,136 +64,136 @@ export const Dashboard = () => {
           startContent={<SearchIcon />}
         />
       </div>
-      <div className="flex w-full gap-2 mr-2 mt-3 mb-2">
-        <Card className="bg-gray-800 border-gray-700 border-1  h-[180px]  w-1/4 xs:w-2/6">
-          <CardHeader className="absolute z-10 top-1 flex-col">
-            <div className="flex justify-between w-full">
-              <p className="text-tiny text-white/60 uppercase font-bold text-xl">
-                Servidores
-              </p>
-              <div className="p-2 rounded-full bg-primary-500">
-                <Server className="h-6 w-6" />
-              </div>
-            </div>
-          </CardHeader>
-          <CardBody className="flex justify-end items-start flex w-full">
-            {" "}
-            <div className="ml-5 mb-5 ">
-              <span className="text-white  text-3xl"> 1</span>
-            </div>
-          </CardBody>
-        </Card>
-        <Card className="bg-gray-800 border-gray-700 border-1  h-[180px]  w-1/4 xs:w-2/6">
-          <CardHeader className="absolute z-10 top-1 flex-col">
-            <div className="flex justify-between w-full">
-              <p className="text-tiny text-white/60 uppercase font-bold text-xl">
-                Estaciones de trabajo
-              </p>
-              <div className="p-2 rounded-full bg-success-500 text-whie">
-                <Monitor className="h-6 w-6" />
-              </div>
-            </div>
-          </CardHeader>
-          <CardBody className="flex justify-end items-start flex w-full">
-            {" "}
-            <div className="ml-5 mb-5 ">
-              <span className="text-white  text-3xl"> 20</span>
-            </div>
-          </CardBody>
-        </Card>
-        <Card className="bg-gray-800 border-gray-700 border-1   h-[180px]  w-1/4 xs:w-2/6">
-          <CardHeader className="absolute z-10 top-1 flex-col">
-            <div className="flex justify-between w-full">
-              <p className="text-tiny text-white/60 uppercase font-bold text-xl">
-                Impresoras
-              </p>
-              <div className="p-2 rounded-full bg-secondary-500">
-                <Printer className="h-6 w-6" />
-              </div>
-            </div>
-          </CardHeader>
-          <CardBody className="flex justify-end items-start flex w-full">
-            {" "}
-            <div className="ml-5 mb-5 ">
-              <span className="text-white  text-3xl"> 2</span>
-            </div>
-          </CardBody>
-        </Card>
-        <Card className="bg-gray-800 border-gray-700 border-1   h-[180px]  w-1/4 xs:w-2/6">
-          <CardHeader className="absolute z-10 top-1 flex-col">
-            <div className="flex justify-between w-full">
-              <p className="text-tiny text-white/60 uppercase font-bold text-xl">
-                Wi-Fi
-              </p>
-              <div className="p-2 rounded-full bg-warning-500">
-                <Wifi className="h-6 w-6" />
-              </div>
-            </div>
-          </CardHeader>
-          <CardBody className="flex justify-end items-start flex w-full">
-            {" "}
-            <div className="ml-5 mb-5 ">
-              <span className="text-white  text-3xl"> 2</span>
-            </div>
-          </CardBody>
-        </Card>
-      </div>
-      <div className="flex w-full gap-2">
-        <Card className="bg-gray-800 border-gray-700 border-1  w-1/4 h-[300px]">
-          <CardHeader className="flex gap-3">
-            <div className="flex justify-between w-full">
-              <p className="text-tiny text-white/60 uppercase font-bold text-xl">
-                Sucursales
-              </p>
-              <div className="p-2 rounded-full bg-warning-500">
-                <Building className="h-6 w-6" />
-              </div>
-            </div>
-          </CardHeader>
-
-          <CardBody>
-            <Listbox
-              value={selectedValue}
-              variant="solid"
-              onChange={setSelectedKeys}
-              multiple
-              className="w-full text-white"
-              aria-label="Branches"
-            >
-              {store.branchs.map((branch) => (
-                <ListboxItem
-                  key={branch.branch_cr}
-                  className="p-0 m-0"
-                  value={branch.branch_cr}
-                >
-                  <BranchDetails branch={branch} />
-                </ListboxItem>
-              ))}
-            </Listbox>
-          </CardBody>
-          <CardFooter className="absolute bg-black/30 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100 justify-end">
-            <div className="flex justify-end w-full">
-              <Link
-                className="text-tiny uppercase font-bold"
-                showAnchorIcon
-                href="/branches"
-                color="primary"
-              >
-                Sucursales.
-              </Link>
-            </div>
-          </CardFooter>
-        </Card>
-        <Card className="w-1/2 h-[300px] border-gray-700 border-1 ">
-          <Map />
-        </Card>
-        <div className="flex-grow">
-          <Card className="bg-gray-800 border-gray-700 border-1   h-[145px]  w-full mb-2">
+      <div className="columns-2xs  lg:grid grid-cols-4 grid-rows-6">
+        <div className="row-span-2">
+          <Card className="border-1 m-2 h-[187px]">
             <CardHeader className="absolute z-10 top-1 flex-col">
               <div className="flex justify-between w-full">
-                <p className="text-tiny text-white/60 uppercase font-bold text-xl">
-                  Enlaces
+                <p className="text-tiny uppercase font-bold text-xl">
+                  Servidores
                 </p>
+                <div className="p-2 rounded-full bg-primary-500">
+                  <Server className="h-6 w-6" />
+                </div>
+              </div>
+            </CardHeader>
+            <CardBody className="flex justify-end items-start flex w-full">
+              {" "}
+              <div className="ml-5 mb-5 ">
+                <span className="  text-3xl"> 1</span>
+              </div>
+            </CardBody>
+          </Card>
+        </div>
+        <div className="row-span-4 col-start-1 row-start-3">
+          <Card className="border-1 m-2 h-[400px]">
+            <CardHeader className="flex gap-3">
+              <div className="flex justify-between w-full">
+                <p className="text-tiny uppercase font-bold text-xl">
+                  Sucursales
+                </p>
+                <div className="p-2 rounded-full bg-warning-500">
+                  <Building className="h-6 w-6" />
+                </div>
+              </div>
+            </CardHeader>
+            <CardBody>
+              <Listbox
+                value={selectedValue}
+                variant="solid"
+                onChange={setSelectedKeys}
+                className="w-full "
+                aria-label="Branches"
+              >
+                {store.branchs.map((branch, index) => (
+                  <ListboxItem
+                    key={branch.branch_cr}
+                    className="p-0 m-0"
+                    value={branch.branch_cr}
+                  >
+                    {index+1} -<BranchDetails branch={branch} />
+                  </ListboxItem>
+                ))}
+              </Listbox>
+            </CardBody>
+            <CardFooter className="absolute bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100 justify-end">
+              <div className="flex justify-end w-full">
+                <Link
+                  className="text-tiny uppercase font-bold"
+                  showAnchorIcon
+                  href="/branches"
+                  color="primary"
+                >
+                  Sucursales.
+                </Link>
+              </div>
+            </CardFooter>
+          </Card>
+        </div>
+        <div className="row-span-2 col-start-2 row-start-1">
+          <Card className="border-1 m-2 h-[187px]">
+            <CardHeader className="absolute z-10 top-1 flex-col">
+              <div className="flex justify-between w-full">
+                <p className="text-tiny uppercase font-bold text-xl">
+                  Estaciones de trabajo
+                </p>
+                <div className="p-2 rounded-full bg-success-500 h-10 w-10">
+                  <Monitor className="h-6 w-6" />
+                </div>
+              </div>
+            </CardHeader>
+            <CardBody className="flex justify-end items-start flex w-full">
+              {" "}
+              <div className="ml-5 mb-5 ">
+                <span className="  text-3xl"> 20</span>
+              </div>
+            </CardBody>
+          </Card>
+        </div>
+        <div className="row-span-2 col-start-3 row-start-1">
+          <Card className="border-1 m-2 h-[187px]">
+            <CardHeader className="absolute z-10 top-1 flex-col">
+              <div className="flex justify-between w-full">
+                <p className="text-tiny uppercase font-bold text-xl">
+                  Impresoras
+                </p>
+                <div className="p-2 rounded-full bg-secondary-500">
+                  <Printer className="h-6 w-6" />
+                </div>
+              </div>
+            </CardHeader>
+            <CardBody className="flex justify-end items-start flex w-full">
+              {" "}
+              <div className="ml-5 mb-5 ">
+                <span className="  text-3xl"> 2</span>
+              </div>
+            </CardBody>
+          </Card>
+        </div>
+        <div className="row-span-2 col-start-4 row-start-1">
+          <Card className="border-1 m-2 h-[187px]">
+            <CardHeader className="absolute z-10 top-1 flex-col">
+              <div className="flex justify-between w-full">
+                <p className="text-tiny uppercase font-bold text-xl">Wi-Fi</p>
+                <div className="p-2 rounded-full bg-warning-500">
+                  <Wifi className="h-6 w-6" />
+                </div>
+              </div>
+            </CardHeader>
+            <CardBody className="flex justify-end items-start flex w-full">
+              {" "}
+              <div className="ml-5 mb-5 ">
+                <span className="  text-3xl"> 2</span>
+              </div>
+            </CardBody>
+          </Card>
+        </div>
+        <div className="row-span-2 col-start-4 row-start-3">
+          {" "}
+          <Card className="border-1 m-2   h-[191px]  mb-2">
+            <CardHeader className="absolute z-10 top-1 flex-col">
+              <div className="flex justify-between w-full">
+                <p className="text-tiny uppercase font-bold text-xl">Enlaces</p>
                 <div className="p-2 rounded-full bg-secondary-500">
                   <LinkIcon className="h-6 w-6" />
                 </div>
@@ -203,14 +202,16 @@ export const Dashboard = () => {
             <CardBody className="flex justify-end items-start flex w-full">
               {" "}
               <div className="ml-5 mb-5 ">
-                <span className="text-white  text-3xl"> 2</span>
+                <span className="  text-3xl"> 2</span>
               </div>
             </CardBody>
           </Card>
-          <Card className="bg-gray-800 border-gray-700 border-1   h-[145px]">
+        </div>
+        <div className="row-span-2 col-start-4 row-start-5">
+          <Card className="border-1 m-2 h-[191px] mb-2">
             <CardHeader className="absolute z-10 top-1 flex-col">
               <div className="flex justify-between w-full">
-                <p className="text-tiny text-white/60 uppercase font-bold text-xl">
+                <p className="text-tiny uppercase font-bold text-xl">
                   Responsables
                 </p>
                 <div className="p-2 rounded-full bg-success-500">
@@ -220,14 +221,19 @@ export const Dashboard = () => {
             </CardHeader>
             <CardBody className="flex justify-end items-start flex w-full">
               {" "}
-              <div className="ml-5 mb-5 ">
-                <span className="text-white  text-3xl"> 2</span>
+              <div className="">
+                <span className="  text-3xl"> 2</span>
               </div>
             </CardBody>
+          </Card>
+        </div>
+        <div className="col-span-2 row-span-4 col-start-2 row-start-3">
+          {" "}
+          <Card className="h-[400px] border-gray-700 border-1 m-2 ">
+            <Map />
           </Card>
         </div>
       </div>
     </div>
   );
 };
-

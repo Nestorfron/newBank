@@ -12,12 +12,27 @@ export const FormBranches = ({ id, btnBranch, branch: initialBranch }) => {
     branch_address: "",
     branch_zone: "",
     branch_subzone: "",
+    user_id: null,
+    admins_id: null,
+    engineer_id: null,
   });
+
+  const me = store.me;
 
   const [loading, setLoading] = useState(false);
 
+  const addId = ()  => {
+    if (me.role === "Master") {
+      setBranch({ ...branch, user_id: me.id });
+    } else if (me.role === "Admin") {
+      setBranch({ ...branch, admins_id: me.id });
+    } else if (me.role === "Ingeniero de Campo") {
+      setBranch({ ...branch, engineer_id: me.id });
+    }
+  }
+  
+
   const handleChange = (e) => {
-    console.log("Change detected:", e.target.name, e.target.value);
     setBranch({ ...branch, [e.target.name]: e.target.value });
   };
 
@@ -42,19 +57,26 @@ export const FormBranches = ({ id, btnBranch, branch: initialBranch }) => {
       },
     });
     try {
+      console.log(branch);
       const response = id
         ? await actions.editBranch(
             id,
             branch.branch_cr,
             branch.branch_address,
             branch.branch_zone,
-            branch.branch_subzone
+            branch.branch_subzone,
+            branch.user_id,
+            branch.admins_id,
+            branch.engineer_id
           )
         : await actions.add_branch(
             branch.branch_cr,
             branch.branch_address,
             branch.branch_zone,
-            branch.branch_subzone
+            branch.branch_subzone,
+            branch.user_id,
+            branch.admins_id,
+            branch.engineer_id
           );
       Swal.fire({
         position: "center",
@@ -76,6 +98,9 @@ export const FormBranches = ({ id, btnBranch, branch: initialBranch }) => {
           branch_address: "",
           branch_zone: "",
           branch_subzone: "",
+          user_id: null,
+          admins_id: null,
+          engineer_id: null,
         });
       }
     } catch (error) {
@@ -103,12 +128,17 @@ export const FormBranches = ({ id, btnBranch, branch: initialBranch }) => {
       return;
     }
     actions.getBranchs();
+    actions.getMe();
+    addId();
     if (initialBranch) {
       setBranch({
         branch_cr: initialBranch.branch_cr || "",
         branch_address: initialBranch.branch_address || "",
         branch_zone: initialBranch.branch_zone || "",
         branch_subzone: initialBranch.branch_subzone || "",
+        user_id: initialBranch.user_id || null,
+        admins_id: initialBranch.admins_id || null,
+        engineer_id: initialBranch.engineer_id || null,
       });
     }
   }, []);

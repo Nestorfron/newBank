@@ -55,6 +55,15 @@ export const History = () => {
     return filteredHistory;
   }, [store.history, filterValue, statusFilter]);
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  };
+
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
   const items = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -136,24 +145,16 @@ export const History = () => {
       >
         <TableHeader>
           <TableColumn>ID</TableColumn>
+          <TableColumn>Fecha</TableColumn>
           <TableColumn>Mensaje</TableColumn>
-          <TableColumn>Usuario</TableColumn>
-          <TableColumn>Proveedor</TableColumn>
-          <TableColumn>Sucursal</TableColumn>
-          <TableColumn>Migracion</TableColumn>
-          <TableColumn>Activo</TableColumn>
           <TableColumn>Acciones</TableColumn>
         </TableHeader>
         <TableBody>
           {items.map((history) => (
             <TableRow key={history.id}>
               <TableCell>{history.id}</TableCell>
+              <TableCell>{formatDate(history.date)}</TableCell>
               <TableCell>{history.message}</TableCell>
-              <TableCell>{history.user_id}</TableCell>
-              <TableCell>{history.provider_id}</TableCell>
-              <TableCell>{history.branch_id}</TableCell>
-              <TableCell>{history.migration_id}</TableCell>
-              <TableCell>{history.asset_id}</TableCell>
               <TableCell>
                 <div className="flex justify-center">
                   <Button variant="link" color="danger">

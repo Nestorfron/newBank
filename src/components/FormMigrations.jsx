@@ -27,9 +27,24 @@ export const FormMigrations = ({
     migration_status: "",
     provider_id: "",
     branch_id: "",
+    user_id: null,
+    admins_id: null,
+    engineer_id: null,
   });
 
+  const me = store.me;
+
   const [loading, setLoading] = useState(false);
+
+  const addId = ()  => {
+    if (me.role === "Master") {
+      setMigration({ ...migration, user_id: me.id });
+    } else if (me.role === "Admin") {
+      setMigration({ ...migration, admins_id: me.id });
+    } else if (me.role === "Ingeniero de Campo") {
+      setMigration({ ...migration, engineer_id: me.id });
+    }
+  }
 
   const parseDateString = (dateString) => {
     const date = new Date(dateString);
@@ -41,7 +56,6 @@ export const FormMigrations = ({
 
   const handleChange = (e) => {
     setMigration({ ...migration, [e.target.name]: e.target.value });
-    console.log(migration)
   };
 
   const handleSubmit = async (e) => {
@@ -66,7 +80,10 @@ export const FormMigrations = ({
             migration.migration_description,
             migration.migration_status,
             migration.provider_id,
-            migration.branch_id
+            migration.branch_id,
+            migration.user_id,
+            migration.admins_id,
+            migration.engineer_id
           )
         : await actions.add_migration(
             migration.installation_date,
@@ -74,7 +91,10 @@ export const FormMigrations = ({
             migration.migration_description,
             migration.migration_status,
             migration.provider_id,
-            migration.branch_id
+            migration.branch_id,
+            migration.user_id,
+            migration.admins_id,
+            migration.engineer_id
           );
       Swal.fire({
         position: "center",
@@ -92,6 +112,9 @@ export const FormMigrations = ({
           user_id: "",
           provider_id: "",
           branch_id: "",
+          user_id: null,
+          admins_id: null,
+          engineer_id: null,
         });
       }
     } catch (error) {
@@ -132,6 +155,8 @@ export const FormMigrations = ({
       return;
     }
     actions.getMigrations();
+    actions.getMe();
+    addId();
     if (initialMigration) {
       getProviderById(initialMigration.provider_id);
       getBranchById(initialMigration.branch_id);
@@ -143,6 +168,9 @@ export const FormMigrations = ({
         user_id: initialMigration.user_id || "",
         provider_id: initialMigration.provider_id || "",
         branch_id: initialMigration.branch_id || "",
+        user_id: initialMigration.user_id || null,
+        admins_id: initialMigration.admins_id || null,
+        engineer_id: initialMigration.engineer_id || null,
       });
     }
   }, []);
