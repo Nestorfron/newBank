@@ -8,7 +8,7 @@ import { Home } from "./pages/home.jsx";
 import { Navbar } from "./components/navbar.jsx";
 import { Dashboard } from "./pages/dashboard.jsx";
 import { AllUsers } from "./pages/allUsers.jsx";
-import { Admins } from "./components/admins.jsx";
+import { AdminsView } from "./pages/adminsView.jsx";
 import { Branches } from "./pages/branches.jsx";
 import { Providers } from "./pages/providers.jsx";
 import { Assets } from "./pages/assets.jsx";
@@ -27,7 +27,7 @@ function App({ Component, pageProps }) {
             <Route path="/" element={<Home />} />
             <Route path="/dashboard" element={<Dashboard/>}/>
             <Route path="/users" element={<AllUsers/>}/>
-            <Route path="/admins" element={<Admins/>}/>
+            <Route path="/admins" element={<AdminsView/>}/>
             <Route path="/branches" element={<Branches/>}/>
             <Route path="/providers" element={<Providers/>}/>
             <Route path="/assets" element={<Assets/>}/>

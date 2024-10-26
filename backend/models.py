@@ -19,7 +19,8 @@ class User(db.Model):
     messages = db.relationship('Message', backref='user', lazy=True)
     history = db.relationship('History', backref='user', lazy=True)
     admins = db.relationship('Admins', backref='user', lazy=True)
-    engineers = db.relationship('Engineer', backref='user', lazy=True)  
+    engineers = db.relationship('Engineer', backref='user', lazy=True) 
+    links = db.relationship('Link', backref='user', lazy=True)
 
     def __repr__(self):
         return f'<User {self.user_name}>'
@@ -40,7 +41,8 @@ class User(db.Model):
             "messages": [message.serialize() for message in self.messages],
             "history": [history.serialize() for history in self.history],
             "admins": [admins.serialize() for admins in self.admins],
-            "engineers": [engineer.serialize() for engineer in self.engineers]  
+            "engineers": [engineer.serialize() for engineer in self.engineers],
+            "links": [link.serialize() for link in self.links]
         }
 
 
@@ -64,6 +66,7 @@ class Admins(db.Model):
     assets = db.relationship('Assets', backref='admins', lazy=True)
     messages = db.relationship('Message', backref='admins', lazy=True)
     history = db.relationship('History', backref='admins', lazy=True)
+    links = db.relationship('Link', backref='admins', lazy=True)
 
     def __repr__(self):
         return f'<Admins {self.user_name}>'
@@ -86,7 +89,8 @@ class Admins(db.Model):
             "branch": [branch.serialize() for branch in self.branch],
             "assets": [asset.serialize() for asset in self.assets],
             "messages": [message.serialize() for message in self.messages],
-            "history": [history.serialize() for history in self.history]
+            "history": [history.serialize() for history in self.history],
+            "links": [link.serialize() for link in self.links]
         }
 
 
@@ -110,6 +114,7 @@ class Engineer(db.Model):
     assets = db.relationship('Assets', backref='engineer', lazy=True)
     messages = db.relationship('Message', backref='engineer', lazy=True)
     history = db.relationship('History', backref='engineer', lazy=True)
+    links = db.relationship('Link', backref='engineer', lazy=True)
 
     def __repr__(self):
         return f'<Engineer {self.user_name}>'
@@ -131,7 +136,8 @@ class Engineer(db.Model):
             "branch": [branch.serialize() for branch in self.branch],
             "assets": [asset.serialize() for asset in self.assets],
             "messages": [message.serialize() for message in self.messages],
-            "history": [history.serialize() for history in self.history]
+            "history": [history.serialize() for history in self.history],
+            "links": [link.serialize() for link in self.links]
         }
 
 
@@ -144,6 +150,7 @@ class Provider(db.Model):
     assets = db.relationship('Assets', backref='provider', lazy=True)
     messages = db.relationship('Message', backref='provider', lazy=True)
     history = db.relationship('History', backref='provider', lazy=True)
+    links = db.relationship('Link', backref='provider', lazy=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     admins_id = db.Column(db.Integer, db.ForeignKey('admins.id'), nullable=True)
@@ -165,7 +172,8 @@ class Provider(db.Model):
             "service": self.service,
             "assets": [asset.serialize() for asset in self.assets],
             "messages": [message.serialize() for message in self.messages],
-            "history": [history.serialize() for history in self.history]
+            "history": [history.serialize() for history in self.history],
+            "links": [link.serialize() for link in self.links]
         }
     
 class Migration(db.Model):
@@ -178,6 +186,7 @@ class Migration(db.Model):
     assets = db.relationship('Assets', backref='migration', lazy=True)
     messages = db.relationship('Message', backref='migration', lazy=True)
     history = db.relationship('History', backref='migration', lazy=True)
+    links = db.relationship('Link', backref='migration', lazy=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     provider_id = db.Column(db.Integer, db.ForeignKey('provider.id'), nullable=True)
@@ -202,7 +211,8 @@ class Migration(db.Model):
             "engineer_id": self.engineer_id,  
             "assets": [asset.serialize() for asset in self.assets],
             "messages": [message.serialize() for message in self.messages],
-            "history": [history.serialize() for history in self.history]
+            "history": [history.serialize() for history in self.history],
+            "links": [link.serialize() for link in self.links]
         }
 
     
@@ -212,6 +222,10 @@ class Branch(db.Model):
     branch_address = db.Column(db.String(50), unique=False, nullable=False)
     branch_zone = db.Column(db.String(50), unique=False, nullable=False)
     branch_subzone = db.Column(db.String(50), unique=False, nullable=False)
+    branch_work_stations = db.Column(db.String(50), unique=False, nullable=False)
+    branch_category = db.Column(db.String(50), unique=False, nullable=False)
+    branch_saturday = db.Column(db.String(50), unique=False, nullable=False)
+
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     admins_id = db.Column(db.Integer, db.ForeignKey('admins.id'), nullable=True)
@@ -223,6 +237,7 @@ class Branch(db.Model):
     migrations = db.relationship('Migration', backref='branches', lazy=True)
     messages = db.relationship('Message', backref='branches', lazy=True)
     history = db.relationship('History', backref='branches', lazy=True)
+    links = db.relationship('Link', backref='branches', lazy=True)
 
     def __repr__(self):
         return f'<Branch {self.branch_cr}>'
@@ -237,12 +252,16 @@ class Branch(db.Model):
             "user_id": self.user_id,
             "admins_id": self.admins_id,
             "engineer_id": self.engineer_id,  
+            "branch_work_stations": self.branch_work_stations,
+            "branch_category": self.branch_category,
+            "branch_saturday": self.branch_saturday,
             "providers": [provider.serialize() for provider in self.providers],
             "users_mb": [userMB.serialize() for userMB in self.users_mb],
             "assets": [asset.serialize() for asset in self.assets],
             "migrations": [migration.serialize() for migration in self.migrations],
             "messages": [message.serialize() for message in self.messages],
-            "history": [history.serialize() for history in self.history]
+            "history": [history.serialize() for history in self.history],
+            "links": [link.serialize() for link in self.links]
         }
     
 
@@ -288,11 +307,12 @@ class Assets(db.Model):
     
 class UserMB(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_name_MB = db.Column(db.String(30), unique=True, nullable=False)
+    role = db.Column(db.String(50), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
     names = db.Column(db.String(50), unique=False, nullable=False)
     last_names = db.Column(db.String(50), unique=False, nullable=False)
     employee_number = db.Column(db.String(20), unique=True, nullable=False)
+    extension_phone = db.Column(db.String(50), unique=False, nullable=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     asset_id = db.Column(db.Integer, db.ForeignKey('assets.id'), nullable=True)
@@ -306,7 +326,7 @@ class UserMB(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "user_name_MB": self.user_name_MB,
+            "role": self.role,
             "is_active": self.is_active,
             "names": self.names,
             "last_names": self.last_names,
@@ -342,7 +362,7 @@ class Message(db.Model):
             "provider_id": self.provider_id,
             "branch_id": self.branch_id,
             "admins_id": self.admins_id,
-            "engineer_id": self.engineer_id  
+            "engineer_id": self.engineer_id 
         }
 
 
@@ -358,6 +378,7 @@ class History(db.Model):
     asset_id = db.Column(db.Integer, db.ForeignKey('assets.id'), nullable=True)
     admins_id = db.Column(db.Integer, db.ForeignKey('admins.id'), nullable=True)
     engineer_id = db.Column(db.Integer, db.ForeignKey('engineer.id'), nullable=True)  
+    link_id = db.Column(db.Integer, db.ForeignKey('link.id'), nullable=True)
 
     def __repr__(self):
         return f'<History {self.message}>'
@@ -373,5 +394,43 @@ class History(db.Model):
             "message": self.message,
             "date": self.date,
             "admins_id": self.admins_id,
-            "engineer_id": self.engineer_id  
+            "engineer_id": self.engineer_id,  
+            "link_id": self.link_id
+        }
+
+
+
+class Link(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.String(50), unique=False, nullable=False)
+    description = db.Column(db.String(250), unique=False, nullable=False)
+    speed = db.Column(db.String(50), unique=False, nullable=False)
+    status = db.Column(db.String(50), unique=False, nullable=False)
+    
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    admins_id = db.Column(db.Integer, db.ForeignKey('admins.id'), nullable=True)
+    engineer_id = db.Column(db.Integer, db.ForeignKey('engineer.id'), nullable=True)  
+    branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'), nullable=True)
+    provider_id = db.Column(db.Integer, db.ForeignKey('provider.id'), nullable=True)
+
+
+    history = db.relationship('History', backref='links', lazy=True)
+
+    def __repr__(self):
+        return f'<Link {self.id}>'
+    
+    def serialize(self):
+        return {
+            "id": self.id,
+            "type": self.type,
+            "description": self.description,
+            "speed": self.speed,
+            "status": self.status,
+            "user_id": self.user_id,
+            "admins_id": self.admins_id,
+            "engineer_id": self.engineer_id,  
+            "branch_id": self.branch_id,
+            "provider_id": self.provider_id,
+            "history": [history.serialize() for history in self.history]
         }

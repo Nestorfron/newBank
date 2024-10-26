@@ -266,7 +266,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
         try {
           const response = await fetch(
-            import.meta.env.VITE_API_URL + "/adminss",
+            import.meta.env.VITE_API_URL + "/admins",
             {
               method: "GET",
               headers: {
@@ -277,7 +277,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           const data = await response.json();
           if (response.ok) {
             console.log(data);
-            setStore({ admins: data.adminss });
+            setStore({ admins: data.admins });
           }
         } catch (error) {
           console.log(error);

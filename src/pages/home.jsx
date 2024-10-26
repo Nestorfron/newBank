@@ -35,6 +35,7 @@ export const Home = () => {
   const navigate = useNavigate();
 
   const users = store.users;
+  const me = store.me;
 
   const handleSubmitLogin = async (e) => {
     e.preventDefault();
@@ -42,7 +43,13 @@ export const Home = () => {
     const success = await actions.login(userName, password);
 
     if (success) {
-      navigate("/dashboard");
+      if (me.role === "Master") {
+        navigate("/dashboard");
+      } else if (me.role === "Admin") {
+        navigate("/admins");
+      } else if (me.role === "Ingeniero de Campo") {
+        navigate("/engineers");
+      }
     } else {
       setError("Nombre de usuario o contraseña incorrectos");
     }
