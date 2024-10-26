@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from backend.models import User, Provider, Branch, Assets, UserMB, Migration, Message, History, Admins, Engineer
+from backend.models import User, Provider, Branch, Assets, UserMB, Migration, Message, History, Admins, Engineer, Link
 from backend.extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
@@ -118,9 +118,9 @@ def create_engineer():
     employee_number = body.get("employee_number", None)
     subzone = body.get("subzone", None)
     is_active = body.get("is_active", None)
-    role = body.get("role", "Engineer")
+    role = body.get("role", "Ingeniero de Campo")
     user_id = body.get("user_id", None)
-    admin_id = body.get("admin_id", None)
+    admins_id = body.get("admins_id", None)
 
     if User.query.filter_by(user_name=user_name).first() is not None:
         return jsonify({"error": "Ese nombre de usuario ya esta siendo utilizado"}), 400
@@ -139,7 +139,7 @@ def create_engineer():
     password_hash = generate_password_hash(password)
 
     try:
-        new_engineer = Engineer(user_name=user_name, password=password_hash, names=names, last_names=last_names, employee_number=employee_number, subzone=subzone, is_active=is_active, role=role, user_id=user_id, admin_id=admin_id)
+        new_engineer = Engineer(user_name=user_name, password=password_hash, names=names, last_names=last_names, employee_number=employee_number, subzone=subzone, is_active=is_active, role=role, user_id=user_id, admins_id=admins_id)
         db.session.add(new_engineer)
         db.session.commit()
         return jsonify({"new_engineer": new_engineer.serialize()}), 201
@@ -218,6 +218,14 @@ def get_branchs():
     branchs_data = [branch.serialize() for branch in branchs]
     return jsonify({"branchs": branchs_data}), 200
 
+#GET ALL LINKS
+
+@api_blueprint.route('/links', methods=['GET'])
+def get_links():
+    links = Link.query.order_by(Link.id.asc()).all()
+    links_data = [link.serialize() for link in links]    
+    return jsonify({"links": links_data}), 200
+
 # GET ALL ASSETS
 
 @api_blueprint.route('/assets', methods=['GET'])
@@ -282,6 +290,14 @@ def get_history_by_provider_id(provider_id):
 @api_blueprint.route('/history/<int:branch_id>', methods=['GET'])
 def get_history_by_branch_id(branch_id):
     history = History.query.filter_by(branch_id=branch_id).order_by(History.id.asc()).all()
+    history_data = [history.serialize() for history in history]
+    return jsonify({"history": history_data}), 200
+
+#GET ALL HISTORY BY LINK ID
+
+@api_blueprint.route('/history/<int:link_id>', methods=['GET'])
+def get_history_by_link_id(link_id):
+    history = History.query.filter_by(link_id=link_id).order_by(History.id.asc()).all()
     history_data = [history.serialize() for history in history]
     return jsonify({"history": history_data}), 200
 
@@ -404,6 +420,9 @@ def add_branch():
     branch_address = body.get("branch_address", None)
     branch_zone = body.get("branch_zone", None)
     branch_subzone = body.get("branch_subzone", None)
+    branch_work_stations = body.get("branch_work_stations", None)
+    branch_category = body.get("branch_category", None)
+    branch_saturday = body.get("branch_saturday", None)
     user_id = body.get("user_id", None)
     admins_id = body.get("admins_id", None)
     engineer_id = body.get("engineer_id", None)
@@ -411,10 +430,10 @@ def add_branch():
 
     if Branch.query.filter_by(branch_cr=branch_cr).first() is not None:
         return jsonify({"error": "Branch ya existe"}), 400
-    if branch_cr is None or branch_address is None or branch_zone is None or branch_subzone is None:
+    if branch_cr is None or branch_address is None or branch_zone is None or branch_subzone is None or branch_work_stations is None or branch_category is None or branch_saturday is None:
         return jsonify({"error": "Todos los campos son requeridos"}), 400
     try:
-        new_branch = Branch(branch_cr=branch_cr, branch_address=branch_address, branch_zone=branch_zone, branch_subzone=branch_subzone, user_id=user_id, admins_id=admins_id, engineer_id=engineer_id)    
+        new_branch = Branch(branch_cr=branch_cr, branch_address=branch_address, branch_zone=branch_zone, branch_subzone=branch_subzone, branch_work_stations=branch_work_stations, branch_category=branch_category, branch_saturday=branch_saturday, user_id=user_id, admins_id=admins_id, engineer_id=engineer_id)
         db.session.add(new_branch)
         db.session.commit()
         return jsonify({"new_branch": new_branch.serialize()}), 201
@@ -452,6 +471,36 @@ def add_provider():
         return jsonify({"new_provider": new_provider.serialize()}), 201
     except Exception as error:
         db.session.rollback()
+        return jsonify({"error": f"{error}"}), 500
+
+#ADD LINK
+
+@api_blueprint.route('/add_link', methods=['POST'])
+@jwt_required()
+def add_link():
+    body=request.json
+    user_data = get_jwt_identity()
+    type = body.get("type", None)
+    description = body.get("description", None)
+    speed = body.get("speed", None)
+    status = body.get("status", None)
+    user_id = body.get("user_id", None)
+    admins_id = body.get("admins_id", None)
+    engineer_id = body.get("engineer_id", None)
+    provider_id = body.get("provider_id", None)
+    branch_id = body.get("branch_id", None)
+
+    if Link.query.filter_by(type=type).first() is not None:
+        return jsonify({"error": "Link ya existe"}), 400
+    if type is None or description is None or speed is None or status is None:
+        return jsonify({"error": "Todos los campos son requeridos"}), 400
+    try:
+        new_link = Link(type=type, description=description, speed=speed, status=status, user_id=user_id, admins_id=admins_id, engineer_id=engineer_id, provider_id=provider_id, branch_id=branch_id)
+        db.session.add(new_link)
+        db.session.commit()
+        return jsonify({"new_link": new_link.serialize()}), 201
+    except Exception as error:
+        db.session.rollback()    
         return jsonify({"error": f"{error}"}), 500
     
 #ADD ASSET
@@ -612,6 +661,7 @@ def add_history():
     migration_id = body.get("migration_id", None)
     asset_id = body.get("asset_id", None)
     date = body.get("date", None)
+    link_id = body.get("link_id", None)
     user_id = body.get("user_id", None)
     admins_id = body.get("admins_id", None)
     engineer_id = body.get("engineer_id", None)
@@ -619,7 +669,7 @@ def add_history():
 
         
     try:
-        new_history = History(message=message, provider_id=provider_id, branch_id=branch_id, migration_id=migration_id, asset_id=asset_id, date=date, user_id=user_id, admins_id=admins_id, engineer_id=engineer_id)
+        new_history = History(message=message, provider_id=provider_id, branch_id=branch_id, migration_id=migration_id, asset_id=asset_id, date=date, link_id=link_id, user_id=user_id, admins_id=admins_id, engineer_id=engineer_id)
         db.session.add(new_history)
         db.session.commit()
         return jsonify({"new_history": new_history.serialize()}), 201
@@ -758,6 +808,9 @@ def edit_branch():
         branch.branch_address = body.get("branch_address", branch.branch_address)
         branch.branch_zone = body.get("branch_zone", branch.branch_zone)
         branch.branch_subzone = body.get("branch_subzone", branch.branch_subzone)
+        branch.branch_work_stations = body.get("branch_work_stations", branch.branch_work_stations)
+        branch.branch_category = body.get("branch_category", branch.branch_category)
+        branch.branch_saturday = body.get("branch_saturday", branch.branch_saturday)
         branch.user_id = body.get("user_id", branch.user_id)
         branch.admins_id = body.get("admins_id", branch.admins_id)
         branch.engineer_id = body.get("engineer_id", branch.engineer_id)
@@ -793,6 +846,38 @@ def edit_provider():
         
         db.session.commit()
         return jsonify({"message": "Provider updated successfully"}), 200
+    except Exception as error:
+        return jsonify({"error": f"{error}"}), 500
+    
+
+# EDIT LINK
+@api_blueprint.route('/edit_link', methods=['PUT'])
+@jwt_required()
+def edit_link():
+    try:
+        body = request.json
+        user_data = get_jwt_identity()
+        type = body.get("id")
+        
+        if not type:
+            return jsonify({'error': 'Missing link ID'}), 400
+        
+        link = Link.query.filter_by(id=type).first()
+        if link is None:
+            return jsonify({'error': 'Link no found'}), 404
+        
+        link.type = body.get("type", link.type)
+        link.description = body.get("description", link.description)
+        link.speed = body.get("speed", link.speed)
+        link.status = body.get("status", link.status)
+        link.user_id = body.get("user_id", link.user_id)
+        link.admins_id = body.get("admins_id", link.admins_id)
+        link.engineer_id = body.get("engineer_id", link.engineer_id)
+        link.provider_id = body.get("provider_id", link.provider_id)
+        link.branch_id = body.get("branch_id", link.branch_id)
+        
+        db.session.commit()
+        return jsonify({"message": "Link updated successfully"}), 200
     except Exception as error:
         return jsonify({"error": f"{error}"}), 500
 
@@ -988,6 +1073,28 @@ def delete_provider():
         return jsonify({"message": "Provider removed"}), 200
     except Exception as error:
         return jsonify({"error": f"{error}"}), 500
+    
+
+# DELETE LINK
+@api_blueprint.route('/delete_link', methods=['DELETE'])
+@jwt_required()
+def delete_link():
+    try:
+        body = request.json
+        user_data = get_jwt_identity()
+        link_id = body.get("id", None)
+        
+        link = Link.query.filter_by(id=link_id).first()
+        if link is None:
+            return jsonify({'error': 'Link no found'}), 404
+        
+        db.session.delete(link)
+        db.session.commit()
+        return jsonify({"message": "Link removed"}), 200
+    except Exception as error:
+        return jsonify({"error": f"{error}"}), 500
+    
+
 
 # DELETE ASSET
 @api_blueprint.route('/delete_asset', methods=['DELETE'])

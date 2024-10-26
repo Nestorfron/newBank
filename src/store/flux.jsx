@@ -1,4 +1,3 @@
-
 const getState = ({ getStore, getActions, setStore }) => {
   
   const today = new Date();
@@ -13,11 +12,13 @@ const getState = ({ getStore, getActions, setStore }) => {
       engineers: [],
       providers: [],
       branchs: [],
+      links: [],
       assets: [],
       usersMB: [],
       migrations: [],
       branch: [],
       provider: [],
+      link: [],
       asset: [],
       userMB: [],
       migration: [],
@@ -139,8 +140,11 @@ const getState = ({ getStore, getActions, setStore }) => {
         employee_number,
         subzone,
         is_active,
-        role
+        role,
+        user_id,
+        admins_id
       ) => {
+        console.log(user_name, password, names, last_names, employee_number, subzone, is_active, role, user_id, admins_id);
         const jwt = localStorage.getItem("token");
         const actions = getActions();
         const store = getStore();
@@ -162,6 +166,8 @@ const getState = ({ getStore, getActions, setStore }) => {
                 subzone,
                 is_active,
                 role,
+                user_id,
+                admins_id
               }),
             }
           );
@@ -354,6 +360,32 @@ const getState = ({ getStore, getActions, setStore }) => {
             console.log(data);
             setStore({ branchs: data.branchs });
           }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      //GET ALL LINKS
+
+      getLinks: async () => {
+        const jwt = localStorage.getItem("token");
+
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/links",
+            {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${jwt}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            console.log(data);
+            setStore({ links: data.links });
+          }
+          
         } catch (error) {
           console.log(error);
         }
@@ -811,6 +843,31 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
       },
 
+      //GET LINK BY ID
+
+      getLinkById: async (id) => {
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/link/" + id,
+            {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${jwt}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            console.log(data);
+            setStore({ link: data.link });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
       //GET ASSET BY ID
 
       getAssetById: async (id) => {
@@ -945,6 +1002,9 @@ const getState = ({ getStore, getActions, setStore }) => {
         branch_address,
         branch_zone,
         branch_subzone,
+        branch_work_stations,
+        branch_category,
+        branch_saturday,
         user_id,
         admins_id,
         engineer_id
@@ -965,6 +1025,9 @@ const getState = ({ getStore, getActions, setStore }) => {
               branch_address,
               branch_zone,
               branch_subzone,
+              branch_work_stations,
+              branch_category,
+              branch_saturday,
               user_id,
               admins_id,
               engineer_id,
@@ -1040,10 +1103,69 @@ const getState = ({ getStore, getActions, setStore }) => {
           null,
           null,
           null,
-          today
+          today, null
         );
         actions.getProviders();
         return data;
+      },
+
+      //ADD LINK
+
+      add_link: async (
+        type,
+        description,
+        speed,
+        status,
+        user_id,
+        admins_id,
+        engineer_id,
+        provider_id,
+        branch_id
+      ) => {
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        const store = getStore();
+        const response = await fetch(
+          import.meta.env.VITE_API_URL + "/add_link",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${jwt}`,
+            },
+            body: JSON.stringify({
+              type,
+              description,
+              speed,
+              status,
+              user_id,
+              admins_id,
+              engineer_id,
+              provider_id,
+              branch_id,
+            }),
+          }
+        );
+        if (!response.ok) {
+          console.log(response);
+        }
+        const data = await response.json();
+        actions.getLinks();
+        actions.add_history(
+          "El usuario " +
+            store.me.role +
+            " " +
+            store.me.user_name +
+            " se ha creado el link id N° " +
+            data.new_link.id,
+          null,
+          null,
+          null,
+          null,
+          today, 
+          data.new_link.id
+        );
+         return data;
       },
 
       //ADD ASSET
@@ -1103,7 +1225,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           data.new_asset.branch_id,
           null,
           data.new_asset.id,
-          today
+          today, null
         );
         actions.getAssets();
         return data;
@@ -1163,7 +1285,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           data.new_userMB.branch_id,
           null,
           null,
-          today
+          today, null
         );
         actions.getUsersMB();
         return data;
@@ -1285,7 +1407,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           migration_id,
           user_id,
           admins_id,
-          today
+          today, null
         );
         actions.getMessages();
         return data;
@@ -1299,7 +1421,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         branch_id,
         migration_id,
         asset_id,
-        date
+        date,
+        link_id
       ) => {
         const jwt = localStorage.getItem("token");
         const actions = getActions();
@@ -1318,6 +1441,7 @@ const getState = ({ getStore, getActions, setStore }) => {
               migration_id,
               asset_id,
               date,
+              link_id,
             }),
           }
         );
@@ -1379,7 +1503,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             null,
             null,
             null,
-            today
+            today, null
           );
           actions.getUsers();
           return data;
@@ -1430,7 +1554,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log(response);
         }
         const data = await response.json();
-        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha editado el Admins id N° " + admin_id, null, null,null,null,today);
+        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha editado el Admins id N° " + admin_id, null, null,null,null,today, null);
         actions.getAdmins();
         return data;
       },
@@ -1478,7 +1602,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
         const data = await response.json();
         actions.add_history(
-         "El usuario " + store.me.role + " " + store.me.user_name + " ha editado el Engineer id N° " + engineer_id, null, null,null,null,today);
+         "El usuario " + store.me.role + " " + store.me.user_name + " ha editado el Engineer id N° " + engineer_id, null, null,null,null,today, null);
         actions.getEngineers();
         return data;
       },
@@ -1529,7 +1653,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             branch_id,
             null,
             null,
-            today
+            today, null
           );
           actions.getBranchs();
           return data;
@@ -1568,8 +1692,58 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
           const data = await response.json();
           actions.add_history(
-            "El usuario " + store.me.role + " " + store.me.user_name + " ha editado el proveedor id N° " + provider_id, provider_id, null,null,null,today);
+            "El usuario " + store.me.role + " " + store.me.user_name + " ha editado el proveedor id N° " + provider_id, provider_id, null,null,null,today, null);
           actions.getProviders();
+          return data;
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      // EDIT LINK
+
+      editLink: async (id, type, description, speed, status) => {
+        const link_id = id;
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        const store = getStore();
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/edit_link",
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                authorization: `Bearer ${jwt}`,
+              },
+              body: JSON.stringify({
+                id,
+                type,
+                description,
+                speed,
+                status,
+              }),
+            }
+          );
+          if (!response.ok) {
+            console.log(response);
+          }
+          const data = await response.json();
+          actions.add_history(
+            "El usuario " +
+              store.me.role +
+              " " +
+              store.me.user_name +
+              " se ha editado el link id N° " +
+              link_id,
+            null,
+            null,
+            null,
+            null,
+            today, 
+            link_id
+          );
+          actions.getLinks();
           return data;
         } catch (error) {
           console.log(error);
@@ -1636,7 +1810,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             null,
             null,
             asset_id,
-            today
+            today, null
           );
           actions.getAssets();
           return data;
@@ -1704,7 +1878,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             userMB_branch_id,
             null,
             null,
-            today
+            today, null
           );
           actions.getUsersMB();
           return data;
@@ -1791,7 +1965,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             null,
             null,
             null,
-            today
+            today, null
           );
           return data;
         } catch (error) {
@@ -1826,7 +2000,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
           const data = await response.json();
           actions.add_history(
-            "El usuario " + store.me.role + " " + store.me.user_name + " ha editado el mensaje id N° " + message_id, null, null,null,null,today);
+            "El usuario " + store.me.role + " " + store.me.user_name + " ha editado el mensaje id N° " + message_id, null, null,null,null,today, null);
           actions.getMessages();
           return data;
         } catch (error) {
@@ -1860,7 +2034,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             console.log(response);
           }
           const data = await response.json();
-          actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha editado el mensaje id N° " + history_id, null, null,null,null,today);
+          actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha editado el mensaje id N° " + history_id, null, null,null,null,today, null);
           actions.getHistory();
           return data;
         } catch (error) {
@@ -1877,7 +2051,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         const actions = getActions();
         const branch_id = id;
         const store = getStore();
-        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha eliminado o ha intentado eliminar la sucursal id N° " + branch_id, null, null,null,null,today);
+        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha eliminado o ha intentado eliminar la sucursal id N° " + branch_id, null, null,null,null,today, null);
         try {
           const response = await fetch(
             import.meta.env.VITE_API_URL + "/delete_branch",
@@ -1910,7 +2084,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         const actions = getActions();
         const provider_id = id;
         const store = getStore();
-        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha eliminado o ha intentado eliminar el proveedor id N° " + provider_id, null, null,null,null,today);
+        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha eliminado o ha intentado eliminar el proveedor id N° " + provider_id, null, null,null,null,today, null);
         try {
           const response = await fetch(
             import.meta.env.VITE_API_URL + "/delete_provider",
@@ -1936,6 +2110,39 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
       },
 
+      // DELETE LINK
+
+      deleteLink: async (id) => {
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        const link_id = id;
+        const store = getStore();
+        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha eliminado o ha intentado eliminar el link id N° " + link_id, null, null,null,null,today, null);
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/delete_link",
+            {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+                authorization: `Bearer ${jwt}`,
+              },
+              body: JSON.stringify({
+                id,
+              }),
+            }
+          );
+          if (!response.ok) {
+            console.log(response);
+          }
+          const data = await response.json();
+          actions.getLinks();
+          return data;
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
       // DELETE ASSET
 
       deleteAsset: async (id) => {
@@ -1943,7 +2150,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         const actions = getActions();
         const asset_id = id;
         const store = getStore();
-        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha eliminado o ha intentado eliminar el activo id N° " + asset_id, null, null,null,null,today);
+        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha eliminado o ha intentado eliminar el activo id N° " + asset_id, null, null,null,null,today, null);
         try {
           const response = await fetch(
             import.meta.env.VITE_API_URL + "/delete_asset",
@@ -1976,7 +2183,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         const actions = getActions();
         const userMB_id = id;
         const store = getStore();
-        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha eliminado o ha intentado eliminar el usuarioMB id N° " + userMB_id, null, null,null,null,today);
+        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha eliminado o ha intentado eliminar el usuarioMB id N° " + userMB_id, null, null,null,null,today, null);
         try {
           const response = await fetch(
             import.meta.env.VITE_API_URL + "/delete_userMB",
@@ -2009,7 +2216,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         const actions = getActions();
         const migration_id = id;
         const store = getStore();
-        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha eliminado o ha intentado eliminar la migración id N° " + migration_id, null, null,null,null,today);
+        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha eliminado o ha intentado eliminar la migración id N° " + migration_id, null, null,null,null,today, null);
         try {
           const response = await fetch(
             import.meta.env.VITE_API_URL + "/delete_migration",
@@ -2042,7 +2249,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         const actions = getActions();
         const message_id = id;
         const store = getStore();
-        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha eliminado o ha intentado eliminar el mensaje id N° " + message_id, null, null,null,null,today);
+        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha eliminado o ha intentado eliminar el mensaje id N° " + message_id, null, null,null,null,today, null);
         try {
           const response = await fetch(
             import.meta.env.VITE_API_URL + "/delete_message",
@@ -2075,7 +2282,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         const actions = getActions();
         const history_id = id;
         const store = getStore();
-        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha eliminado o ha intentado eliminar el mensaje id N° " + history_id, null, null,null,null,today);
+        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha eliminado o ha intentado eliminar el mensaje id N° " + history_id, null, null,null,null,today, null);
         try {
           const response = await fetch(
             import.meta.env.VITE_API_URL + "/delete_history",

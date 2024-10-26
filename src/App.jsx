@@ -8,9 +8,10 @@ import { Home } from "./pages/home.jsx";
 import { Navbar } from "./components/navbar.jsx";
 import { Dashboard } from "./pages/dashboard.jsx";
 import { AllUsers } from "./pages/allUsers.jsx";
-import { AdminsView } from "./pages/adminsView.jsx";
+import { EngenieerDashboard } from "./pages/engenieerDashboard.jsx";
 import { Branches } from "./pages/branches.jsx";
 import { Providers } from "./pages/providers.jsx";
+import { Links } from "./pages/links.jsx";
 import { Assets } from "./pages/assets.jsx";
 import { UsersMB } from "./pages/usersMB.jsx";
 import { Migrations } from "./pages/migrations.jsx";
@@ -27,9 +28,10 @@ function App({ Component, pageProps }) {
             <Route path="/" element={<Home />} />
             <Route path="/dashboard" element={<Dashboard/>}/>
             <Route path="/users" element={<AllUsers/>}/>
-            <Route path="/admins" element={<AdminsView/>}/>
+            <Route path="/engenieerDashboard" element={<EngenieerDashboard/>}/>
             <Route path="/branches" element={<Branches/>}/>
             <Route path="/providers" element={<Providers/>}/>
+            <Route path="/links" element={<Links/>}/>
             <Route path="/assets" element={<Assets/>}/>
             <Route path="/usersMB" element={<UsersMB/>}/>
             <Route path="/migrations" element={<Migrations/>}/>  

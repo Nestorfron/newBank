@@ -12,6 +12,9 @@ export const FormBranches = ({ id, btnBranch, branch: initialBranch }) => {
     branch_address: "",
     branch_zone: "",
     branch_subzone: "",
+    branch_work_stations: "",
+    branch_category: "",
+    branch_saturday: "",
     user_id: null,
     admins_id: null,
     engineer_id: null,
@@ -65,18 +68,26 @@ export const FormBranches = ({ id, btnBranch, branch: initialBranch }) => {
             branch.branch_address,
             branch.branch_zone,
             branch.branch_subzone,
+            branch.branch_work_stations,
+            branch.branch_category,
+            branch.branch_saturday,
             branch.user_id,
             branch.admins_id,
             branch.engineer_id
+            
           )
         : await actions.add_branch(
             branch.branch_cr,
             branch.branch_address,
             branch.branch_zone,
             branch.branch_subzone,
+            branch.branch_work_stations,
+            branch.branch_category,
+            branch.branch_saturday,
             branch.user_id,
             branch.admins_id,
-            branch.engineer_id
+            branch.engineer_id,
+           
           );
       Swal.fire({
         position: "center",
@@ -98,6 +109,9 @@ export const FormBranches = ({ id, btnBranch, branch: initialBranch }) => {
           branch_address: "",
           branch_zone: "",
           branch_subzone: "",
+          branch_work_stations: "",
+          branch_category: "",
+          branch_saturday: "",
           user_id: null,
           admins_id: null,
           engineer_id: null,
@@ -136,6 +150,9 @@ export const FormBranches = ({ id, btnBranch, branch: initialBranch }) => {
         branch_address: initialBranch.branch_address || "",
         branch_zone: initialBranch.branch_zone || "",
         branch_subzone: initialBranch.branch_subzone || "",
+        branch_work_stations: initialBranch.branch_work_stations || "",
+        branch_category: initialBranch.branch_category || "",
+        branch_saturday: initialBranch.branch_saturday || "",
         user_id: initialBranch.user_id || null,
         admins_id: initialBranch.admins_id || null,
         engineer_id: initialBranch.engineer_id || null,
@@ -171,6 +188,27 @@ export const FormBranches = ({ id, btnBranch, branch: initialBranch }) => {
           label="Subzona"
           name="branch_subzone"
           value={branch.branch_subzone}
+          onChange={handleChange}
+          required
+        />
+        <Input
+          label="Estaciones de Trabajo"
+          name="branch_work_stations"
+          value={branch.branch_work_stations}
+          onChange={handleChange}
+          required
+        />
+        <Input
+          label="Categoría"
+          name="branch_category"
+          value={branch.branch_category}
+          onChange={handleChange}
+          required
+        />
+        <Input
+          label="Saturday"
+          name="branch_saturday"
+          value={branch.branch_saturday}
           onChange={handleChange}
           required
         />

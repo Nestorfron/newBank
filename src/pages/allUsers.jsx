@@ -21,20 +21,21 @@ export const AllUsers = () => {
 
   const user = store.me;
 
+
   useEffect(() => {
+    if (user.role === "Ingeniero de Campo") {
+      navigate("/engenieerDashboard");
+      return;
+    }
     const jwt = localStorage.getItem("token");
     if (!jwt) {
       navigate("/");
       return;
     }
-    if (user.role === "Ingeniero de Campo") {
-        navigate("/dashboard");
-        return;
-    }
     actions.getMe();
-    actions.getEngineers();
-    actions.getAdmins();
     actions.getUsers();
+    actions.getAdmins();
+    actions.getEngineers();
   }, []);
 
   return (

@@ -87,6 +87,15 @@ export const Navbar = () => {
                 Proveedores
               </Button>
             </NavbarItem>
+            <NavbarItem className="gap-2">  
+              <Button
+                isDisabled={!jwt}
+                onClick={() => navigate("/links")}
+                variant="link"
+              >
+                Links
+              </Button>
+            </NavbarItem>
             <NavbarItem>
               <Button
                 isDisabled={!jwt}
@@ -153,6 +162,15 @@ export const Navbar = () => {
               variant="link"
             >
               Proveedores
+            </Button>
+          </li>
+          <li className="gap-2">
+            <Button
+              disabled={!jwt}
+              onClick={() => navigate("/links")}
+              variant="link"
+            >
+              Links
             </Button>
           </li>
           <li>

@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: ac1d537b7123
+Revision ID: 6b946d5a6c23
 Revises: 
-Create Date: 2024-10-24 19:28:33.284973
+Create Date: 2024-10-26 18:16:08.574027
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'ac1d537b7123'
+revision = '6b946d5a6c23'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -27,6 +27,7 @@ def upgrade():
     sa.Column('last_names', sa.String(length=50), nullable=False),
     sa.Column('employee_number', sa.String(length=20), nullable=False),
     sa.Column('subzone', sa.String(length=50), nullable=False),
+    sa.Column('role', sa.String(length=50), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('employee_number'),
     sa.UniqueConstraint('user_name')
@@ -34,12 +35,13 @@ def upgrade():
     op.create_table('admins',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_name', sa.String(length=50), nullable=False),
-    sa.Column('password', sa.String(length=50), nullable=False),
+    sa.Column('password', sa.String(length=180), nullable=False),
     sa.Column('names', sa.String(length=50), nullable=False),
     sa.Column('last_names', sa.String(length=50), nullable=False),
     sa.Column('employee_number', sa.String(length=50), nullable=False),
     sa.Column('subzone', sa.String(length=50), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
+    sa.Column('role', sa.String(length=50), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id'),
@@ -48,12 +50,13 @@ def upgrade():
     op.create_table('engineer',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_name', sa.String(length=50), nullable=False),
-    sa.Column('password', sa.String(length=50), nullable=False),
+    sa.Column('password', sa.String(length=180), nullable=False),
     sa.Column('names', sa.String(length=50), nullable=False),
     sa.Column('last_names', sa.String(length=50), nullable=False),
     sa.Column('employee_number', sa.String(length=50), nullable=False),
     sa.Column('subzone', sa.String(length=50), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
+    sa.Column('role', sa.String(length=50), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('admins_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['admins_id'], ['admins.id'], ),
@@ -67,6 +70,9 @@ def upgrade():
     sa.Column('branch_address', sa.String(length=50), nullable=False),
     sa.Column('branch_zone', sa.String(length=50), nullable=False),
     sa.Column('branch_subzone', sa.String(length=50), nullable=False),
+    sa.Column('branch_work_stations', sa.String(length=50), nullable=False),
+    sa.Column('branch_category', sa.String(length=50), nullable=False),
+    sa.Column('branch_saturday', sa.String(length=50), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('admins_id', sa.Integer(), nullable=True),
     sa.Column('engineer_id', sa.Integer(), nullable=True),
@@ -91,6 +97,24 @@ def upgrade():
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('rfc')
+    )
+    op.create_table('link',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('type', sa.String(length=50), nullable=False),
+    sa.Column('description', sa.String(length=250), nullable=False),
+    sa.Column('speed', sa.String(length=50), nullable=False),
+    sa.Column('status', sa.String(length=50), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.Column('admins_id', sa.Integer(), nullable=True),
+    sa.Column('engineer_id', sa.Integer(), nullable=True),
+    sa.Column('branch_id', sa.Integer(), nullable=True),
+    sa.Column('provider_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['admins_id'], ['admins.id'], ),
+    sa.ForeignKeyConstraint(['branch_id'], ['branch.id'], ),
+    sa.ForeignKeyConstraint(['engineer_id'], ['engineer.id'], ),
+    sa.ForeignKeyConstraint(['provider_id'], ['provider.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('migration',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -159,10 +183,12 @@ def upgrade():
     sa.Column('asset_id', sa.Integer(), nullable=True),
     sa.Column('admins_id', sa.Integer(), nullable=True),
     sa.Column('engineer_id', sa.Integer(), nullable=True),
+    sa.Column('link_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['admins_id'], ['admins.id'], ),
     sa.ForeignKeyConstraint(['asset_id'], ['assets.id'], ),
     sa.ForeignKeyConstraint(['branch_id'], ['branch.id'], ),
     sa.ForeignKeyConstraint(['engineer_id'], ['engineer.id'], ),
+    sa.ForeignKeyConstraint(['link_id'], ['link.id'], ),
     sa.ForeignKeyConstraint(['migration_id'], ['migration.id'], ),
     sa.ForeignKeyConstraint(['provider_id'], ['provider.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
@@ -170,11 +196,12 @@ def upgrade():
     )
     op.create_table('user_mb',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('user_name_MB', sa.String(length=30), nullable=False),
+    sa.Column('role', sa.String(length=50), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('names', sa.String(length=50), nullable=False),
     sa.Column('last_names', sa.String(length=50), nullable=False),
     sa.Column('employee_number', sa.String(length=20), nullable=False),
+    sa.Column('extension_phone', sa.String(length=50), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('asset_id', sa.Integer(), nullable=True),
     sa.Column('branch_id', sa.Integer(), nullable=True),
@@ -186,8 +213,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['engineer_id'], ['engineer.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('employee_number'),
-    sa.UniqueConstraint('user_name_MB')
+    sa.UniqueConstraint('employee_number')
     )
     # ### end Alembic commands ###
 
@@ -199,6 +225,7 @@ def downgrade():
     op.drop_table('message')
     op.drop_table('assets')
     op.drop_table('migration')
+    op.drop_table('link')
     op.drop_table('provider')
     op.drop_table('branch')
     op.drop_table('engineer')

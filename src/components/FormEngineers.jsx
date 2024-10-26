@@ -24,14 +24,27 @@ export const FormEngineers = ({ id, btnEngineer, engineer: initialEngineer }) =>
     subzone: "",
     is_active: "",
     role: "",
+    user_id: null,
+    admin_id: null,
   });
 
   const role = ["Engineer"]
 
   const [loading, setLoading] = useState(false);
 
+  const me = store.me;
+
+  const addId = ()  => {
+    if (me.role === "Master") {
+      setEngineer({ ...engineer, user_id: me.id });
+    } else if (me.role === "Admin") {
+      setEngineer({ ...engineer, admin_id: me.id });
+    }
+  }
+
   const handleChange = (e) => {
     setEngineer({ ...engineer, [e.target.name]: e.target.value });
+    console.log(engineer);
   };
 
   const handleSubmit = async (e) => {
@@ -59,7 +72,9 @@ export const FormEngineers = ({ id, btnEngineer, engineer: initialEngineer }) =>
             engineer.employee_number,
             engineer.subzone,
             engineer.is_active,
-            engineer.role
+            engineer.role,
+            engineer.user_id,
+            engineer.admin_id
           )
         : await actions.create_engineer(
             engineer.user_name,
@@ -69,7 +84,9 @@ export const FormEngineers = ({ id, btnEngineer, engineer: initialEngineer }) =>
             engineer.employee_number,
             engineer.subzone,
             engineer.is_active,
-            engineer.role
+            engineer.role,
+            engineer.user_id,
+            engineer.admin_id
           );
       Swal.fire({
         position: "center",
@@ -88,6 +105,8 @@ export const FormEngineers = ({ id, btnEngineer, engineer: initialEngineer }) =>
           subzone: "",
           is_active: "",
           role: "",
+          user_id: null,
+          admin_id: null,
         });
       }
     } catch (error) {
@@ -108,6 +127,8 @@ export const FormEngineers = ({ id, btnEngineer, engineer: initialEngineer }) =>
     //   return;
     // }
     actions.getEngineers();
+    actions.getMe();
+    addId();
     if (initialEngineer) {
       setEngineer({
         user_name: initialEngineer.user_name || "",
@@ -117,6 +138,8 @@ export const FormEngineers = ({ id, btnEngineer, engineer: initialEngineer }) =>
         subzone: initialEngineer.subzone || "",
         is_active: initialEngineer.is_active || false,
         role: initialEngineer.role || "",
+        user_id: initialEngineer.user_id || null,
+        admin_id: initialEngineer.admin_id || null,
       });
     }
   }, []);
