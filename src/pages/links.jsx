@@ -1,11 +1,11 @@
 import React, { useContext, useState, useMemo, useEffect } from "react";
-import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
+import { Context } from "../store/appContext";
 import Swal from "sweetalert2";
 import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
 import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
-import { CreateUsersMB } from "../components/CreateUsersMB.jsx";
-import { EditUsersMB } from "../components/EditUsersMB.jsx";
+import { CreateLinks } from "../components/CreateLinks.jsx";
+import { EditLinks } from "../components/EditLinks.jsx";
 import {
   Button,
   Table,
@@ -20,8 +20,7 @@ import {
 } from "@nextui-org/react";
 import useTokenExpiration from "../hooks/useTokenExpitarion.jsx";
 
-
-export const UsersMB = () => {
+export const Links = () => {
   const { store, actions } = useContext(Context);
   const navigate = useNavigate();
   const [filterValue, setFilterValue] = useState("");
@@ -32,31 +31,34 @@ export const UsersMB = () => {
   useTokenExpiration();
 
   const filteredItems = useMemo(() => {
-    let filteredUsersMB = [...store.usersMB];
+    let filteredLinks = [...store.links];
 
     if (filterValue) {
-      filteredUsersMB = filteredUsersMB.filter(
-        (userMB) =>
-          userMB.user_name_MB
-            .toLowerCase()
-            .includes(filterValue.toLowerCase()) ||
-          userMB.names.toLowerCase().includes(filterValue.toLowerCase()) ||
-          userMB.last_names.toLowerCase().includes(filterValue.toLowerCase()) ||
-          userMB.employee_number
-            .toLowerCase()
-            .includes(filterValue.toLowerCase())
+      filteredLinks = filteredLinks.filter((link) =>
+        link.type
+          .toLowerCase()
+          .includes(filterValue.toLowerCase()) ||
+        link.description
+          .toLowerCase()
+          .includes(filterValue.toLowerCase()) ||
+        link.speed
+          .toLowerCase()
+          .includes(filterValue.toLowerCase()) ||
+        link.status
+          .toLowerCase()
+          .includes(filterValue.toLowerCase())
       );
     }
 
     // Asegúrate de que 'status' esté en tus datos para filtrar adecuadamente
     if (statusFilter !== "all") {
-      filteredUsersMB = filteredUsersMB.filter(
-        (userMB) => userMB.status === statusFilter // Cambia según tus datos
+      filteredLinks = filteredLinks.filter(
+        (link) => link.status === statusFilter // Cambia según tus datos
       );
     }
 
-    return filteredUsersMB;
-  }, [store.usersMB, filterValue, statusFilter]);
+    return filteredLinks;
+  }, [store.links, filterValue, statusFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
   const items = useMemo(() => {
@@ -64,18 +66,18 @@ export const UsersMB = () => {
     return filteredItems.slice(start, start + rowsPerPage);
   }, [page, filteredItems, rowsPerPage]);
 
-  const deleteUserMB = (id) => {
+  const deleteLink = (id) => {
     Swal.fire({
       title: "Advertencia",
-      text: "¿Desea eliminar Usuario MB?",
+      text: "¿Desea eliminar el Link?",
       icon: "warning",
       showDenyButton: true,
       denyButtonText: "No",
       confirmButtonText: "Sí",
     }).then((click) => {
       if (click.isConfirmed) {
-        actions.deleteUserMB(id).then(() => {
-          Swal.fire("Usuario MB eliminado correctamente", "", "success");
+        actions.deleteLink(id).then(() => {
+          Swal.fire("Link eliminado correctamente", "", "success");
         });
       }
     });
@@ -85,13 +87,13 @@ export const UsersMB = () => {
     <div className="flex justify-between gap-3 items-center">
       <div className="flex justify-start gap-3 items-center">
         <span className="text-default-400 text-lg">
-          Total de Usuarios MB : {store.usersMB.length}
+          Total de Links : {store.links.length}
         </span>
       </div>
       <div className="flex gap-2 items-center">
         <Input
           isClearable
-          placeholder="Buscar por Usuario MB..."
+          placeholder="Buscar por Link..."
           value={filterValue}
           onClear={() => setFilterValue("")}
           onValueChange={setFilterValue}
@@ -99,7 +101,7 @@ export const UsersMB = () => {
           startContent={<SearchIcon />}
         />
         <div>
-          <CreateUsersMB />
+          <CreateLinks />
         </div>
       </div>
     </div>
@@ -111,32 +113,23 @@ export const UsersMB = () => {
     </div>
   );
 
-  const statusColorMap = {
-    active: "success",
-    inactive: "danger",
-  };
-
-  
-
   useEffect(() => {
     const jwt = localStorage.getItem("token");
     if (!jwt) {
       navigate("/");
       return;
     }
-    actions.getUsersMB();
     actions.getMe();
-    actions.getBranchs();
-    actions.getAssets();
-  }, []);
+    actions.getLinks();
+  }, []);    
 
   return (
     <div className="m-5">
       <div className="flex justify-start gap-4 mt-4 mb-4">
-        <span className="text-lg font-bold">Gestor de Usuarios MB</span>
+        <span className="text-lg font-bold">Gestor de Links</span>
       </div>
       <Table
-        aria-label="Tabla de Usuarios MB"
+        aria-label="Tabla de links"
         isHeaderSticky
         isStriped
         topContent={topContent}
@@ -148,44 +141,31 @@ export const UsersMB = () => {
       >
         <TableHeader>
           <TableColumn>ID</TableColumn>
+          <TableColumn>Tipo</TableColumn>
+          <TableColumn>Descripción</TableColumn>
+          <TableColumn>Velocidad</TableColumn>
           <TableColumn>Estado</TableColumn>
-          <TableColumn>Nombres</TableColumn>
-          <TableColumn>Apellidos</TableColumn>
-          <TableColumn>Numero de Empleado</TableColumn>
-          <TableColumn>Sucursal</TableColumn>
-          <TableColumn>Activos Adjudicados</TableColumn>
-          <TableColumn>Telefono</TableColumn>
           <TableColumn>Acciones</TableColumn>
         </TableHeader>
         <TableBody>
-          {items.map((userMB) => (
-            <TableRow key={userMB.id}>
-              <TableCell>{userMB.id}</TableCell>
-              <TableCell>
-                <Chip
-                  color={statusColorMap[userMB.is_active ? "active" : "inactive"]}
-                  status={userMB.is_active ? "active" : "inactive"}
-                >
-                  {userMB.is_active ? "Activo" : "Inactivo"}
-                </Chip>
-              </TableCell>
-              <TableCell>{userMB.names}</TableCell>
-              <TableCell>{userMB.last_names}</TableCell>
-              <TableCell>{userMB.employee_number}</TableCell>
-              <TableCell>{userMB.branch_id}</TableCell>
-              <TableCell>{userMB.asset_id}</TableCell>
-              <TableCell>{userMB.extension_phone}</TableCell>
+          {items.map((link) => (
+            <TableRow key={link.id}>
+              <TableCell>{link.id}</TableCell>
+              <TableCell>{link.type}</TableCell>
+              <TableCell>{link.description}</TableCell>
+              <TableCell>{link.speed}</TableCell>
+              <TableCell>{link.status}</TableCell>
               <TableCell>
                 <div className="flex justify-center">
                   <Button variant="link" color="danger">
                     <span
                       className="text-lg text-danger cursor-pointer"
-                      onClick={() => deleteUserMB(userMB.id)}
+                      onClick={() => deleteLink(link.id)}
                     >
                       <DeleteIcon />
                     </span>
                   </Button>
-                  <EditUsersMB userMB={userMB} />
+                  <EditLinks link={link} />
                 </div>
               </TableCell>
             </TableRow>

@@ -1,9 +1,13 @@
-import { useEffect, useRef } from "react";
+
+import react, { useEffect, useRef } from "react";
+import { useContext } from "react";
+import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import Swal from "sweetalert2";
 
 const useTokenExpiration = () => {
+  const { store, actions } = useContext(Context);
   const navigate = useNavigate();
   const inactivityTimeoutRef = useRef(null);
 

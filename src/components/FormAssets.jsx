@@ -15,6 +15,7 @@ import Swal from "sweetalert2";
 export const FormAssets = ({ id, btnAsset, asset: initialAsset }) => {
   const { store, actions } = useContext(Context);
   const [provider, setProvider] = useState("");
+  const [branch, setBranch] = useState("");
   const navigate = useNavigate();
   const [asset, setAsset] = useState({
     asset_type: "",
@@ -151,6 +152,13 @@ export const FormAssets = ({ id, btnAsset, asset: initialAsset }) => {
     setProvider(Provider);
   };
 
+  const getBranchById = (branchId) => {
+    const Branch = store.branchs.find(
+      (branch) => branch.id === branchId
+    );
+    setBranch(Branch);
+  };
+
   useEffect(() => {
     const jwt = localStorage.getItem("token");
     if (!jwt) {
@@ -163,6 +171,7 @@ export const FormAssets = ({ id, btnAsset, asset: initialAsset }) => {
     addId();
     if (initialAsset) {
       getProviderById(initialAsset.provider_id);
+      getBranchById(initialAsset.branch_id);
       setAsset({
         id: initialAsset.id,
         asset_type: initialAsset.asset_type || "",
@@ -184,9 +193,8 @@ export const FormAssets = ({ id, btnAsset, asset: initialAsset }) => {
     <form onSubmit={handleSubmit}>
       <div className="flex flex-col gap-4">
         <Input
-          label="Tipo de Activo"
-          placeholder="Ingrese el Tipo de Activo"
-          labelPlacement="outside"
+          label="Tipo"
+          
           name="asset_type"
           value={asset.asset_type}
           onChange={handleChange}
@@ -194,44 +202,39 @@ export const FormAssets = ({ id, btnAsset, asset: initialAsset }) => {
         />
         <Input
           label="Marca"
-          placeholder="Ingrese la marca"
-          labelPlacement="outside"
+          
           name="asset_brand"
           value={asset.asset_brand}
           onChange={handleChange}
           required
         />
         <Input
-          label="Modelo"
-          placeholder="Ingrese el modelo"
-          labelPlacement="outside"
+          label="Modelo de Activo"
+          
           name="asset_model"
           value={asset.asset_model}
           onChange={handleChange}
           required
         />
         <Input
-          label="Serial"
-          placeholder="Ingrese el serial"
-          labelPlacement="outside"
+          label="Numero de Serial"
+          
           name="asset_serial"
           value={asset.asset_serial}
           onChange={handleChange}
           required
         />
         <Input
-          label="Numero de Inventario"
-          placeholder="Ingrese el numero de inventario"
-          labelPlacement="outside"
+          label="Numero de Inventario de Activo"
+          
           name="asset_inventory_number"
           value={asset.asset_inventory_number}
           onChange={handleChange}
           required
         />
         <Select
-          label="Selecciona un proveedor"
-          labelPlacement="outside"
-          placeholder={provider ? provider.company_name : "..."}
+          label="Proveedor"
+          placeholder={provider ? provider.company_name : ""}
           name="provider_id"
           required
           value={asset.provider_id}
@@ -240,6 +243,19 @@ export const FormAssets = ({ id, btnAsset, asset: initialAsset }) => {
           {store.providers.map((provider) => (
             <SelectItem key={provider.id} value={provider.id}>
               {provider.company_name}
+            </SelectItem>
+          ))}
+        </Select>
+        <Select
+          label="Sucursal"
+          placeholder={branch ? branch.branch_cr : ""}
+          name="branch_id"
+          value={asset.branch_id}    
+          onChange={handleChange}
+        >
+          {store.branchs.map((branch) => (
+            <SelectItem key={branch.id} value={branch.id}>
+              {branch.branch_cr}
             </SelectItem>
           ))}
         </Select>

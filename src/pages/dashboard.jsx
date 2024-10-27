@@ -43,6 +43,10 @@ export const Dashboard = () => {
 
 
   useEffect(() => {
+    if (store.me.role === "ingeniero de Campo") {
+      navigate("/engenieerDashboard");
+      return;
+    } 
     const jwt = localStorage.getItem("token");
     if (!jwt) {
       navigate("/");

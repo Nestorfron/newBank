@@ -331,6 +331,7 @@ class UserMB(db.Model):
             "names": self.names,
             "last_names": self.last_names,
             "employee_number": self.employee_number,
+            "extension_phone": self.extension_phone,
             "branch_id": self.branch_id,
             "user_id": self.user_id,
             "asset_id": self.asset_id,
@@ -413,6 +414,7 @@ class Link(db.Model):
     engineer_id = db.Column(db.Integer, db.ForeignKey('engineer.id'), nullable=True)  
     branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'), nullable=True)
     provider_id = db.Column(db.Integer, db.ForeignKey('provider.id'), nullable=True)
+    migration_id = db.Column(db.Integer, db.ForeignKey('migration.id'), nullable=True)
 
 
     history = db.relationship('History', backref='links', lazy=True)
@@ -432,5 +434,6 @@ class Link(db.Model):
             "engineer_id": self.engineer_id,  
             "branch_id": self.branch_id,
             "provider_id": self.provider_id,
+            "migration_id": self.migration_id,
             "history": [history.serialize() for history in self.history]
         }

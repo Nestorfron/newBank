@@ -17,12 +17,13 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
   const navigate = useNavigate();
   const [userMB, setUserMB] = useState({
     id: "",
-    user_name_MB: "",
+    role: "",
     is_active: false,
     names: "",
     last_names: "",
     employee_number: "",
     user_id: null,
+    extension_phone: "",
     branch_id: null,
     asset_id: null,
     admins_id: null,
@@ -30,6 +31,7 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
   });
   const [branch, setBranch] = useState("");
   const [asset, setAsset] = useState("");
+  const role = ["Responsable", "Gerente", "Ejectuvido", "Cajero", "Otro"];
 
   
   const me = store.me;
@@ -78,11 +80,12 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
       const response = id
         ? await actions.editUserMB(
             id,
-            userMB.user_name_MB,
+            userMB.role,
             userMB.is_active,
             userMB.names,
             userMB.last_names,
             userMB.employee_number,
+            userMB.extension_phone,
             userMB.branch_id,
             userMB.asset_id,
             userMB.user_id,
@@ -90,11 +93,12 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
             userMB.engineer_id
           )
         : await actions.add_userMB(
-            userMB.user_name_MB,
+            userMB.role,
             userMB.is_active,
             userMB.names,
             userMB.last_names,
             userMB.employee_number,
+            userMB.extension_phone,
             userMB.branch_id,
             userMB.asset_id,
             userMB.user_id,
@@ -120,11 +124,12 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
       }).then(() => {});
       if (!id) {
         setUserMB({
-          user_name_MB: "",
+          role: "",
           is_active: false,
           names: "",
           last_names: "",
           employee_number: "",
+          extension_phone: "",
           branch_id: "",
           asset_id: "",
           user_id: null,
@@ -178,11 +183,12 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
       getBranchById(initialUserMB.branch_id);
       getAssetById(initialUserMB.asset_id);
       setUserMB({
-        user_name_MB: initialUserMB.user_name_MB || "",
+        role: initialUserMB.role || "",
         is_active: initialUserMB.is_active || false,
         names: initialUserMB.names || "",
         last_names: initialUserMB.last_names || "",
         employee_number: initialUserMB.employee_number || "",
+        extension_phone: initialUserMB.extension_phone || "",
         branch_id: initialUserMB.branch_id || "",
         asset_id: initialUserMB.asset_id || "",
         user_id: initialUserMB.user_id || null,
@@ -197,13 +203,20 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
   return (
     <form onSubmit={handleSubmit}>
       <div className="flex flex-col gap-4">
-        <Input
-          label="Nombre de Usuario MB"
-          name="user_name_MB"
-          value={userMB.user_name_MB}
-          onChange={handleChange}
+        <Select
+          label="Rol"
+          placeholder={userMB.role}
+          name="role"
           required
-        />
+          value={userMB.role}
+          onChange={handleChange}
+        >
+          {role.map((role) => (
+            <SelectItem key={role} value={role}>
+              {role}
+            </SelectItem>
+          ))}
+        </Select>
         <Input
           label="Nombres"
           name="names"
@@ -222,6 +235,13 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
           label="Numero de Empleado"
           name="employee_number"
           value={userMB.employee_number}
+          onChange={handleChange}
+          required
+        />
+        <Input
+          label="Numero de Telefono"
+          name="extension_phone"
+          value={userMB.extension_phone}
           onChange={handleChange}
           required
         />
