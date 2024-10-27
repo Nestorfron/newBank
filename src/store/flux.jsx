@@ -1235,13 +1235,15 @@ const getState = ({ getStore, getActions, setStore }) => {
 
       add_userMB: async (
         user_name_MB,
+        role,
         is_active,
         names,
         last_names,
         employee_number,
+        extension_phone,
+        user_id,
         branch_id,
         asset_id,
-        user_id,
         admins_id,
         engineer_id
       ) => {
@@ -1258,13 +1260,15 @@ const getState = ({ getStore, getActions, setStore }) => {
             },
             body: JSON.stringify({
               user_name_MB,
+              role,
               is_active,
               names,
               last_names,
               employee_number,
+              extension_phone,
+              user_id,
               branch_id,
               asset_id,
-              user_id,
               admins_id,
               engineer_id,
             }),
@@ -1614,7 +1618,13 @@ const getState = ({ getStore, getActions, setStore }) => {
         branch_cr,
         branch_address,
         branch_zone,
-        branch_subzone
+        branch_subzone,
+        branch_work_stations,
+        branch_category,
+        branch_saturday,
+        user_id,
+        admins_id,
+        engineer_id
       ) => {
         const branch_id = id;
         const store = getStore();
@@ -1635,6 +1645,12 @@ const getState = ({ getStore, getActions, setStore }) => {
                 branch_address,
                 branch_zone,
                 branch_subzone,
+                branch_work_stations,
+                branch_category,
+                branch_saturday,
+                user_id,
+                admins_id,
+                engineer_id,
               }),
             }
           );
@@ -1825,9 +1841,11 @@ const getState = ({ getStore, getActions, setStore }) => {
         id,
         user_name_MB,
         is_active,
+        role,
         names,
         last_names,
         employee_number,
+        extension_phone,
         branch_id,
         asset_id,
         user_id,
@@ -1851,10 +1869,12 @@ const getState = ({ getStore, getActions, setStore }) => {
               body: JSON.stringify({
                 id,
                 user_name_MB,
+                role,
                 is_active,
                 names,
                 last_names,
                 employee_number,
+                extension_phone,
                 branch_id,
                 asset_id,
                 user_id,
