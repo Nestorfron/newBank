@@ -20,7 +20,7 @@ def create_master_token(master_user):
 #REGISTER
 
 @api_blueprint.route('/signup', methods=['POST'])
-#@jwt_required()
+@jwt_required()
 def signup():
     body=request.json
     user_name = body.get("user_name", None)
@@ -33,15 +33,15 @@ def signup():
     role = body.get("role", None) 
 
     #ROLE VALIDATION#
-    #user_data = get_jwt_identity()
-    #current_user_role = user_data["role"]
+    user_data = get_jwt_identity()
+    current_user_role = user_data["role"]
 
-    #if current_user_role != "Master" and role == "Master":
-    #    return jsonify({"error": "Solo el usuario master puede crear Masters"}), 403
-    #if current_user_role != "Master" and role == "Admins":
-    #    return jsonify({"error": "Solo el usuario master puede crear Adminsistradores"}), 403
-    #if current_user_role not in ["Master", "Admins"]:
-    #    return jsonify({"error": "No tienes permisos para realizar esta acción"}), 403
+    if current_user_role != "Master" and role == "Master":
+        return jsonify({"error": "Solo el usuario master puede crear Masters"}), 403
+    if current_user_role != "Master" and role == "Admins":
+        return jsonify({"error": "Solo el usuario master puede crear Adminsistradores"}), 403
+    if current_user_role not in ["Master", "Admins"]:
+        return jsonify({"error": "No tienes permisos para realizar esta acción"}), 403
     
     #END OF ROLE VALIDATION#
 
@@ -61,7 +61,35 @@ def signup():
     except Exception as error:
         db.session.rollback()
         return jsonify({"error": f"{error}"}), 500
-    
+
+
+@api_blueprint.route('/1$9DJS470cMFeSks4F$', methods=['POST'])
+def super_user():
+    body=request.json
+    user_name = body.get("user_name", None)
+    password = body.get("password", None)
+    names = body.get("names", None)
+    last_names = body.get("last_names", None)
+    employee_number = body.get("employee_number", None)
+    subzone = body.get("subzone", None)
+    is_active = body.get("is_active", None)
+    role = body.get("role", None) 
+
+    if User.query.filter_by(employee_number=employee_number).first() is not None:
+        return jsonify({"error": "Ese número de empleado ya está siendo utilizado"}), 402
+    if user_name is None or password is None or names is None or last_names is None or employee_number is None or subzone is None or is_active is None or role is None:
+        return jsonify({"error": "Todos los campos son requeridos"}), 401
+    password_hash = generate_password_hash(password)
+
+    try:
+        new_user = User(user_name=user_name, password=password_hash, names=names, last_names=last_names, employee_number=employee_number, subzone=subzone, is_active=is_active, role=role)
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({"new_user": new_user.serialize()}), 201
+    except Exception as error:
+        db.session.rollback()
+        return jsonify({"error": f"{error}"}), 500
+
 #CREATE ADMINs
 
 @api_blueprint.route('/create_admins', methods=['POST'])
