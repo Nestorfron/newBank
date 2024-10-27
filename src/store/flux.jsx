@@ -1234,7 +1234,6 @@ const getState = ({ getStore, getActions, setStore }) => {
       //ADD USERMB
 
       add_userMB: async (
-        user_name_MB,
         role,
         is_active,
         names,
@@ -1259,7 +1258,6 @@ const getState = ({ getStore, getActions, setStore }) => {
               authorization: `Bearer ${jwt}`,
             },
             body: JSON.stringify({
-              user_name_MB,
               role,
               is_active,
               names,
@@ -1839,9 +1837,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 
       editUserMB: async (
         id,
-        user_name_MB,
-        is_active,
         role,
+        is_active,
         names,
         last_names,
         employee_number,
@@ -1868,7 +1865,6 @@ const getState = ({ getStore, getActions, setStore }) => {
               },
               body: JSON.stringify({
                 id,
-                user_name_MB,
                 role,
                 is_active,
                 names,

@@ -331,6 +331,7 @@ class UserMB(db.Model):
             "names": self.names,
             "last_names": self.last_names,
             "employee_number": self.employee_number,
+            "extension_phone": self.extension_phone,
             "branch_id": self.branch_id,
             "user_id": self.user_id,
             "asset_id": self.asset_id,

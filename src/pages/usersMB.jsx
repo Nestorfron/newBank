@@ -148,20 +148,19 @@ export const UsersMB = () => {
       >
         <TableHeader>
           <TableColumn>ID</TableColumn>
-          <TableColumn>Nombre de Usuario MB</TableColumn>
           <TableColumn>Estado</TableColumn>
           <TableColumn>Nombres</TableColumn>
           <TableColumn>Apellidos</TableColumn>
           <TableColumn>Numero de Empleado</TableColumn>
           <TableColumn>Sucursal</TableColumn>
           <TableColumn>Activos Adjudicados</TableColumn>
+          <TableColumn>Telefono</TableColumn>
           <TableColumn>Acciones</TableColumn>
         </TableHeader>
         <TableBody>
           {items.map((userMB) => (
             <TableRow key={userMB.id}>
               <TableCell>{userMB.id}</TableCell>
-              <TableCell>{userMB.user_name_MB}</TableCell>
               <TableCell>
                 <Chip
                   color={statusColorMap[userMB.is_active ? "active" : "inactive"]}
@@ -175,6 +174,7 @@ export const UsersMB = () => {
               <TableCell>{userMB.employee_number}</TableCell>
               <TableCell>{userMB.branch_id}</TableCell>
               <TableCell>{userMB.asset_id}</TableCell>
+              <TableCell>{userMB.extension_phone}</TableCell>
               <TableCell>
                 <div className="flex justify-center">
                   <Button variant="link" color="danger">

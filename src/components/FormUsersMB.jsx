@@ -17,7 +17,6 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
   const navigate = useNavigate();
   const [userMB, setUserMB] = useState({
     id: "",
-    user_name_MB: "",
     role: "",
     is_active: false,
     names: "",
@@ -81,7 +80,6 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
       const response = id
         ? await actions.editUserMB(
             id,
-            userMB.user_name_MB,
             userMB.role,
             userMB.is_active,
             userMB.names,
@@ -95,7 +93,6 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
             userMB.engineer_id
           )
         : await actions.add_userMB(
-            userMB.user_name_MB,
             userMB.role,
             userMB.is_active,
             userMB.names,
@@ -127,7 +124,6 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
       }).then(() => {});
       if (!id) {
         setUserMB({
-          user_name_MB: "",
           role: "",
           is_active: false,
           names: "",
@@ -187,7 +183,6 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
       getBranchById(initialUserMB.branch_id);
       getAssetById(initialUserMB.asset_id);
       setUserMB({
-        user_name_MB: initialUserMB.user_name_MB || "",
         role: initialUserMB.role || "",
         is_active: initialUserMB.is_active || false,
         names: initialUserMB.names || "",
@@ -208,13 +203,6 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
   return (
     <form onSubmit={handleSubmit}>
       <div className="flex flex-col gap-4">
-        <Input
-          label="Nombre de Usuario MB"
-          name="user_name_MB"
-          value={userMB.user_name_MB}
-          onChange={handleChange}
-          required
-        />
         <Select
           label="Rol"
           placeholder={userMB.role}

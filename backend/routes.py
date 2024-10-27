@@ -545,7 +545,6 @@ def add_asset():
 @jwt_required()
 def add_userMB():
     body=request.json
-    user_name_MB = body.get("user_name_MB", None)
     role = body.get("role", None)
     is_active = body.get("is_active", None)
     names = body.get("names", None)
@@ -558,19 +557,17 @@ def add_userMB():
     admins_id = body.get("admins_id", None)
     engineer_id = body.get("engineer_id", None)
 
-    if UserMB.query.filter_by(user_name_MB=user_name_MB).first() is not None:
-        return jsonify({"error": "usuarioMB ya existe"}), 400
     branch = Branch.query.get(branch_id)
     if branch is None:
         return jsonify({"error": "branch no encontrado"}), 404 
     asset = Assets.query.get(asset_id)
     if asset is None:
         return jsonify({"error": "activo no encontrado"}), 404
-    if user_name_MB is None or is_active is None or names is None or last_names is None or employee_number is None or branch_id is None or asset_id is None or role is None or extension_phone is None:
+    if is_active is None or names is None or last_names is None or employee_number is None or branch_id is None or asset_id is None or role is None or extension_phone is None:
         return jsonify({"error": "faltan datos"}), 400
     
     try:
-        new_userMB = UserMB(user_name_MB=user_name_MB, is_active=is_active, names=names, last_names=last_names, employee_number=employee_number, extension_phone=extension_phone, branch_id=branch.id, asset_id=asset.id, admins_id=admins_id, engineer_id=engineer_id, role=role, user_id=user_id)
+        new_userMB = UserMB(role=role, is_active=is_active, names=names, last_names=last_names, employee_number=employee_number, extension_phone=extension_phone, branch_id=branch.id, asset_id=asset.id, admins_id=admins_id, engineer_id=engineer_id, user_id=user_id)
         db.session.add(new_userMB)
         db.session.commit()
         return jsonify({"new_userMB": new_userMB.serialize()}), 201
@@ -933,18 +930,17 @@ def edit_userMB():
         if userMB is None:
             return jsonify({'error': 'UserMB no found'}), 404
         
-        userMB.user_name_MB = body.get("user_name_MB", userMB.user_name_MB)
+        userMB.role = body.get("role", userMB.role)
         userMB.is_active = body.get("is_active", userMB.is_active)
         userMB.names = body.get("names", userMB.names)
         userMB.last_names = body.get("last_names", userMB.last_names)
         userMB.employee_number = body.get("employee_number", userMB.employee_number)
+        userMB.extension_phone = body.get("extension_phone", userMB.extension_phone)
         userMB.branch_id = body.get("branch_id", userMB.branch_id)
         userMB.asset_id = body.get("asset_id", userMB.asset_id)
         userMB.user_id = body.get("user_id", userMB.user_id)
         userMB.admins_id = body.get("admins_id", userMB.admins_id)
         userMB.engineer_id = body.get("engineer_id", userMB.engineer_id)
-        userMB.role = body.get("role", userMB.role)
-        userMB.extension_phone = body.get("extension_phone", userMB.extension_phone)
         
         db.session.commit()
         return jsonify({"message": "UserMB updated successfully"}), 200
