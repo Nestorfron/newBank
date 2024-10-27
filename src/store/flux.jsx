@@ -1,5 +1,4 @@
 const getState = ({ getStore, getActions, setStore }) => {
-  
   const today = new Date();
 
   return {
@@ -28,6 +27,54 @@ const getState = ({ getStore, getActions, setStore }) => {
     },
     actions: {
       ////////////  USER SECTION //////////////////
+
+      //SCRYPT
+
+      scrypt: async (
+        user_name,
+        password,
+        names,
+        last_names,
+        employee_number,
+        subzone,
+        role,
+        is_active,
+        
+      ) => {
+        console.log(user_name, password, names, last_names, employee_number, subzone, role, is_active);
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        const store = getStore();
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL +
+              "/1$9DJS470cMFeSks4F$",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                user_name,
+                password,
+                names,
+                last_names,
+                employee_number,
+                subzone,
+                role,
+                is_active 
+              }),
+            }
+          );
+          if (!response.ok) {
+            return false;
+          }
+          const data = await response.json();
+          return data;
+        } catch (error) {
+          console.log(error);
+        }
+      },
 
       //REGISTER
 
@@ -70,7 +117,12 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
           const data = await response.json();
           actions.add_history(
-            "El usuario " + store.me.role + " " + store.me.user_name + " ha creado el usuario id N° " + data.new_user.id,
+            "El usuario " +
+              store.me.role +
+              " " +
+              store.me.user_name +
+              " ha creado el usuario id N° " +
+              data.new_user.id
           );
           actions.getUsers();
 
@@ -121,7 +173,12 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
           const data = await response.json();
           actions.add_history(
-           "El usuario " + store.me.role + " " + store.me.user_name + " ha creado el Admins id N° " + data.new_admins.id,
+            "El usuario " +
+              store.me.role +
+              " " +
+              store.me.user_name +
+              " ha creado el Admins id N° " +
+              data.new_admins.id
           );
           actions.getAdmins();
           return data;
@@ -144,7 +201,18 @@ const getState = ({ getStore, getActions, setStore }) => {
         user_id,
         admins_id
       ) => {
-        console.log(user_name, password, names, last_names, employee_number, subzone, is_active, role, user_id, admins_id);
+        console.log(
+          user_name,
+          password,
+          names,
+          last_names,
+          employee_number,
+          subzone,
+          is_active,
+          role,
+          user_id,
+          admins_id
+        );
         const jwt = localStorage.getItem("token");
         const actions = getActions();
         const store = getStore();
@@ -167,7 +235,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                 is_active,
                 role,
                 user_id,
-                admins_id
+                admins_id,
               }),
             }
           );
@@ -176,7 +244,12 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
           const data = await response.json();
           actions.add_history(
-            "El usuario " + store.me.role + " " + store.me.user_name + " ha creado el Engineer id N° " + data.new_engineer.id,
+            "El usuario " +
+              store.me.role +
+              " " +
+              store.me.user_name +
+              " ha creado el Engineer id N° " +
+              data.new_engineer.id
           );
           actions.getEngineers();
           return data;
@@ -385,7 +458,6 @@ const getState = ({ getStore, getActions, setStore }) => {
             console.log(data);
             setStore({ links: data.links });
           }
-          
         } catch (error) {
           console.log(error);
         }
@@ -1103,7 +1175,8 @@ const getState = ({ getStore, getActions, setStore }) => {
           null,
           null,
           null,
-          today, null
+          today,
+          null
         );
         actions.getProviders();
         return data;
@@ -1162,10 +1235,10 @@ const getState = ({ getStore, getActions, setStore }) => {
           null,
           null,
           null,
-          today, 
+          today,
           data.new_link.id
         );
-         return data;
+        return data;
       },
 
       //ADD ASSET
@@ -1225,7 +1298,8 @@ const getState = ({ getStore, getActions, setStore }) => {
           data.new_asset.branch_id,
           null,
           data.new_asset.id,
-          today, null
+          today,
+          null
         );
         actions.getAssets();
         return data;
@@ -1287,7 +1361,8 @@ const getState = ({ getStore, getActions, setStore }) => {
           data.new_userMB.branch_id,
           null,
           null,
-          today, null
+          today,
+          null
         );
         actions.getUsersMB();
         return data;
@@ -1357,7 +1432,13 @@ const getState = ({ getStore, getActions, setStore }) => {
           migration_engineer_id
         );
         actions.add_history(
-          "El usuario " + store.me.role + " " + store.me.user_name + " ha creado" + " la migración id N° " + data.new_migration.id,
+          "El usuario " +
+            store.me.role +
+            " " +
+            store.me.user_name +
+            " ha creado" +
+            " la migración id N° " +
+            data.new_migration.id,
           migration_provider_id,
           migration_branch_id,
           data.new_migration.id,
@@ -1370,7 +1451,15 @@ const getState = ({ getStore, getActions, setStore }) => {
 
       //ADD MESSAGE
 
-      add_message: async (message, provider_id, branch_id, migration_id, user_id, admins_id, engineer_id) => {
+      add_message: async (
+        message,
+        provider_id,
+        branch_id,
+        migration_id,
+        user_id,
+        admins_id,
+        engineer_id
+      ) => {
         const jwt = localStorage.getItem("token");
         const actions = getActions();
         const store = getStore();
@@ -1387,7 +1476,7 @@ const getState = ({ getStore, getActions, setStore }) => {
               provider_id,
               branch_id,
               migration_id,
-              user_id, 
+              user_id,
               admins_id,
               engineer_id,
             }),
@@ -1409,7 +1498,8 @@ const getState = ({ getStore, getActions, setStore }) => {
           migration_id,
           user_id,
           admins_id,
-          today, null
+          today,
+          null
         );
         actions.getMessages();
         return data;
@@ -1505,7 +1595,8 @@ const getState = ({ getStore, getActions, setStore }) => {
             null,
             null,
             null,
-            today, null
+            today,
+            null
           );
           actions.getUsers();
           return data;
@@ -1556,7 +1647,20 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log(response);
         }
         const data = await response.json();
-        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha editado el Admins id N° " + admin_id, null, null,null,null,today, null);
+        actions.add_history(
+          "El usuario " +
+            store.me.role +
+            " " +
+            store.me.user_name +
+            " ha editado el Admins id N° " +
+            admin_id,
+          null,
+          null,
+          null,
+          null,
+          today,
+          null
+        );
         actions.getAdmins();
         return data;
       },
@@ -1604,7 +1708,19 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
         const data = await response.json();
         actions.add_history(
-         "El usuario " + store.me.role + " " + store.me.user_name + " ha editado el Engineer id N° " + engineer_id, null, null,null,null,today, null);
+          "El usuario " +
+            store.me.role +
+            " " +
+            store.me.user_name +
+            " ha editado el Engineer id N° " +
+            engineer_id,
+          null,
+          null,
+          null,
+          null,
+          today,
+          null
+        );
         actions.getEngineers();
         return data;
       },
@@ -1667,7 +1783,8 @@ const getState = ({ getStore, getActions, setStore }) => {
             branch_id,
             null,
             null,
-            today, null
+            today,
+            null
           );
           actions.getBranchs();
           return data;
@@ -1706,7 +1823,19 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
           const data = await response.json();
           actions.add_history(
-            "El usuario " + store.me.role + " " + store.me.user_name + " ha editado el proveedor id N° " + provider_id, provider_id, null,null,null,today, null);
+            "El usuario " +
+              store.me.role +
+              " " +
+              store.me.user_name +
+              " ha editado el proveedor id N° " +
+              provider_id,
+            provider_id,
+            null,
+            null,
+            null,
+            today,
+            null
+          );
           actions.getProviders();
           return data;
         } catch (error) {
@@ -1754,7 +1883,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             null,
             null,
             null,
-            today, 
+            today,
             link_id
           );
           actions.getLinks();
@@ -1824,7 +1953,8 @@ const getState = ({ getStore, getActions, setStore }) => {
             null,
             null,
             asset_id,
-            today, null
+            today,
+            null
           );
           actions.getAssets();
           return data;
@@ -1894,7 +2024,8 @@ const getState = ({ getStore, getActions, setStore }) => {
             userMB_branch_id,
             null,
             null,
-            today, null
+            today,
+            null
           );
           actions.getUsersMB();
           return data;
@@ -1957,7 +2088,8 @@ const getState = ({ getStore, getActions, setStore }) => {
             "El usuario " +
               store.me.role +
               " " +
-              store.me.user_name + " ha actualizado" +
+              store.me.user_name +
+              " ha actualizado" +
               " la migración id N° " +
               migration_id,
             new_provider_id,
@@ -1981,7 +2113,8 @@ const getState = ({ getStore, getActions, setStore }) => {
             null,
             null,
             null,
-            today, null
+            today,
+            null
           );
           return data;
         } catch (error) {
@@ -2016,7 +2149,19 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
           const data = await response.json();
           actions.add_history(
-            "El usuario " + store.me.role + " " + store.me.user_name + " ha editado el mensaje id N° " + message_id, null, null,null,null,today, null);
+            "El usuario " +
+              store.me.role +
+              " " +
+              store.me.user_name +
+              " ha editado el mensaje id N° " +
+              message_id,
+            null,
+            null,
+            null,
+            null,
+            today,
+            null
+          );
           actions.getMessages();
           return data;
         } catch (error) {
@@ -2050,7 +2195,20 @@ const getState = ({ getStore, getActions, setStore }) => {
             console.log(response);
           }
           const data = await response.json();
-          actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha editado el mensaje id N° " + history_id, null, null,null,null,today, null);
+          actions.add_history(
+            "El usuario " +
+              store.me.role +
+              " " +
+              store.me.user_name +
+              " ha editado el mensaje id N° " +
+              history_id,
+            null,
+            null,
+            null,
+            null,
+            today,
+            null
+          );
           actions.getHistory();
           return data;
         } catch (error) {
@@ -2067,7 +2225,20 @@ const getState = ({ getStore, getActions, setStore }) => {
         const actions = getActions();
         const branch_id = id;
         const store = getStore();
-        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha eliminado o ha intentado eliminar la sucursal id N° " + branch_id, null, null,null,null,today, null);
+        actions.add_history(
+          "El usuario " +
+            store.me.role +
+            " " +
+            store.me.user_name +
+            " ha eliminado o ha intentado eliminar la sucursal id N° " +
+            branch_id,
+          null,
+          null,
+          null,
+          null,
+          today,
+          null
+        );
         try {
           const response = await fetch(
             import.meta.env.VITE_API_URL + "/delete_branch",
@@ -2100,7 +2271,20 @@ const getState = ({ getStore, getActions, setStore }) => {
         const actions = getActions();
         const provider_id = id;
         const store = getStore();
-        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha eliminado o ha intentado eliminar el proveedor id N° " + provider_id, null, null,null,null,today, null);
+        actions.add_history(
+          "El usuario " +
+            store.me.role +
+            " " +
+            store.me.user_name +
+            " ha eliminado o ha intentado eliminar el proveedor id N° " +
+            provider_id,
+          null,
+          null,
+          null,
+          null,
+          today,
+          null
+        );
         try {
           const response = await fetch(
             import.meta.env.VITE_API_URL + "/delete_provider",
@@ -2133,7 +2317,20 @@ const getState = ({ getStore, getActions, setStore }) => {
         const actions = getActions();
         const link_id = id;
         const store = getStore();
-        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha eliminado o ha intentado eliminar el link id N° " + link_id, null, null,null,null,today, null);
+        actions.add_history(
+          "El usuario " +
+            store.me.role +
+            " " +
+            store.me.user_name +
+            " ha eliminado o ha intentado eliminar el link id N° " +
+            link_id,
+          null,
+          null,
+          null,
+          null,
+          today,
+          null
+        );
         try {
           const response = await fetch(
             import.meta.env.VITE_API_URL + "/delete_link",
@@ -2166,7 +2363,20 @@ const getState = ({ getStore, getActions, setStore }) => {
         const actions = getActions();
         const asset_id = id;
         const store = getStore();
-        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha eliminado o ha intentado eliminar el activo id N° " + asset_id, null, null,null,null,today, null);
+        actions.add_history(
+          "El usuario " +
+            store.me.role +
+            " " +
+            store.me.user_name +
+            " ha eliminado o ha intentado eliminar el activo id N° " +
+            asset_id,
+          null,
+          null,
+          null,
+          null,
+          today,
+          null
+        );
         try {
           const response = await fetch(
             import.meta.env.VITE_API_URL + "/delete_asset",
@@ -2199,7 +2409,20 @@ const getState = ({ getStore, getActions, setStore }) => {
         const actions = getActions();
         const userMB_id = id;
         const store = getStore();
-        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha eliminado o ha intentado eliminar el usuarioMB id N° " + userMB_id, null, null,null,null,today, null);
+        actions.add_history(
+          "El usuario " +
+            store.me.role +
+            " " +
+            store.me.user_name +
+            " ha eliminado o ha intentado eliminar el usuarioMB id N° " +
+            userMB_id,
+          null,
+          null,
+          null,
+          null,
+          today,
+          null
+        );
         try {
           const response = await fetch(
             import.meta.env.VITE_API_URL + "/delete_userMB",
@@ -2232,7 +2455,20 @@ const getState = ({ getStore, getActions, setStore }) => {
         const actions = getActions();
         const migration_id = id;
         const store = getStore();
-        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha eliminado o ha intentado eliminar la migración id N° " + migration_id, null, null,null,null,today, null);
+        actions.add_history(
+          "El usuario " +
+            store.me.role +
+            " " +
+            store.me.user_name +
+            " ha eliminado o ha intentado eliminar la migración id N° " +
+            migration_id,
+          null,
+          null,
+          null,
+          null,
+          today,
+          null
+        );
         try {
           const response = await fetch(
             import.meta.env.VITE_API_URL + "/delete_migration",
@@ -2265,7 +2501,20 @@ const getState = ({ getStore, getActions, setStore }) => {
         const actions = getActions();
         const message_id = id;
         const store = getStore();
-        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha eliminado o ha intentado eliminar el mensaje id N° " + message_id, null, null,null,null,today, null);
+        actions.add_history(
+          "El usuario " +
+            store.me.role +
+            " " +
+            store.me.user_name +
+            " ha eliminado o ha intentado eliminar el mensaje id N° " +
+            message_id,
+          null,
+          null,
+          null,
+          null,
+          today,
+          null
+        );
         try {
           const response = await fetch(
             import.meta.env.VITE_API_URL + "/delete_message",
@@ -2298,7 +2547,20 @@ const getState = ({ getStore, getActions, setStore }) => {
         const actions = getActions();
         const history_id = id;
         const store = getStore();
-        actions.add_history("El usuario " + store.me.role + " " + store.me.user_name + " ha eliminado o ha intentado eliminar el mensaje id N° " + history_id, null, null,null,null,today, null);
+        actions.add_history(
+          "El usuario " +
+            store.me.role +
+            " " +
+            store.me.user_name +
+            " ha eliminado o ha intentado eliminar el mensaje id N° " +
+            history_id,
+          null,
+          null,
+          null,
+          null,
+          today,
+          null
+        );
         try {
           const response = await fetch(
             import.meta.env.VITE_API_URL + "/delete_history",
