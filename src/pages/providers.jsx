@@ -6,6 +6,11 @@ import { CreateProviders } from "../components/CreateProviders.jsx";
 import { EditProviders } from "../components/EditProviders.jsx";
 import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
 import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
+import { EyeIcon } from "../assets/icons/EyeIcon.jsx";
+import { CloseIcon } from "../assets/icons/CloseIcon.jsx";
+
+
+
 import {
   Button,
   Table,
@@ -16,6 +21,8 @@ import {
   TableColumn,
   Input,
   Pagination,
+  Accordion,
+  AccordionItem,
 } from "@nextui-org/react";
 
 export const Providers = () => {
@@ -25,7 +32,6 @@ export const Providers = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(1);
- 
 
   const filteredProviders = useMemo(() => {
     let filteredProviders = [...store.providers];
@@ -96,10 +102,6 @@ export const Providers = () => {
     </div>
   );
 
-
- 
-
-
   useEffect(() => {
     const jwt = localStorage.getItem("token");
     if (!jwt) {
@@ -107,7 +109,7 @@ export const Providers = () => {
       return;
     }
     actions.getMe();
-    actions.getProviders()
+    actions.getProviders();
     actions.getBranchs();
   }, []);
 
@@ -132,6 +134,7 @@ export const Providers = () => {
           <TableColumn>Nombre</TableColumn>
           <TableColumn>RFC</TableColumn>
           <TableColumn>Servicio</TableColumn>
+          <TableColumn>Ingenieros de Campo</TableColumn>
           <TableColumn>Acciones</TableColumn>
         </TableHeader>
         <TableBody>
@@ -141,6 +144,24 @@ export const Providers = () => {
               <TableCell>{provider.company_name}</TableCell>
               <TableCell>{provider.rfc}</TableCell>
               <TableCell>{provider.service}</TableCell>
+              <TableCell>
+                {provider.engineers.length ? (
+                  <Accordion>
+                    <AccordionItem 
+                    textValue="Ingenieros de Campo"
+                    key={provider.id} 
+                    subtitle={"Ingenieros de Campo (" + provider.engineers.length + ")"}
+                    indicator={({ isOpen }) => (isOpen ? <CloseIcon  className="h-6 w-6"  /> : <EyeIcon className="h-6 w-6" />)}
+                    >
+                      {provider.engineers.map((engineer, index) => (
+                        <p key={engineer.id}>{index+1} - {engineer.names} {engineer.last_names}</p>
+                      ))}
+                    </AccordionItem>
+                  </Accordion>
+                ) : (
+                  "Sin Ingenieros"
+                )}
+              </TableCell>
               <TableCell>
                 <div className="flex justify-center">
                   <Button

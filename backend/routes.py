@@ -145,6 +145,7 @@ def create_engineer():
     last_names = body.get("last_names", None)
     employee_number = body.get("employee_number", None)
     subzone = body.get("subzone", None)
+    provider_id = body.get("provider_id", None)
     is_active = body.get("is_active", None)
     role = body.get("role", "Ingeniero de Campo")
     user_id = body.get("user_id", None)
@@ -162,12 +163,15 @@ def create_engineer():
         return jsonify({"error": "Ese número de empleado ya está siendo utilizado"}), 400
     if Engineer.query.filter_by(employee_number=employee_number).first() is not None:
         return jsonify({"error": "Ese número de empleado ya está siendo utilizado"}), 400
-    if user_name is None or password is None or names is None or last_names is None or employee_number is None or subzone is None or is_active is None or role is None:
+    provider = Provider.query.get(provider_id)
+    if provider is None:
+        return jsonify({"error": "proveedor no encontrado"}), 404
+    if user_name is None or password is None or names is None or last_names is None or employee_number is None or subzone is None or provider_id is None or is_active is None or role is None:
         return jsonify({"error": "Todos los campos son requeridos"}), 400
     password_hash = generate_password_hash(password)
 
     try:
-        new_engineer = Engineer(user_name=user_name, password=password_hash, names=names, last_names=last_names, employee_number=employee_number, subzone=subzone, is_active=is_active, role=role, user_id=user_id, admins_id=admins_id)
+        new_engineer = Engineer(user_name=user_name, password=password_hash, names=names, last_names=last_names, employee_number=employee_number, subzone=subzone, provider_id=provider_id, is_active=is_active, role=role, user_id=user_id, admins_id=admins_id)
         db.session.add(new_engineer)
         db.session.commit()
         return jsonify({"new_engineer": new_engineer.serialize()}), 201
@@ -354,6 +358,23 @@ def get_history_by_message_id(message_id):
     return jsonify({"history": history_data}), 200
 
 
+#GET MIGRATION BY PROVIDER ID
+
+@api_blueprint.route('/migration/<int:provider_id>', methods=['GET'])
+def get_migration_by_provider_id(provider_id):
+    migration = Migration.query.filter_by(provider_id=provider_id).order_by(Migration.id.asc()).all()
+    migration_data = [migration.serialize() for migration in migration]
+    return jsonify({"migration": migration_data}), 200
+
+#GET MIGRATION BY BRANCH ID
+
+@api_blueprint.route('/migration/<int:branch_id>', methods=['GET'])
+def get_migration_by_branch_id(branch_id):
+    migration = Migration.query.filter_by(branch_id=branch_id).order_by(Migration.id.asc()).all()
+    migration_data = [migration.serialize() for migration in migration]    
+    return jsonify({"migration": migration_data}), 200  
+
+
 # GET USER BY ID
 
 @api_blueprint.route('/user/<int:id>', methods=['GET'])
@@ -482,7 +503,6 @@ def add_provider():
     service = body.get("service", None)
     user_id = body.get("user_id", None)
     admins_id = body.get("admins_id", None)
-    engineer_id = body.get("engineer_id", None)
 
     if Provider.query.filter_by(company_name=company_name).first() is not None:
         return jsonify({"error": "Ese nombre de Proveedor ya esta siendo utilizado"}), 400
@@ -493,7 +513,7 @@ def add_provider():
         return jsonify({"error": "Todos los campos son requeridos"}), 400
     
     try:
-        new_provider = Provider(company_name=company_name, rfc=rfc, service=service, user_id=user_id, admins_id=admins_id, engineer_id=engineer_id, branch_id=branch.id)
+        new_provider = Provider(company_name=company_name, rfc=rfc, service=service, user_id=user_id, admins_id=admins_id, branch_id=branch.id)
         db.session.add(new_provider)
         db.session.commit()
         return jsonify({"new_provider": new_provider.serialize()}), 201
@@ -809,6 +829,7 @@ def edit_engineer():
         user.last_names = body.get("last_names", user.last_names)
         user.employee_number = body.get("employee_number", user.employee_number)
         user.subzone = body.get("subzone", user.subzone)
+        user.provider_id = body.get("provider_id", user.provider_id)
         user.role = body.get("role", user.role)
     
         db.session.commit()
@@ -870,7 +891,6 @@ def edit_provider():
         provider.service = body.get("service", provider.service)
         provider.user_id = body.get("user_id", provider.user_id)
         provider.admins_id = body.get("admins_id", provider.admins_id)
-        provider.engineer_id = body.get("engineer_id", provider.engineer_id)
         
         db.session.commit()
         return jsonify({"message": "Provider updated successfully"}), 200

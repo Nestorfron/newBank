@@ -155,6 +155,8 @@ export const FormMigrations = ({
       return;
     }
     actions.getMigrations();
+    actions.getProviders();
+    actions.getBranchs();
     actions.getMe();
     addId();
     if (initialMigration) {

@@ -75,7 +75,6 @@ class Admins(db.Model):
         return {
             "id": self.id,
             "user_name": self.user_name,
-            "password": self.password,
             "names": self.names,
             "last_names": self.last_names,
             "employee_number": self.employee_number,
@@ -123,7 +122,6 @@ class Engineer(db.Model):
         return {
             "id": self.id,
             "user_name": self.user_name,
-            "password": self.password,
             "names": self.names,
             "last_names": self.last_names,
             "employee_number": self.employee_number,
@@ -153,9 +151,9 @@ class Provider(db.Model):
     links = db.relationship('Link', backref='provider', lazy=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
-    admins_id = db.Column(db.Integer, db.ForeignKey('admins.id'), nullable=True)
-    engineer_id = db.Column(db.Integer, db.ForeignKey('engineer.id'), nullable=True)  
+    admins_id = db.Column(db.Integer, db.ForeignKey('admins.id'), nullable=True)  
     branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'), nullable=True)
+    engineer_id = db.Column(db.Integer, db.ForeignKey('engineer.id'), nullable=True)
 
     def __repr__(self):
         return f'<Provider {self.company_name}>'
@@ -168,7 +166,7 @@ class Provider(db.Model):
             "rfc": self.rfc,
             "user_id": self.user_id,
             "admins_id": self.admins_id,
-            "engineer_id": self.engineer_id,  
+            "engineer.id" : self.engineer_id, 
             "service": self.service,
             "assets": [asset.serialize() for asset in self.assets],
             "messages": [message.serialize() for message in self.messages],

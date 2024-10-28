@@ -57,7 +57,7 @@ export const Dashboard = () => {
   }, []);
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container-fluid mx-auto p-4">
       <div className="flex gap-2 items-center justify-center  mb-4 mt-3 ">
         <Input
           isClearable
@@ -175,7 +175,7 @@ export const Dashboard = () => {
             </CardBody>
           </Card>
         </div>
-        <div className="row-span-2 col-start-4 row-start-1">
+        <div className="lg:pt-0 pt-0.5 row-span-2 col-start-4 row-start-1">
           <Card className="border-1 m-2 h-[187px]">
             <CardHeader className="absolute z-10 top-1 flex-col">
               <div className="flex justify-between w-full">

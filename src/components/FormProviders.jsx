@@ -18,7 +18,6 @@ export const FormProviders = ({
     service: "",
     user_id: null,
     admins_id: null,
-    engineer_id: null,
   });
   const [branch, setBranch] = useState("");
 
@@ -64,7 +63,6 @@ export const FormProviders = ({
             provider.service,
             provider.user_id,
             provider.admins_id,
-            provider.engineer_id
           )
         : await actions.add_provider(
             provider.branch_id,
@@ -73,7 +71,6 @@ export const FormProviders = ({
             provider.service,
             provider.user_id,
             provider.admins_id,
-            provider.engineer_id
           );
 
       Swal.fire({
@@ -92,7 +89,6 @@ export const FormProviders = ({
           service: "",
           user_id: null,
           admins_id: null,
-          engineer_id: null,
         });
       }
     } catch (error) {
@@ -133,7 +129,6 @@ export const FormProviders = ({
         service: initialProvider.service || "",
         user_id: initialProvider.user_id || null,
         admins_id: initialProvider.admins_id || null,
-        engineer_id: initialProvider.engineer_id || null,
       });
     }
   }, []);

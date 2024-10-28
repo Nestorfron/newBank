@@ -15,6 +15,8 @@ const getState = ({ getStore, getActions, setStore }) => {
       assets: [],
       usersMB: [],
       migrations: [],
+      migrationsByUserId: [],
+      providerMigrations: [],
       branch: [],
       provider: [],
       link: [],
@@ -196,23 +198,13 @@ const getState = ({ getStore, getActions, setStore }) => {
         last_names,
         employee_number,
         subzone,
+        provider_id,
         is_active,
         role,
         user_id,
         admins_id
       ) => {
-        console.log(
-          user_name,
-          password,
-          names,
-          last_names,
-          employee_number,
-          subzone,
-          is_active,
-          role,
-          user_id,
-          admins_id
-        );
+        console.log(user_name, password, names, last_names, employee_number, subzone, provider_id, is_active, role, user_id, admins_id);
         const jwt = localStorage.getItem("token");
         const actions = getActions();
         const store = getStore();
@@ -232,6 +224,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                 last_names,
                 employee_number,
                 subzone,
+                provider_id,
                 is_active,
                 role,
                 user_id,
@@ -587,6 +580,56 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log(error);
         }
       },
+
+      //GET MIGRATION BY PROVIDER ID
+
+      getMigrationByProviderId: async (providerId) => {
+        const jwt = localStorage.getItem("token");
+
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/migration/" + providerId,
+            {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${jwt}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            console.log(data);
+            setStore({ migrationsByUserId: data.migration });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      //GET MIGRATION BY BRANCH ID
+
+      getMigrationByBranchId: async (branchId) => {
+        const jwt = localStorage.getItem("token");
+
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/migration/" + branchId,
+            {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${jwt}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            console.log(data);
+            setStore({ providerMigrations: data.migration });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },  
 
       //GET ALL HISTORY BY USER ID
 
@@ -1136,7 +1179,6 @@ const getState = ({ getStore, getActions, setStore }) => {
         service,
         user_id,
         admins_id,
-        engineer_id
       ) => {
         const jwt = localStorage.getItem("token");
         const actions = getActions();
@@ -1156,7 +1198,6 @@ const getState = ({ getStore, getActions, setStore }) => {
               service,
               user_id,
               admins_id,
-              engineer_id,
             }),
           }
         );
@@ -1675,6 +1716,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         last_names,
         employee_number,
         subzone,
+        provider_id,
         is_active,
         role
       ) => {
@@ -1698,6 +1740,7 @@ const getState = ({ getStore, getActions, setStore }) => {
               last_names,
               employee_number,
               subzone,
+              provider_id,
               is_active,
               role,
             }),
