@@ -262,6 +262,42 @@ class Branch(db.Model):
             "links": [link.serialize() for link in self.links]
         }
     
+class UserMB(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    role = db.Column(db.String(50), unique=False, nullable=False)
+    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+    names = db.Column(db.String(50), unique=False, nullable=False)
+    last_names = db.Column(db.String(50), unique=False, nullable=False)
+    employee_number = db.Column(db.String(20), unique=True, nullable=False)
+    extension_phone = db.Column(db.String(50), unique=False, nullable=False)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'), nullable=True)
+    admins_id = db.Column(db.Integer, db.ForeignKey('admins.id'), nullable=True)
+    engineer_id = db.Column(db.Integer, db.ForeignKey('engineer.id'), nullable=True) 
+
+    assets = db.relationship('Assets', backref='user_mbs', lazy=True)
+
+    def __repr__(self):
+        return f'<UserMB {self.user_name_MB}>'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "role": self.role,
+            "is_active": self.is_active,
+            "names": self.names,
+            "last_names": self.last_names,
+            "employee_number": self.employee_number,
+            "extension_phone": self.extension_phone,
+            "branch_id": self.branch_id,
+            "user_id": self.user_id,
+            "admins_id": self.admins_id,
+            "engineer_id": self.engineer_id,
+            "assets": [asset.serialize() for asset in self.assets]
+        }
+
+    
 
 class Assets(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -277,9 +313,9 @@ class Assets(db.Model):
     branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'), nullable=True)
     migration_id = db.Column(db.Integer, db.ForeignKey('migration.id'), nullable=True)
     provider_id = db.Column(db.Integer, db.ForeignKey('provider.id'), nullable=True)
+    user_mb_id = db.Column(db.Integer, db.ForeignKey('user_mb.id'), nullable= True)
     
     history = db.relationship('History', backref='assets', lazy=True)
-    users_mb = db.relationship('UserMB', backref='assets', lazy=True)
 
     def __repr__(self):
         return f'<Assets {self.asset_type}>'
@@ -298,44 +334,11 @@ class Assets(db.Model):
             "branch_id": self.branch_id,
             "provider_id": self.provider_id,
             "migration_id": self.migration_id,
-            "users_mb": [userMB.serialize() for userMB in self.users_mb],
+            "user_mb_id": self.user_mb_id,
             "history": [history.serialize() for history in self.history]
         }
     
     
-class UserMB(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    role = db.Column(db.String(50), unique=False, nullable=False)
-    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
-    names = db.Column(db.String(50), unique=False, nullable=False)
-    last_names = db.Column(db.String(50), unique=False, nullable=False)
-    employee_number = db.Column(db.String(20), unique=True, nullable=False)
-    extension_phone = db.Column(db.String(50), unique=False, nullable=False)
-
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
-    asset_id = db.Column(db.Integer, db.ForeignKey('assets.id'), nullable=True)
-    branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'), nullable=True)
-    admins_id = db.Column(db.Integer, db.ForeignKey('admins.id'), nullable=True)
-    engineer_id = db.Column(db.Integer, db.ForeignKey('engineer.id'), nullable=True)  
-
-    def __repr__(self):
-        return f'<UserMB {self.user_name_MB}>'
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "role": self.role,
-            "is_active": self.is_active,
-            "names": self.names,
-            "last_names": self.last_names,
-            "employee_number": self.employee_number,
-            "extension_phone": self.extension_phone,
-            "branch_id": self.branch_id,
-            "user_id": self.user_id,
-            "asset_id": self.asset_id,
-            "admins_id": self.admins_id,
-            "engineer_id": self.engineer_id  
-        }
     
 
 class Message(db.Model):
