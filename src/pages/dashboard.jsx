@@ -26,6 +26,7 @@ import {
 } from "@nextui-org/react";
 import Map from "../components/Map.jsx";
 import BranchDetails from "../components/branchDetails.jsx";
+import { use } from "framer-motion/client";
 
 export const Dashboard = () => {
   const { store, actions } = useContext(Context);
@@ -33,6 +34,15 @@ export const Dashboard = () => {
   const navigate = useNavigate();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [selectedKeys, setSelectedKeys] = React.useState(new Set(["text"]));
+  const [selectedBranch, setSelectedBranch] = useState(null);
+
+
+  const handleBranchChange = (value) => {
+    console.log("Valor ingresado en el input de búsqueda:", value);
+    const selected = store.branchs.find(branch => branch.branch_cr === value);
+    setSelectedBranch(selected);
+    console.log("Sucursal seleccionada:", selected);
+  };
 
   const selectedValue = React.useMemo(
     () => Array.from(selectedKeys).join(", "),
@@ -54,6 +64,7 @@ export const Dashboard = () => {
     }
     actions.getMe();
     actions.getBranchs();
+    actions.getAssets();
   }, []);
 
   return (
@@ -62,9 +73,7 @@ export const Dashboard = () => {
         <Input
           isClearable
           placeholder="Buscar por Cr..."
-          // value={filterValue}
-          // onClear={() => setFilterValue("")}
-          // onValueChange={setFilterValue}
+          onChange={(e) => handleBranchChange(e.target.value)}
           className="w-[300px]"
           startContent={<SearchIcon />}
         />
@@ -85,7 +94,7 @@ export const Dashboard = () => {
             <CardBody className="flex justify-end items-start flex w-full">
               {" "}
               <div className="ml-5 mb-5 ">
-                <span className="  text-3xl"> 1</span>
+                <span className="  text-3xl"> {selectedBranch ? store.assets.filter(asset => asset.asset_type === "Servidor" && asset.branch_id === selectedBranch.id).length : 0}</span>
               </div>
             </CardBody>
           </Card>
@@ -150,7 +159,7 @@ export const Dashboard = () => {
             <CardBody className="flex justify-end items-start flex w-full">
               {" "}
               <div className="ml-5 mb-5 ">
-                <span className="  text-3xl"> 20</span>
+                <span className="  text-3xl">{selectedBranch ? store.assets.filter(asset => asset.asset_type === "Estaciones de trabajo" && asset.branch_id === selectedBranch.id).length : 0}</span>
               </div>
             </CardBody>
           </Card>
@@ -170,7 +179,7 @@ export const Dashboard = () => {
             <CardBody className="flex justify-end items-start flex w-full">
               {" "}
               <div className="ml-5 mb-5 ">
-                <span className="  text-3xl"> 2</span>
+                <span className="  text-3xl"> {selectedBranch ? store.assets.filter(asset => asset.asset_type === "Impresora" && asset.branch_id === selectedBranch.id).length : 0}</span>
               </div>
             </CardBody>
           </Card>
@@ -188,7 +197,7 @@ export const Dashboard = () => {
             <CardBody className="flex justify-end items-start flex w-full">
               {" "}
               <div className="ml-5 mb-5 ">
-                <span className="  text-3xl"> 2</span>
+                <span className="  text-3xl"> {selectedBranch ? store.assets.filter(asset => asset.asset_type === "Wi-Fi" && asset.branch_id === selectedBranch.id).length : 0}</span>
               </div>
             </CardBody>
           </Card>
@@ -207,7 +216,7 @@ export const Dashboard = () => {
             <CardBody className="flex justify-end items-start flex w-full">
               {" "}
               <div className="ml-5 mb-5 ">
-                <span className="  text-3xl"> 2</span>
+                <span className="  text-3xl">{selectedBranch ? store.assets.filter(asset => asset.asset_type === "Enlaces" && asset.branch_id === selectedBranch.id).length : 0}</span>
               </div>
             </CardBody>
           </Card>
