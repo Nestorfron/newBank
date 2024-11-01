@@ -566,6 +566,7 @@ def add_asset():
     branch_id = body.get("branch_id", None)
     migration_id = body.get("migration_id", None)
     provider_id = body.get("provider_id", None)
+    user_mb_id = body.get("user_mb_id", None)
     user_id = body.get("user_id", None)
     admins_id = body.get("admins_id", None)
     engineer_id = body.get("engineer_id", None)
@@ -579,7 +580,7 @@ def add_asset():
     if asset_type is None or asset_brand is None or asset_model is None or asset_serial is None or asset_inventory_number is None or provider_id is None:
         return jsonify({"error": "faltan datos"}), 400
     try:
-        new_asset = Assets(asset_type=asset_type, asset_brand=asset_brand, asset_model=asset_model, asset_serial=asset_serial, asset_inventory_number=asset_inventory_number, branch_id=branch_id, migration_id=migration_id, provider_id=provider.id, user_id=user_id, admins_id=admins_id, engineer_id=engineer_id)
+        new_asset = Assets(asset_type=asset_type, asset_brand=asset_brand, asset_model=asset_model, asset_serial=asset_serial, asset_inventory_number=asset_inventory_number, branch_id=branch_id, migration_id=migration_id, provider_id=provider.id, user_mb_id=user_mb_id, user_id=user_id, admins_id=admins_id, engineer_id=engineer_id)
         db.session.add(new_asset)
         db.session.commit()
         return jsonify({"new_asset": new_asset.serialize()}), 201
@@ -952,6 +953,9 @@ def edit_asset():
         asset.asset_model = body.get("asset_model", asset.asset_model)
         asset.asset_serial = body.get("asset_serial", asset.asset_serial)
         asset.asset_inventory_number = body.get("asset_inventory_number", asset.asset_inventory_number)
+        asset.user_mb_id = body.get("user_mb_id", asset.user_mb_id)
+        asset.branch_id = body.get("branch_id", asset.branch_id)
+        asset.migration_id = body.get("migration_id", asset.migration_id)
         asset.user_id = body.get("user_id", asset.user_id)
         asset.admins_id = body.get("admins_id", asset.admins_id)
         asset.engineer_id = body.get("engineer_id", asset.engineer_id)

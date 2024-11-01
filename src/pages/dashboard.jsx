@@ -53,10 +53,10 @@ export const Dashboard = () => {
 
 
   useEffect(() => {
-    if (store.me.role === "ingeniero de Campo") {
+    actions.getMe();
+    if (store.me.role === "Ingeniero de Campo") {
       navigate("/engenieerDashboard");
-      return;
-    } 
+    }
     const jwt = localStorage.getItem("token");
     if (!jwt) {
       navigate("/");

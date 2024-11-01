@@ -16,6 +16,8 @@ const getState = ({ getStore, getActions, setStore }) => {
       usersMB: [],
       migrations: [],
       migrationsByUserId: [],
+      migrationByProviderId: [],
+      migrationByBranchId: [],
       providerMigrations: [],
       branch: [],
       provider: [],
@@ -254,6 +256,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       //LOGIN
 
       login: async (user_name, password) => {
+        const actions = getActions();
         try {
           const response = await fetch(
             import.meta.env.VITE_API_URL + "/signin",
@@ -270,6 +273,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
           const data = await response.json();
           localStorage.setItem("token", data.token);
+          actions.getMe();
           return true;
         } catch (error) {
           console.log(error);
@@ -301,6 +305,8 @@ const getState = ({ getStore, getActions, setStore }) => {
           if (response.ok) {
             setStore({ me: data });
           }
+          console.log(data);
+          return data;
         } catch (error) {
           console.log(error);
         }
@@ -598,8 +604,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
-            setStore({ migrationsByUserId: data.migration });
+            setStore({ migrationsByProviderId: data.migration });
           }
         } catch (error) {
           console.log(error);
@@ -624,7 +629,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           const data = await response.json();
           if (response.ok) {
             console.log(data);
-            setStore({ providerMigrations: data.migration });
+            setStore({ migrationByProviderId: data.migration });
           }
         } catch (error) {
           console.log(error);
@@ -1295,7 +1300,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         user_id,
         admins_id,
         engineer_id,
-        migration_id
+        migration_id,
+        user_mb_id
       ) => {
         const jwt = localStorage.getItem("token");
         const actions = getActions();
@@ -1320,6 +1326,7 @@ const getState = ({ getStore, getActions, setStore }) => {
               admins_id,
               engineer_id,
               migration_id,
+              user_mb_id,
             }),
           }
         );
@@ -1950,7 +1957,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         user_id,
         admins_id,
         engineer_id,
-        migration_id
+        migration_id,
+        user_mb_id
       ) => {
         const asset_id = id;
         const jwt = localStorage.getItem("token");
@@ -1978,6 +1986,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                 admins_id,
                 engineer_id,
                 migration_id,
+                user_mb_id,
               }),
             }
           );

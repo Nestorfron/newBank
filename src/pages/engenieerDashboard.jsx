@@ -1,7 +1,7 @@
 import React, { useContext, useState, useMemo, useEffect } from "react";
 import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
-import { Button, Table, TableBody, TableCell, TableHeader, TableRow, TableColumn, Input, Pagination } from "@nextui-org/react";
+import { Button, Table, TableBody, TableCell, TableHeader, TableRow, TableColumn, Input, Pagination, Chip } from "@nextui-org/react";
 import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
 import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
 import { CreateMigrations } from "../components/CreateMigration.jsx";
@@ -17,12 +17,22 @@ export const EngenieerDashboard = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(1); 
+  const [user, setUser] = useState("");
+
 
   useTokenExpiration();
 
   const me = store.me;
 
-  const migrations = store.providerMigrations;
+  const getMigrationsByProviderId = () => {
+    const user = store.engineers.find(
+      (user) => user.id === me.id
+    );
+    actions.getMigrationByProviderId(user.provider_id);
+  };
+
+  const migrations = store.migrationsByProviderId;
+
 
 
   const formatDate = (dateString) => {
@@ -101,13 +111,17 @@ export const EngenieerDashboard = () => {
   };
 
   useEffect(() => {
+    if (me.role !== "Ingeniero de Campo") {
+      navigate("/dashboard");}
     const jwt = localStorage.getItem("token");
     if (!jwt) {
       navigate("/");
       return;
     }
     actions.getMe();
-    actions.getMigrations();
+    actions.getMigrations();;
+    actions.getEngineers();
+    getMigrationsByProviderId();    
   }, []);
 
   return (
@@ -132,6 +146,7 @@ export const EngenieerDashboard = () => {
             <TableColumn>Fecha de Instalación</TableColumn>
             <TableColumn>Fecha de Migración</TableColumn>
             <TableColumn>Descripción de Migración</TableColumn>
+            <TableColumn>Activos</TableColumn>
             <TableColumn>Estado de Migración</TableColumn>
             <TableColumn>Acciones</TableColumn>
           </TableHeader>
@@ -142,7 +157,17 @@ export const EngenieerDashboard = () => {
                 <TableCell>{formatDate(migration.installation_date)}</TableCell>
                 <TableCell>{formatDate(migration.migration_date)}</TableCell>
                 <TableCell>{migration.migration_description}</TableCell>
-                <TableCell>{migration.migration_status}</TableCell>
+                <TableCell>{migration.assets.length > 0 ? migration.assets.map(asset => asset.asset_type).join(", ") : "Sin Activos"}</TableCell>
+                <TableCell className="capitalize">
+                  <Chip
+                    color={statusColorMap[migration.migration_status]}
+                    status={migration.migration_status}
+                  >
+                    {migration.migration_status === "Ordered" ? "Ordenada" : ""}
+                    {migration.migration_status === "In_progress" ? "En proceso" : ""}
+                    {migration.migration_status === "Completed" ? "Completada" : ""}
+                  </Chip>
+                </TableCell>
                 <TableCell>
                   <div className="flex justify-center">
                     <EditMigrations migration={migration} />

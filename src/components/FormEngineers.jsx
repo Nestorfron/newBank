@@ -30,7 +30,7 @@ export const FormEngineers = ({ id, btnEngineer, engineer: initialEngineer }) =>
   });
   const [provider, setProvider] = useState("");
 
-  const role = ["Imgeniero de Campo"]
+  const role = ["Ingeniero de Campo"]
 
   const [loading, setLoading] = useState(false);
 

@@ -51,7 +51,7 @@ export const Navbar = () => {
           disabled={!jwt}
           className="flex justify-start items-center gap-1 "
           color="foreground"
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate(user.role === "Ingeniero de Campo" ? "/engenieerDashboard" : "/dashboard")}
         >
           <Avatar src={img} alt="DR-App" />
         </button>
@@ -62,7 +62,7 @@ export const Navbar = () => {
           <NavbarContent>
             <NavbarItem>
               <Button
-                isDisabled={!jwt}
+                isDisabled={!jwt || user.role === "Ingeniero de Campo"}
                 onClick={() => navigate("/users")}
                 variant="link"
               >
@@ -71,7 +71,7 @@ export const Navbar = () => {
             </NavbarItem>
             <NavbarItem className="gap-2">
               <Button
-                isDisabled={!jwt}
+                isDisabled={!jwt || user.role === "Ingeniero de Campo"}
                 onClick={() => navigate("/branches")}
                 variant="link"
               >
@@ -80,7 +80,7 @@ export const Navbar = () => {
             </NavbarItem>
             <NavbarItem>
               <Button
-                isDisabled={!jwt}
+                isDisabled={!jwt || user.role === "Ingeniero de Campo"}
                 onClick={() => navigate("/providers")}
                 variant="link"
               >
@@ -89,7 +89,7 @@ export const Navbar = () => {
             </NavbarItem>
             <NavbarItem className="gap-2">  
               <Button
-                isDisabled={!jwt}
+                isDisabled={!jwt || user.role === "Ingeniero de Campo"}
                 onClick={() => navigate("/links")}
                 variant="link"
               >
@@ -98,7 +98,7 @@ export const Navbar = () => {
             </NavbarItem>
             <NavbarItem>
               <Button
-                isDisabled={!jwt}
+                isDisabled={!jwt || user.role === "Ingeniero de Campo"}
                 onClick={() => navigate("/assets")}
                 variant="link"
               >
@@ -107,7 +107,7 @@ export const Navbar = () => {
             </NavbarItem>
             <NavbarItem>
               <Button
-                isDisabled={!jwt}
+                isDisabled={!jwt || user.role === "Ingeniero de Campo"}
                 onClick={() => navigate("/usersMb")}
                 variant="link"
               >
@@ -116,7 +116,7 @@ export const Navbar = () => {
             </NavbarItem>
             <NavbarItem>
               <Button
-                isDisabled={!jwt}
+                isDisabled={!jwt || user.role === "Ingeniero de Campo"}
                 onClick={() => navigate("/migrations")}
                 variant="link"
               >
@@ -139,7 +139,7 @@ export const Navbar = () => {
         <ul>
           <li>
             <Button
-              disabled={!jwt}
+              disabled={!jwt || user.role === "Ingeniero de Campo"}
               onClick={() => navigate("/users")}
               variant="link"
             >
@@ -148,7 +148,7 @@ export const Navbar = () => {
           </li>
           <li className="gap-2">
             <Button
-              disabled={!jwt}
+              disabled={!jwt || user.role === "Ingeniero de Campo"}
               onClick={() => navigate("/branches")}
               variant="link"
             >
@@ -157,7 +157,7 @@ export const Navbar = () => {
           </li>
           <li>
             <Button
-              disabled={!jwt}
+              disabled={!jwt || user.role === "Ingeniero de Campo"}
               onClick={() => navigate("/providers")}
               variant="link"
             >
@@ -166,7 +166,7 @@ export const Navbar = () => {
           </li>
           <li className="gap-2">
             <Button
-              disabled={!jwt}
+              disabled={!jwt || user.role === "Ingeniero de Campo"}
               onClick={() => navigate("/links")}
               variant="link"
             >
@@ -175,7 +175,7 @@ export const Navbar = () => {
           </li>
           <li>
             <Button
-              disabled={!jwt}
+              disabled={!jwt || user.role === "Ingeniero de Campo"}
               onClick={() => navigate("/assets")}
               variant="link"
             >
@@ -184,7 +184,7 @@ export const Navbar = () => {
           </li>
           <li>
             <Button
-              disabled={!jwt}
+              disabled={!jwt || user.role === "Ingeniero de Campo"}
               onClick={() => navigate("/usersMb")}
               variant="link"
             >
@@ -193,7 +193,7 @@ export const Navbar = () => {
           </li>
           <li>
             <Button
-              disabled={!jwt}
+              disabled={!jwt || user.role === "Ingeniero de Campo"}
               onClick={() => navigate("/migrations")}
               variant="link"
             >
