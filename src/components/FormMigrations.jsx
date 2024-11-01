@@ -83,7 +83,9 @@ export const FormMigrations = ({
             migration.branch_id,
             migration.user_id,
             migration.admins_id,
-            migration.engineer_id
+            migration.engineer_id,
+            migration.asset_ids
+
           )
         : await actions.add_migration(
             migration.installation_date,
@@ -94,7 +96,8 @@ export const FormMigrations = ({
             migration.branch_id,
             migration.user_id,
             migration.admins_id,
-            migration.engineer_id
+            migration.engineer_id,
+            migration.asset_ids
           );
       Swal.fire({
         position: "center",
@@ -243,6 +246,21 @@ export const FormMigrations = ({
           {store.branchs.map((branch) => (
             <SelectItem key={branch.id} value={branch.id}>
               {branch.branch_cr}
+            </SelectItem>
+          ))}
+        </Select>
+        <Select
+          label="Assets"
+          selectionMode="multiple"
+          placeholder="Select assets"
+          selectedKeys={migration.asset_ids}
+          onSelectionChange={(keys) =>
+            setMigration({ ...migration, asset_ids: keys })
+          }
+        >
+          {store.assets.map((asset) => (
+            <SelectItem key={asset.id} value={asset.id}>
+              {`${asset.asset_type} ${asset.asset_brand} ${asset.asset_serial}`}
             </SelectItem>
           ))}
         </Select>

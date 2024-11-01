@@ -3,6 +3,7 @@ import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
+import { EyeIcon} from "../assets/icons/EyeIcon.jsx";
 import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
 import { CreateMigrations } from "../components/CreateMigration.jsx";
 import { EditMigrations } from "../components/EditMigrations.jsx";
@@ -16,8 +17,15 @@ import {
   TableColumn,
   Input,
   Pagination,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
 } from "@nextui-org/react";
 import useTokenExpiration from "../hooks/useTokenExpitarion.jsx";
+
 
 export const Migrations = () => {
   const { store, actions } = useContext(Context);
@@ -25,6 +33,15 @@ export const Migrations = () => {
   const [filterValue, setFilterValue] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [selectedAssets, setSelectedAssets] = useState([]);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  const handleOpenModal = (assets) => {
+    console.log(assets);
+    setSelectedAssets(assets);
+    onOpen();
+  };
+
   const [page, setPage] = useState(1);
 
   useTokenExpiration();
@@ -120,6 +137,7 @@ export const Migrations = () => {
     actions.getMigrations();
     actions.getBranchs();
     actions.getProviders();
+    actions.getAssets();
   }, []);
 
   return (
@@ -128,7 +146,7 @@ export const Migrations = () => {
         <span className="text-lg font-bold">Gestor de Migraciones</span>
       </div>
       <Table
-        aria-label="Tabla de migraciones"
+        aria-label="Tabla de sucursales"
         isHeaderSticky
         isStriped
         topContent={topContent}
@@ -144,27 +162,46 @@ export const Migrations = () => {
           <TableColumn>Fecha de Migración</TableColumn>
           <TableColumn>Descripción de Migración</TableColumn>
           <TableColumn>Estado de Migración</TableColumn>
+          <TableColumn>ID de Usuario</TableColumn>
+          <TableColumn>Proveedor</TableColumn>
+          <TableColumn>Sucursal</TableColumn>
+          <TableColumn>Activos</TableColumn>
           <TableColumn>Acciones</TableColumn>
         </TableHeader>
         <TableBody>
           {items.map((migration) => (
             <TableRow key={migration.id}>
               <TableCell>{migration.id}</TableCell>
-              <TableCell>{formatDate(migration.installation_date)}</TableCell>
-              <TableCell>{formatDate(migration.migration_date)}</TableCell>
+              <TableCell>
+                {new Date(migration.installation_date).toLocaleDateString()}
+              </TableCell>
+              <TableCell>
+                {new Date(migration.migration_date).toLocaleDateString()}
+              </TableCell>
               <TableCell>{migration.migration_description}</TableCell>
               <TableCell>{migration.migration_status}</TableCell>
+              <TableCell>{migration.user_id}</TableCell>
+              <TableCell>{migration.provider_id}</TableCell>
+              <TableCell>{migration.branch_id}</TableCell>
+              <TableCell>
+                <Button
+                  variant="link"
+                  color = "danger"
+                  onClick={() => handleOpenModal(migration.assets)}
+                >
+                  < EyeIcon />
+                </Button>
+              </TableCell>
               <TableCell>
                 <div className="flex justify-center">
-                 {store.me.role == "Master" ? 
-                    <Button variant="link" color="danger">
+                  <Button variant="link" color="danger">
                     <span
                       className="text-lg text-danger cursor-pointer"
                       onClick={() => deleteMigration(migration.id)}
                     >
                       <DeleteIcon />
                     </span>
-                  </Button>: null}
+                  </Button>
                   <EditMigrations migration={migration} />
                 </div>
               </TableCell>
@@ -172,6 +209,29 @@ export const Migrations = () => {
           ))}
         </TableBody>
       </Table>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader>Activos de Migracion</ModalHeader>
+              <ModalBody>
+                {selectedAssets.map((asset, index) => (
+                  <div key={index}>
+                    <p>Tipo: {asset.asset_type}</p>
+                    <p>Marca: {asset.asset_brand}</p>
+                    <p>Serial: {asset.asset_serial}</p>
+                  </div>
+                ))}
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Cerrar
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
 };

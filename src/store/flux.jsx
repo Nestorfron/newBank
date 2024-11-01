@@ -1420,7 +1420,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         branch_id,
         user_id,
         admins_id,
-        engineer_id
+        engineer_id,
+        asset_ids
       ) => {
         const jwt = localStorage.getItem("token");
         const actions = getActions();
@@ -1448,6 +1449,7 @@ const getState = ({ getStore, getActions, setStore }) => {
               user_id,
               admins_id,
               engineer_id,
+              asset_ids: Array.from(asset_ids),
             }),
           }
         );
