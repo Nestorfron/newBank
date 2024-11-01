@@ -22,13 +22,15 @@ export const FormEngineers = ({ id, btnEngineer, engineer: initialEngineer }) =>
     last_names: "",
     employee_number: "",
     subzone: "",
+    provider_id: null,
     is_active: "",
     role: "",
     user_id: null,
     admin_id: null,
   });
+  const [provider, setProvider] = useState("");
 
-  const role = ["Engineer"]
+  const role = ["Ingeniero de Campo"]
 
   const [loading, setLoading] = useState(false);
 
@@ -62,6 +64,7 @@ export const FormEngineers = ({ id, btnEngineer, engineer: initialEngineer }) =>
     });
 
     try {
+      console.log(engineer);
       const response = id
         ? await actions.editEngineer(
             id,
@@ -71,6 +74,7 @@ export const FormEngineers = ({ id, btnEngineer, engineer: initialEngineer }) =>
             engineer.last_names,
             engineer.employee_number,
             engineer.subzone,
+            engineer.provider_id,
             engineer.is_active,
             engineer.role,
             engineer.user_id,
@@ -83,6 +87,7 @@ export const FormEngineers = ({ id, btnEngineer, engineer: initialEngineer }) =>
             engineer.last_names,
             engineer.employee_number,
             engineer.subzone,
+            engineer.provider_id,
             engineer.is_active,
             engineer.role,
             engineer.user_id,
@@ -103,6 +108,7 @@ export const FormEngineers = ({ id, btnEngineer, engineer: initialEngineer }) =>
           last_names: "",
           employee_number: "",
           subzone: "",
+          provider_id: null,
           is_active: "",
           role: "",
           user_id: null,
@@ -120,6 +126,13 @@ export const FormEngineers = ({ id, btnEngineer, engineer: initialEngineer }) =>
     }
   };
 
+  const getProviderById = (providerId) => {
+    const Provider = store.providers.find(
+      (provider) => provider.id === providerId
+    );
+    setProvider(Provider);
+  };
+
   useEffect(() => {
     // const jwt = localStorage.getItem("token");
     // if (!jwt) {
@@ -127,15 +140,18 @@ export const FormEngineers = ({ id, btnEngineer, engineer: initialEngineer }) =>
     //   return;
     // }
     actions.getEngineers();
+    actions.getProviders();
     actions.getMe();
     addId();
     if (initialEngineer) {
+      getProviderById(initialEngineer.provider_id);
       setEngineer({
         user_name: initialEngineer.user_name || "",
         names: initialEngineer.names || "",
         last_names: initialEngineer.last_names || "",
         employee_number: initialEngineer.employee_number || "",
         subzone: initialEngineer.subzone || "",
+        provider_id: initialEngineer.provider_id || null,
         is_active: initialEngineer.is_active || false,
         role: initialEngineer.role || "",
         user_id: initialEngineer.user_id || null,
@@ -190,6 +206,20 @@ export const FormEngineers = ({ id, btnEngineer, engineer: initialEngineer }) =>
           onChange={handleChange}
           required
         />
+        <Select
+          label="Proveedor"
+          placeholder={provider ? provider.company_name : ""}
+          name="provider_id"
+          required
+          value={engineer.provider_id}
+          onChange={handleChange}
+        >
+          {store.providers.map((provider) => (
+            <SelectItem key={provider.id} value={provider.id}>
+              {provider.company_name}
+            </SelectItem>
+          ))}
+        </Select>
         <Select
           label="Rol"
           placeholder={engineer.role}

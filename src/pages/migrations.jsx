@@ -16,6 +16,7 @@ import {
   TableColumn,
   Input,
   Pagination,
+  Chip,
 } from "@nextui-org/react";
 import useTokenExpiration from "../hooks/useTokenExpitarion.jsx";
 
@@ -110,6 +111,13 @@ export const Migrations = () => {
     </div>
   );
 
+
+  const statusColorMap = {
+    Ordered: "danger",
+    In_progress: "warning",
+    Completed: "success",
+  };
+
   useEffect(() => {
     const jwt = localStorage.getItem("token");
     if (!jwt) {
@@ -143,6 +151,7 @@ export const Migrations = () => {
           <TableColumn>Fecha de Instalación</TableColumn>
           <TableColumn>Fecha de Migración</TableColumn>
           <TableColumn>Descripción de Migración</TableColumn>
+          <TableColumn>Activos</TableColumn>
           <TableColumn>Estado de Migración</TableColumn>
           <TableColumn>Acciones</TableColumn>
         </TableHeader>
@@ -153,7 +162,17 @@ export const Migrations = () => {
               <TableCell>{formatDate(migration.installation_date)}</TableCell>
               <TableCell>{formatDate(migration.migration_date)}</TableCell>
               <TableCell>{migration.migration_description}</TableCell>
-              <TableCell>{migration.migration_status}</TableCell>
+              <TableCell>{migration.assets.length > 0 ? migration.assets.map(asset => asset.asset_type).join(", ") : "Sin Activos"}</TableCell>
+              <TableCell className="capitalize">
+                <Chip
+                  color={statusColorMap[migration.migration_status]}
+                  status={migration.migration_status}
+                >
+                  {migration.migration_status === "Ordered" ? "Ordenada" : ""}
+                  {migration.migration_status === "In_progress" ? "En proceso" : ""}
+                  {migration.migration_status === "Completed" ? "Completada" : ""}
+                </Chip>
+              </TableCell>
               <TableCell>
                 <div className="flex justify-center">
                  {store.me.role == "Master" ? 

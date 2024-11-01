@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 import {
@@ -9,8 +9,13 @@ import {
   Select,
   SelectItem,
   Switch,
+ 
 } from "@nextui-org/react";
+import{
+  Plus,
+}from "lucide-react";
 import Swal from "sweetalert2";
+import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
 
 export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
   const { store, actions } = useContext(Context);
@@ -27,18 +32,59 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
     branch_id: null,
     asset_id: null,
     admins_id: null,
-    engineer_id: null,   
+    engineer_id: null,
   });
   const [branch, setBranch] = useState("");
-  const [asset, setAsset] = useState("");
+  const [selectedAssetId, setSelectedAssetId] = useState(""); 
   const role = ["Responsable", "Gerente", "Ejectuvido", "Cajero", "Otro"];
+  const [selectedAssets, setSelectedAssets] = useState([]);
 
-  
   const me = store.me;
 
   const [loading, setLoading] = useState(false);
 
-  const addId = ()  => {
+  
+  const filteredAssets = useMemo(() => {
+    const branchId = userMB.branch_id ? String(userMB.branch_id) : null;
+    const assets = store.assets.filter(
+      (asset) => String(asset.branch_id) === branchId
+    );
+    return assets.filter(
+      (asset) => !selectedAssets.some((selected) => selected.id === asset.id)
+    ); 
+  }, [store.assets, userMB.branch_id, selectedAssets]);
+
+  const handleBranchChange = (e) => {
+    const branchId = e.target.value;
+    setUserMB({ ...userMB, branch_id: branchId });
+    setBranch(store.branchs.find((branch) => branch.id === branchId));
+  };
+
+  const handleAddAsset = () => {
+    console.log("Selected Asset ID:", selectedAssetId);
+    console.log("Filtered Assets:", filteredAssets);
+
+    const assetToAdd = filteredAssets.find(
+      (asset) => asset.id === Number(selectedAssetId)
+    );
+    console.log("Asset to Add:", assetToAdd);
+
+    if (
+      assetToAdd &&
+      !selectedAssets.some((selected) => selected.id === assetToAdd.id)
+    ) {
+      setSelectedAssets([...selectedAssets, assetToAdd]);
+      setSelectedAssetId(""); 
+    } else {
+      console.log("El activo ya está en la lista o no se ha seleccionado uno.");
+    }
+  };
+
+  const handleRemoveAsset = (assetId) => {
+    setSelectedAssets(selectedAssets.filter((asset) => asset.id !== assetId));
+  };
+
+  const addId = () => {
     if (me.role === "Master") {
       setUserMB({ ...userMB, user_id: me.id });
     } else if (me.role === "Admin") {
@@ -46,7 +92,7 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
     } else if (me.role === "Ingeniero de Campo") {
       setUserMB({ ...userMB, engineer_id: me.id });
     }
-  }
+  };
 
   const handleChange = (e) => {
     setUserMB({ ...userMB, [e.target.name]: e.target.value });
@@ -62,18 +108,11 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
       title: "Cargando...",
       text: id
         ? "Espere mientras se actualiza el Usuario MB"
-        : "espere mientras se crea el Usuario MB",
+        : "Espere mientras se crea el Usuario MB",
       allowOutsideClick: false,
       showConfirmButton: false,
       didOpen: () => {
         Swal.showLoading();
-      },
-      customClass: {
-        container: "custom-container",
-        popup: "custom-popup",
-        title: "custom-title",
-        content: "custom-content",
-        confirmButton: "custom-confirm-button",
       },
     });
     try {
@@ -87,7 +126,7 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
             userMB.employee_number,
             userMB.extension_phone,
             userMB.branch_id,
-            userMB.asset_id,
+            selectedAssets.map((asset) => asset.id), 
             userMB.user_id,
             userMB.admins_id,
             userMB.engineer_id
@@ -100,7 +139,7 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
             userMB.employee_number,
             userMB.extension_phone,
             userMB.branch_id,
-            userMB.asset_id,
+            selectedAssets.map((asset) => asset.id), 
             userMB.user_id,
             userMB.admins_id,
             userMB.engineer_id
@@ -114,14 +153,8 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
           : "Usuario MB creado correctamente",
         showConfirmButton: false,
         timer: 1500,
-        customClass: {
-          container: "custom-container",
-          popup: "custom-popup",
-          title: "custom-title",
-          content: "custom-content",
-          confirmButton: "custom-confirm-button",
-        },
-      }).then(() => {});
+      });
+
       if (!id) {
         setUserMB({
           role: "",
@@ -136,37 +169,17 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
           admins_id: null,
           engineer_id: null,
         });
+        setSelectedAssets([]); 
       }
     } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Error",
         text: `Hubo un problema: ${error.message}`,
-        customClass: {
-          container: "custom-container",
-          popup: "custom-popup",
-          title: "custom-title",
-          content: "custom-content",
-          confirmButton: "custom-confirm-button",
-        },
       });
     } finally {
       setLoading(false);
     }
-  };
-
-  const getBranchById = (branchId) => {
-    const Branch = store.branchs.find(
-      (branch) => branch.id === branchId
-    );
-    setBranch(Branch);
-  };
-
-  const getAssetById = (assetId) => {
-    const Asset = store.assets.find(
-      (asset) => asset.id === assetId
-    );
-    setAsset(Asset);
   };
 
   useEffect(() => {
@@ -181,7 +194,6 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
     addId();
     if (initialUserMB) {
       getBranchById(initialUserMB.branch_id);
-      getAssetById(initialUserMB.asset_id);
       setUserMB({
         role: initialUserMB.role || "",
         is_active: initialUserMB.is_active || false,
@@ -197,8 +209,6 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
       });
     }
   }, []);
-
-
 
   return (
     <form onSubmit={handleSubmit}>
@@ -252,7 +262,7 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
           name="branch_id"
           required
           value={userMB.branch_id}
-          onChange={handleChange}
+          onChange={handleBranchChange}
         >
           {store.branchs.map((branch) => (
             <SelectItem key={branch.id} value={branch.id}>
@@ -262,19 +272,47 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
         </Select>
 
         <Select
-          label="Activo"
-          placeholder={asset ? asset.asset_inventory_number : ""}
+          placeholder="Selecciona un activo"
           name="asset_id"
-          required
-          value={userMB.asset_id}
-          onChange={handleChange}
+          value={selectedAssetId}
+          onChange={(e) => {
+            setSelectedAssetId(e.target.value);
+          }}
         >
-          {store.assets.map((asset) => (
-            <SelectItem key={asset.id} value={asset.id}>
-              {asset.asset_inventory_number}
-            </SelectItem>
-          ))}
+          {filteredAssets.length > 0 ? (
+            filteredAssets.map((asset) => (
+              <SelectItem key={asset.id} value={asset.id}>
+                {asset.asset_type}
+              </SelectItem>
+            ))
+          ) : (
+            <SelectItem disabled>No hay activos disponibles</SelectItem>
+          )}
         </Select>
+
+        <Button type="button" onClick={handleAddAsset} color="primary" size="md" >
+        <Plus />
+        </Button>
+
+        <ul className="list-disc pl-5">
+          {selectedAssets.length > 0 ? (
+            selectedAssets.map((asset) => (
+              <li key={asset.id} className="flex justify-between items-center">
+                <span>{asset.asset_type}</span>
+                <Button color="danger" size="xs" variant="link">
+                  <span
+                    className="text-lg text-danger cursor-pointer"
+                    onClick={() => handleRemoveAsset(asset.id)}
+                  >
+                    <DeleteIcon />
+                  </span>
+                </Button>
+              </li>
+            ))
+          ) : (
+            <li>No hay activos seleccionados.</li>
+          )}
+        </ul>
 
         <div className="flex items-center">
           <Switch

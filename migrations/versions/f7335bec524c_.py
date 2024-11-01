@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 6b946d5a6c23
+Revision ID: f7335bec524c
 Revises: 
-Create Date: 2024-10-26 18:16:08.574027
+Create Date: 2024-10-28 16:29:09.334945
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '6b946d5a6c23'
+revision = 'f7335bec524c'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -89,32 +89,12 @@ def upgrade():
     sa.Column('service', sa.String(length=50), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('admins_id', sa.Integer(), nullable=True),
-    sa.Column('engineer_id', sa.Integer(), nullable=True),
     sa.Column('branch_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['admins_id'], ['admins.id'], ),
     sa.ForeignKeyConstraint(['branch_id'], ['branch.id'], ),
-    sa.ForeignKeyConstraint(['engineer_id'], ['engineer.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('rfc')
-    )
-    op.create_table('link',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('type', sa.String(length=50), nullable=False),
-    sa.Column('description', sa.String(length=250), nullable=False),
-    sa.Column('speed', sa.String(length=50), nullable=False),
-    sa.Column('status', sa.String(length=50), nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=True),
-    sa.Column('admins_id', sa.Integer(), nullable=True),
-    sa.Column('engineer_id', sa.Integer(), nullable=True),
-    sa.Column('branch_id', sa.Integer(), nullable=True),
-    sa.Column('provider_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['admins_id'], ['admins.id'], ),
-    sa.ForeignKeyConstraint(['branch_id'], ['branch.id'], ),
-    sa.ForeignKeyConstraint(['engineer_id'], ['engineer.id'], ),
-    sa.ForeignKeyConstraint(['provider_id'], ['provider.id'], ),
-    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
-    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('migration',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -147,6 +127,26 @@ def upgrade():
     sa.Column('branch_id', sa.Integer(), nullable=True),
     sa.Column('migration_id', sa.Integer(), nullable=True),
     sa.Column('provider_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['admins_id'], ['admins.id'], ),
+    sa.ForeignKeyConstraint(['branch_id'], ['branch.id'], ),
+    sa.ForeignKeyConstraint(['engineer_id'], ['engineer.id'], ),
+    sa.ForeignKeyConstraint(['migration_id'], ['migration.id'], ),
+    sa.ForeignKeyConstraint(['provider_id'], ['provider.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('link',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('type', sa.String(length=50), nullable=False),
+    sa.Column('description', sa.String(length=250), nullable=False),
+    sa.Column('speed', sa.String(length=50), nullable=False),
+    sa.Column('status', sa.String(length=50), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.Column('admins_id', sa.Integer(), nullable=True),
+    sa.Column('engineer_id', sa.Integer(), nullable=True),
+    sa.Column('branch_id', sa.Integer(), nullable=True),
+    sa.Column('provider_id', sa.Integer(), nullable=True),
+    sa.Column('migration_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['admins_id'], ['admins.id'], ),
     sa.ForeignKeyConstraint(['branch_id'], ['branch.id'], ),
     sa.ForeignKeyConstraint(['engineer_id'], ['engineer.id'], ),
@@ -223,9 +223,9 @@ def downgrade():
     op.drop_table('user_mb')
     op.drop_table('history')
     op.drop_table('message')
+    op.drop_table('link')
     op.drop_table('assets')
     op.drop_table('migration')
-    op.drop_table('link')
     op.drop_table('provider')
     op.drop_table('branch')
     op.drop_table('engineer')

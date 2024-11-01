@@ -130,7 +130,7 @@ export const FormMigrations = ({
 
   const options = [
     { value: "Ordered", label: "Ordenada" },
-    { value: "In progress", label: "En proceso" },
+    { value: "In_progress", label: "En proceso" },
     { value: "Completed", label: "Completada" },
   ];
 
@@ -155,6 +155,8 @@ export const FormMigrations = ({
       return;
     }
     actions.getMigrations();
+    actions.getProviders();
+    actions.getBranchs();
     actions.getMe();
     addId();
     if (initialMigration) {

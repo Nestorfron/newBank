@@ -173,7 +173,7 @@ export const UsersMB = () => {
               <TableCell>{userMB.last_names}</TableCell>
               <TableCell>{userMB.employee_number}</TableCell>
               <TableCell>{userMB.branch_id}</TableCell>
-              <TableCell>{userMB.asset_id}</TableCell>
+              <TableCell>{userMB.assets.length > 0 ? userMB.assets.map(asset => asset.asset_type).join(", ") : "Sin Activos"}</TableCell>
               <TableCell>{userMB.extension_phone}</TableCell>
               <TableCell>
                 <div className="flex justify-center">
