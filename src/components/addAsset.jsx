@@ -3,7 +3,6 @@ import { Context } from "../store/appContext";
 import {
   Listbox,
   ListboxItem,
-  SelectItem,
   Modal,
   ModalContent,
   ModalHeader,
@@ -11,33 +10,34 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-  Select,
 } from "@nextui-org/react";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { PlusIcon } from "../assets/icons/Plusicon.jsx";
 
-
-export default function AddAsset({userMB}) {
+export default function AddAsset({ userMB }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { store, actions } = useContext(Context);
-  const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
+  const [selectedKeys, setSelectedKeys] = useState(new Set([]));
 
-  const selectedValue = React.useMemo(
+  const selectedValue = useMemo(
     () => Array.from(selectedKeys).join(", "),
     [selectedKeys]
   );
 
-  const assets = store.assets
-
+  const assetsList = store.assets.filter((asset) => {
+    return asset.user_mb_id !== userMB.id;
+  });
 
   const addAssets = () => {
     selectedKeys.forEach((assetId) => {
       actions.editAssetUserMB(assetId, userMB.id);
     });
     actions.getUsersMB();
+    actions.getAssets();
   };
 
   useEffect(() => {
     actions.getAssets();
+    actions.getUsersMB();
   }, []);
 
   return (
@@ -50,32 +50,31 @@ export default function AddAsset({userMB}) {
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Modal Title
+                Activos disponibles
               </ModalHeader>
               <ModalBody>
                 <div className="flex flex-col gap-2">
-                 
-                    <Listbox
-                      aria-label="Multiple selection example"
-                      variant="flat"
-                      disallowEmptySelection
-                      selectionMode="multiple"
-                      selectedKeys={selectedKeys}
-                      onSelectionChange={setSelectedKeys}
-                    >
-                       {store.assets.map((asset) => (
+                  <Listbox
+                    aria-label="Multiple selection example"
+                    variant="flat"
+                    disallowEmptySelection
+                    selectionMode="multiple"
+                    selectedKeys={selectedKeys}
+                    onSelectionChange={setSelectedKeys}
+                  >
+                    {assetsList.map((asset) => (
                       <ListboxItem key={asset.id} value={asset.id}>
                         {asset.asset_type} - {asset.asset_brand} - {asset.asset_model} - {asset.asset_serial} - {asset.asset_inventory_number}
                       </ListboxItem>
-                    ))} 
-                    </Listbox>
+                    ))}
+                  </Listbox>
                 </div>
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
                   Cerrar
                 </Button>
-                <Button color="primary" onPress={() => addAssets(selectedValue)}>
+                <Button color="primary" onPress={addAssets}>
                   Agregar
                 </Button>
               </ModalFooter>

@@ -1,41 +1,30 @@
 import React, { useContext, useState, useMemo, useEffect } from "react";
-import { Context } from "../store/appContext";
+import { Context } from "../store/appContext.jsx";
 import { useNavigate } from "react-router-dom";
-import { Button, Table, TableBody, TableCell, TableHeader, TableRow, TableColumn, Input, Pagination, Chip } from "@nextui-org/react";
-import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
-import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
-import { CreateMigrations } from "../components/CreateMigration.jsx";
-import { EditMigrations } from "../components/EditMigrations.jsx";
 import useTokenExpiration from "../hooks/useTokenExpitarion.jsx";
-
+import {Card, CardHeader, CardBody, CardFooter, Image, Button} from "@nextui-org/react";
+import { EyeIcon } from "../assets/icons/EyeIcon.jsx";
+import AssetsListEngineer from "../components/assetsListEngineer.jsx";
 
 
 export const EngenieerDashboard = () => {
   const { store, actions } = useContext(Context);
+  const [branch, setBranch] = useState("");
   const navigate = useNavigate();
-  const [filterValue, setFilterValue] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [page, setPage] = useState(1); 
-  const [user, setUser] = useState("");
 
 
   useTokenExpiration();
 
-  const me = store.me;
+  const me = store.engineer;
+  const provider = store.provider;
 
-  const getMigrationsByProviderId = () => {
-    const data = actions.getEngineers();
-    const user = data.engineers.find(
-      (user) => user.id === me.id
+
+  const getBranchById = (id) => {
+    const Branch = store.branchs.find(
+      (branch) => branch.id === id
     );
-    console.log(user);
-    actions.getMigrationByProviderId(user.provider_id);
+    setBranch(Branch);
   };
-
-  const migrations = store.migrationsByUserId;
-
-
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -46,138 +35,47 @@ export const EngenieerDashboard = () => {
     });
   };
 
-  const filteredItems = useMemo(() => {
-    let filteredMigrations = [...migrations];
-
-    if (filterValue) {
-      filteredMigrations = filteredMigrations.filter((migration) =>
-        [migration.installation_date, migration.migration_date, migration.migration_description, migration.migration_status, migration.provider_id, migration.branch_id].some(field => 
-          field ? field.toString().toLowerCase().includes(filterValue.toLowerCase()) : false
-        )
-      );
-    }
-
-    if (statusFilter !== "all") {
-      filteredMigrations = filteredMigrations.filter(
-        (migration) => migration.migration_status === statusFilter
-      );
-    }
-
-    return filteredMigrations;
-  }, [migrations, filterValue, statusFilter]);
-
-
-  const pages = Math.ceil(filteredItems.length / rowsPerPage);
-  const items = useMemo(() => {
-    const start = (page - 1) * rowsPerPage;
-    return filteredItems.slice(start, start + rowsPerPage);
-  }, [page, filteredItems, rowsPerPage]);
-
- 
-
-  
-  const topContent = (
-    <div className="flex justify-between gap-3 items-center">
-      <div className="flex justify-start gap-3 items-center">
-        <span className="text-default-400 text-lg">
-          Total de Migraciones: {migrations.length}
-        </span>
-      </div>
-      <div className="flex gap-2 items-center">
-        <Input
-          isClearable
-          placeholder="Buscar por Migración..."
-          value={filterValue}
-          onClear={() => setFilterValue("")}
-          onValueChange={setFilterValue}
-          className="w-full"
-          startContent={<SearchIcon />}
-        />
-        <div>
-          <CreateMigrations />
-        </div>
-      </div>
-    </div>
-  );
-
-  const bottomContent = (
-    <div className="flex justify-center mt-4">
-      <Pagination showControls page={page} total={pages} onChange={setPage} />
-    </div>
-  );
-
-  const statusColorMap = {
-    ordered: "success",
-    inProgress: "warning",
-    completed: "danger",
-  };
-
   useEffect(() => {
-    if (me.role !== "Ingeniero de Campo") {
-      navigate("/dashboard");}
-    const jwt = localStorage.getItem("token");
-    if (!jwt) {
-      navigate("/");
-      return;
-    }
     actions.getMe();
-    actions.getMigrations();
-    actions.getEngineers();
-    getMigrationsByProviderId();    
+    getBranchById(store.provider.branch_id);
   }, []);
 
+
   return (
-    <div className="m-5">
-        <div className="flex justify-start gap-4 mt-4 mb-4">
-          <span className="text-lg font-bold">Gestor de Migraciones</span>
-        </div>
-        <Table
-          aria-label="Tabla de migraciones"
-          isHeaderSticky
-          isStriped
-          color={statusColorMap[migrations.migration_status]}
-          topContent={topContent}
-          bottomContent={bottomContent}
-          classNames={{
-            td: "text-center",
-            th: "text-center",
-          }}
-        >
-          <TableHeader>
-            <TableColumn>ID</TableColumn>
-            <TableColumn>Fecha de Instalación</TableColumn>
-            <TableColumn>Fecha de Migración</TableColumn>
-            <TableColumn>Descripción de Migración</TableColumn>
-            <TableColumn>Estado de Migración</TableColumn>
-            <TableColumn>Acciones</TableColumn>
-          </TableHeader>
-          <TableBody>
-            {items.map((migration) => (
-              <TableRow key={migration.id}>
-                <TableCell>{migration.id}</TableCell>
-                <TableCell>{formatDate(migration.installation_date)}</TableCell>
-                <TableCell>{formatDate(migration.migration_date)}</TableCell>
-                <TableCell>{migration.migration_description}</TableCell>
-                <TableCell className="capitalize">
-                  <Chip
-                    color={statusColorMap[migration.migration_status]}
-                    status={migration.migration_status}
-                  >
-                    {migration.migration_status === "Ordered" ? "Ordenada" : ""}
-                    {migration.migration_status === "In_progress" ? "En proceso" : ""}
-                    {migration.migration_status === "Completed" ? "Completada" : ""}
-                  </Chip>
-                </TableCell>
-                <TableCell>
-                  <div className="flex justify-center">
-                    <EditMigrations migration={migration} />
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        </div>
+    <div className="max-w-[900px] gap-2 grid grid-cols-12 grid-rows-2 px-8">
+    <Card className="col-span-12 h-full">
+      <CardHeader className="top-1 flex-col !items-Center">
+        <p className="uppercase font-bold">Proveedor</p>
+      </CardHeader>
+      <CardBody className="flex justify-end items-start flex w-full">
+        <ul>
+          <li className="mb-2">Nombre: {provider.company_name}</li>
+          <li className="mb-2">RFC: {provider.rfc}</li>
+          <li className="mb-2">Servicio: {provider.service}</li>
+          <li className="mb-2">Sucursal: {provider.branch_id}</li>
+          <li className="mb-2">Activos: <AssetsListEngineer provider={provider}/></li>
+        </ul>
+      </CardBody>
+    </Card>
+
+    <Card className="col-span-12 h-full">
+      <CardHeader className="top-1 flex-col !items-Center">
+        <p className="uppercase font-bold">Proveedor</p>
+      </CardHeader>
+      <CardBody className="flex justify-end items-start flex w-full">
+        <ul>
+          <li className="mb-2">Nombre: {provider.company_name}</li>
+          <li className="mb-2">RFC: {provider.rfc}</li>
+          <li className="mb-2">Servicio: {provider.service}</li>
+          <li className="mb-2">Sucursal: {provider.branch_id}</li>
+          <li className="mb-2">Activos: <AssetsListEngineer provider={provider}/></li>
+        </ul>
+      </CardBody>
+    </Card>
+    
+  </div>
   );
-};  
+}
+
+
 

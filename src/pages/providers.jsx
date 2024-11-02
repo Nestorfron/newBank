@@ -6,8 +6,7 @@ import { CreateProviders } from "../components/CreateProviders.jsx";
 import { EditProviders } from "../components/EditProviders.jsx";
 import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
 import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
-import { EyeIcon } from "../assets/icons/EyeIcon.jsx";
-import { CloseIcon } from "../assets/icons/CloseIcon.jsx";
+import { EngineersList } from "../components/engineersList.jsx";
 
 
 
@@ -145,22 +144,7 @@ export const Providers = () => {
               <TableCell>{provider.rfc}</TableCell>
               <TableCell>{provider.service}</TableCell>
               <TableCell>
-                {provider.engineers.length ? (
-                  <Accordion>
-                    <AccordionItem 
-                    textValue="Ingenieros de Campo"
-                    key={provider.id} 
-                    subtitle={"Ingenieros de Campo (" + provider.engineers.length + ")"}
-                    indicator={({ isOpen }) => (isOpen ? <CloseIcon  className="h-6 w-6"  /> : <EyeIcon className="h-6 w-6" />)}
-                    >
-                      {provider.engineers.map((engineer, index) => (
-                        <p key={engineer.id}>{index+1} - {engineer.names} {engineer.last_names}</p>
-                      ))}
-                    </AccordionItem>
-                  </Accordion>
-                ) : (
-                  "Sin Ingenieros"
-                )}
+                {provider.engineers.length ? (<EngineersList provider={provider}/>) : "Sin Ingenieros"}
               </TableCell>
               <TableCell>
                 <div className="flex justify-center">

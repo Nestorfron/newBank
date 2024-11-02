@@ -155,7 +155,7 @@ export const UsersMB = () => {
           <TableColumn>Apellidos</TableColumn>
           <TableColumn>Numero de Empleado</TableColumn>
           <TableColumn>Sucursal</TableColumn>
-          <TableColumn>Activos Adjudicados</TableColumn>
+          <TableColumn>Activos</TableColumn>
           <TableColumn>Telefono</TableColumn>
           <TableColumn>Acciones</TableColumn>
         </TableHeader>

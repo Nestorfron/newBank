@@ -6,6 +6,8 @@ const getState = ({ getStore, getActions, setStore }) => {
       new: [],
       me: [],
       user: [],
+      engineer: [],
+      admin: [],
       users: [],
       admins: [],
       engineers: [],
@@ -306,6 +308,13 @@ const getState = ({ getStore, getActions, setStore }) => {
             setStore({ me: data });
           }
           console.log(data);
+          if (data.role === "Master") {
+            actions.getUserById(data.id);
+          }else if (data.role === "Admin") {
+            actions.getAdminsById(data.id);
+          } else if (data.role === "Ingeniero de Campo") {
+            actions.getEngineersById(data.id);
+          }
           return data;
         } catch (error) {
           console.log(error);
@@ -908,6 +917,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             console.log(data);
             setStore({ engineer: data.engineer });
           }
+          actions.getProviderById(data.engineer.provider_id);
         } catch (error) {
           console.log(error);
         }
