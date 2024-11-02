@@ -65,6 +65,11 @@ export const Dashboard = () => {
     actions.getMe();
     actions.getBranchs();
     actions.getAssets();
+    actions.getProviders();
+    actions.getUsersMB();
+    actions.getMigrations();
+    actions.getMessages();
+    actions.getHistory();
   }, []);
 
   return (

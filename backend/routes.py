@@ -1007,7 +1007,6 @@ def edit_userMB():
         userMB.employee_number = body.get("employee_number", userMB.employee_number)
         userMB.extension_phone = body.get("extension_phone", userMB.extension_phone)
         userMB.branch_id = body.get("branch_id", userMB.branch_id)
-        userMB.asset_id = body.get("asset_id", userMB.asset_id)
         userMB.user_id = body.get("user_id", userMB.user_id)
         userMB.admins_id = body.get("admins_id", userMB.admins_id)
         userMB.engineer_id = body.get("engineer_id", userMB.engineer_id)

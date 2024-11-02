@@ -8,6 +8,8 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
+  Listbox,
+  ListboxItem,
 } from "@nextui-org/react";
 import { EyeIcon } from "../assets/icons/EyeIcon.jsx";
 import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
@@ -32,39 +34,67 @@ export default function AssetsList({ userMB }) {
       <Button variant="link" color="primary" onPress={onOpen}>
         <EyeIcon />
       </Button>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior="inside">
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Activos Adjudicados</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">
+                Activos Adjudicados
+              </ModalHeader>
               <ModalBody>
-                <ul className="list-disc pl-5">
+                <Listbox textValue="id" aria-labelledby="listbox-label">
                   {userMB.assets.map((asset, index) => (
-                    <li
+                    <ListboxItem
                       key={asset.id}
-                      className="flex justify-between"
+                      className="border rounded-lg p-2 m-2"
+                      textValue={asset.id}
                     >
-                      <span>
-                        {index + 1} - {asset.asset_type} - {asset.asset_brand} -{" "}
-                        {asset.asset_model} - {asset.asset_serial} -{" "}
-                        {asset.asset_inventory_number}
-                      </span>{" "}
-                      <Button
-                        color="danger"
-                        size="xs"
-                        variant="link"
-                        className="text-lg text-danger cursor-pointer"
-                        onClick={() => removeAssets(asset.id)}
-                      ><DeleteIcon /></Button>
-                      <Button color="danger" size="xs" variant="link">
-                        <span
-                          className="text-lg text-danger cursor-pointer"
-                          onClick={() => onClose()}
-                        ></span>
-                      </Button>
-                    </li>
+                      <div className="flex justify-between">
+                        <div key={index}>
+                          <p>
+                            Tipo:{" "}
+                            <span className="text-gray-500">
+                              {asset.asset_type}
+                            </span>
+                          </p>
+                          <p>
+                            Marca:{" "}
+                            <span className="text-gray-500">
+                              {asset.asset_brand}
+                            </span>
+                          </p>
+                          <p>
+                            Modelo:{" "}
+                            <span className="text-gray-500">
+                              {asset.asset_model}
+                            </span>
+                          </p>
+                          <p>
+                            Serial:{" "}
+                            <span className="text-gray-500">
+                              {asset.asset_serial}
+                            </span>
+                          </p>
+                          <p>
+                            Numero de Inventario:{" "}
+                            <span className="text-gray-500">
+                              {asset.asset_inventory_number}
+                            </span>
+                          </p>
+                        </div>
+                        <Button
+                          color="danger"
+                          size="xs"
+                          variant="link"
+                          className="text-lg text-danger cursor-pointer my-auto ms-auto"
+                          onClick={() => removeAssets(asset.id)}
+                        >
+                          <DeleteIcon />
+                        </Button>
+                      </div>
+                    </ListboxItem>
                   ))}
-                </ul>
+                </Listbox>
               </ModalBody>
               <ModalFooter></ModalFooter>
             </>

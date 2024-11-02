@@ -8,9 +8,10 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
+  Listbox,
+  ListboxItem,
 } from "@nextui-org/react";
 import { EyeIcon } from "../assets/icons/EyeIcon.jsx";
-
 
 export default function AssetsListEngineer({ provider }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -29,8 +30,8 @@ export default function AssetsListEngineer({ provider }) {
 
   return (
     <>
-      <Button variant="link" color="primary" onPress={onOpen}>
-        <EyeIcon />
+      <Button variant="link" color="primary" onPress={onOpen} size="sm">
+        <EyeIcon  className="m-auto"/>
       </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
@@ -38,9 +39,9 @@ export default function AssetsListEngineer({ provider }) {
             <>
               <ModalHeader className="flex flex-col gap-1">Activos</ModalHeader>
               <ModalBody>
-                <ul className="list-disc pl-5">
+                <Listbox className="list-disc pl-5">
                   {provider.assets.map((asset, index) => (
-                    <li
+                    <ListboxItem
                       key={asset.id}
                       className="flex justify-between"
                     >
@@ -55,9 +56,9 @@ export default function AssetsListEngineer({ provider }) {
                           onClick={() => onClose()}
                         ></span>
                       </Button>
-                    </li>
+                    </ListboxItem>
                   ))}
-                </ul>
+                </Listbox>
               </ModalBody>
 
               <ModalFooter></ModalFooter>

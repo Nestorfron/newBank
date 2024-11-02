@@ -112,10 +112,14 @@ export const Migrations = () => {
   );
 
 
-  const statusColorMap = {
-    Ordered: "danger",
-    In_progress: "warning",
-    Completed: "success",
+  const mapColor = (status) => {
+    if (status === "Ordered") {
+      return "success";
+    } else if (status === "In_progress") {
+      return "warning";
+    } else if (status === "Completed") {
+      return "danger";
+    }
   };
 
   useEffect(() => {
@@ -163,7 +167,7 @@ export const Migrations = () => {
               <TableCell>{migration.migration_description}</TableCell>
               <TableCell className="capitalize">
                 <Chip
-                  color={statusColorMap[migration.migration_status]}
+                  color={mapColor(migration.migration_status)}
                   status={migration.migration_status}
                 >
                   {migration.migration_status === "Ordered" ? "Ordenada" : ""}

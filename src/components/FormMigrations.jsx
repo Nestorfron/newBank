@@ -267,10 +267,11 @@ export const FormMigrations = ({
           placeholder={asset ? asset.asset_type : ""}
           value={migration.asset_id}
           onChange={handleChange}
+          textValue={migration.asset_id}
         >
           {store.assets.map((asset) => (
-            <SelectItem key={asset.id} value={asset.id}>
-              {asset.asset_type}
+            <SelectItem key={asset.id} value={asset.id} textValue={asset.id}>
+              {asset.asset_type} - {asset.asset_brand} - {asset.asset_model} - {asset.asset_serial} - {asset.asset_inventory_number}
             </SelectItem>
           ))}
         </Select>

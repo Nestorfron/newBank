@@ -2078,7 +2078,6 @@ const getState = ({ getStore, getActions, setStore }) => {
         employee_number,
         extension_phone,
         branch_id,
-        asset_id,
         user_id,
         admins_id,
         engineer_id
@@ -2106,7 +2105,6 @@ const getState = ({ getStore, getActions, setStore }) => {
                 employee_number,
                 extension_phone,
                 branch_id,
-                asset_id,
                 user_id,
                 admins_id,
                 engineer_id,

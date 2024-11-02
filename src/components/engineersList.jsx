@@ -9,6 +9,8 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
+  Listbox,
+  ListboxItem,
 } from "@nextui-org/react";
 import { EyeIcon } from "../assets/icons/EyeIcon.jsx";
 
@@ -29,18 +31,28 @@ export const EngineersList = ({provider}) => {
             <>
               <ModalHeader className="flex flex-col gap-1">Ingenierons de Campo</ModalHeader>
               <ModalBody>
-                <ul className="list-disc pl-5">
-                 {provider.engineers.map((engineer, index) => (
-                    <li
+                <Listbox textValue="id" aria-labelledby="listbox-label">
+                {provider.engineers.map((engineer, index) => (
+                    <ListboxItem
                       key={engineer.id}
-                      className="flex justify-between"
-                    >
-                      <span>
-                        {index+1} - {engineer.names} {engineer.last_names} {engineer.employee_number} {engineer.subzone} 
+                      className="flex flex-row gap-2 justify-between border rounded-lg p-2 m-2"
+                      textValue={engineer.id}
+                    > 
+                      <span className="flex flex-row">
+                      Nombres: {" "}
+                        <p className="text-gray-500 ms-2">{engineer.names}</p>
                       </span>
-                    </li>
+                      <span className="flex flex-row">
+                        Apellidos: {" "}
+                        <p className="text-gray-500 ms-2">{engineer.last_names}</p>
+                      </span>
+                      <span className="flex flex-row">
+                        Numero de Empleado: {" "}
+                        <p className="text-gray-500 ms-2">{engineer.employee_number}</p>
+                      </span>
+                    </ListboxItem>
                   ))}
-                </ul>
+                </Listbox>
               </ModalBody>
               <ModalFooter></ModalFooter>
             </>

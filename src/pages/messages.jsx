@@ -30,6 +30,15 @@ export const Messages = () => {
 
   useTokenExpiration();
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  };
+
   const filteredItems = useMemo(() => {
     let filteredMessages = [...store.messages];
 
@@ -126,6 +135,9 @@ export const Messages = () => {
     }
     actions.getMe();
     actions.getMessages()
+    actions.getProviders();
+    actions.getBranchs();
+    actions.getMigrations();
   }, []);
 
   return (
@@ -157,9 +169,9 @@ export const Messages = () => {
             <TableRow key={message.id}>
               <TableCell>{message.id}</TableCell>
               <TableCell>{message.message}</TableCell>
-              <TableCell>{message.provider_id}</TableCell>
-              <TableCell>{message.branch_id}</TableCell>
-              <TableCell>{message.migration_id}</TableCell>
+              <TableCell>{message.provider_id ? store.providers.find(provider => provider.id === message.provider_id).company_name : "No asignado"}</TableCell>
+              <TableCell>{message.branch_id ? store.branchs.find(branch => branch.id === message.branch_id).branch_cr : "No asignado"}</TableCell>
+              <TableCell>{formatDate(message.migration_id ? store.migrations.find(migration => migration.id === message.migration_id).migration_date : "No asignado")}</TableCell>
               <TableCell>
                 <div className="flex justify-center">
                   <Button variant="link" color="danger">

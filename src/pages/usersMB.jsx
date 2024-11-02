@@ -174,8 +174,8 @@ export const UsersMB = () => {
               <TableCell>{userMB.names}</TableCell>
               <TableCell>{userMB.last_names}</TableCell>
               <TableCell>{userMB.employee_number}</TableCell>
-              <TableCell>{userMB.branch_id}</TableCell>
-              <TableCell className="flex justify-center"> {userMB.assets.length > 0 ? <AssetsList userMB={userMB}/> : "Sin Activos"} <AddAsset userMB={userMB}  /></TableCell>
+              <TableCell>{userMB.branch_id ? store.branchs.find(branch => branch.id === userMB.branch_id).branch_cr : "No asignado"}</TableCell>
+              <TableCell className="flex justify-center"> {userMB.assets.length > 0 ? <AssetsList userMB={userMB}/> : <p className="text-center text-gray-500 m-auto">Sin Activos</p>} <AddAsset userMB={userMB}  /></TableCell>
               <TableCell>{userMB.extension_phone}</TableCell>
               <TableCell>
                 <div className="flex justify-center">

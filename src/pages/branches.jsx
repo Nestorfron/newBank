@@ -18,6 +18,9 @@ import {
   Pagination,
 } from "@nextui-org/react";
 import useTokenExpiration from "../hooks/useTokenExpitarion.jsx";
+import AssetsListBranch from "../components/assetsListBranch.jsx";
+import MigrationsListBranch from "../components/migrationsListBranch.jsx";
+import HistoryListBranch from "../components/historyListBranch.jsx";
 
 export const Branches = () => {
   const { store, actions } = useContext(Context);
@@ -133,6 +136,9 @@ export const Branches = () => {
           <TableColumn>Zona</TableColumn>
           <TableColumn>SubZona</TableColumn>
           <TableColumn>Dirección</TableColumn>
+          <TableColumn>Activos</TableColumn>
+          <TableColumn>Migrations</TableColumn>
+          <TableColumn>Historial</TableColumn>
           <TableColumn>Acciones</TableColumn>
         </TableHeader>
         <TableBody>
@@ -143,6 +149,9 @@ export const Branches = () => {
               <TableCell>{branch.branch_zone}</TableCell>
               <TableCell>{branch.branch_subzone}</TableCell>
               <TableCell>{branch.branch_address}</TableCell>
+              <TableCell className="justify-center"> {branch.assets.length > 0 ? <AssetsListBranch branch={branch}/> : <p className="text-center text-gray-500 m-auto">Sin Activos</p>} </TableCell>
+              <TableCell className="justify-center"> {branch.migrations.length > 0 ? <MigrationsListBranch branch={branch}/> : <p className="text-center text-gray-500 m-auto">Sin Migraciones</p>} </TableCell>
+              <TableCell className="justify-center"> {branch.history.length > 0 ? <HistoryListBranch branch={branch}/> : <p className="text-center text-gray-500 m-auto">Sin Historial</p>} </TableCell>
               <TableCell>
                 <div className="flex justify-center">
                   <Button variant="link" color="danger">

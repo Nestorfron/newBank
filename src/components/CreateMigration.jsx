@@ -125,7 +125,7 @@ export const CreateMigrations = () => {
         <span> Agregar Migracion </span>
       </Button>
 
-      <Modal backdrop={backdrop} isOpen={isOpen} onClose={onClose}>
+      <Modal backdrop={backdrop} isOpen={isOpen} onClose={onClose} scrollBehavior="inside">
         <ModalContent>
           {(onClose) => (
             <>

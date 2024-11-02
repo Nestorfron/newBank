@@ -30,9 +30,9 @@ export default function AddAsset({ userMB }) {
   const addAssets = () => {
     selectedKeys.forEach((assetId) => {
       actions.editAssetUserMB(assetId, userMB.id);
+      actions.getUsersMB();
+      actions.getAssets();
     });
-    actions.getUsersMB();
-    actions.getAssets();
   };
 
   useEffect(() => {
@@ -45,7 +45,11 @@ export default function AddAsset({ userMB }) {
       <Button variant="link" color="primary" onPress={onOpen}>
         <PlusIcon />
       </Button>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        scrollBehavior="inside"
+      >
         <ModalContent>
           {(onClose) => (
             <>
@@ -61,10 +65,46 @@ export default function AddAsset({ userMB }) {
                     selectionMode="multiple"
                     selectedKeys={selectedKeys}
                     onSelectionChange={setSelectedKeys}
+                    textValue="id"
+                    aria-labelledby="listbox-label"
                   >
                     {assetsList.map((asset) => (
-                      <ListboxItem key={asset.id} value={asset.id}>
-                        {asset.asset_type} - {asset.asset_brand} - {asset.asset_model} - {asset.asset_serial} - {asset.asset_inventory_number}
+                      <ListboxItem
+                        key={asset.id}
+                        value={asset.id}
+                        textValue={asset.id}
+                        className="flex justify-between border rounded-lg p-2 m-2"
+                      >
+                        <p>
+                          Tipo:{" "}
+                          <span className="text-gray-500">
+                            {asset.asset_type}
+                          </span>
+                        </p>
+                        <p>
+                          Marca:{" "}
+                          <span className="text-gray-500">
+                            {asset.asset_brand}
+                          </span>
+                        </p>
+                        <p>
+                          Modelo:{" "}
+                          <span className="text-gray-500">
+                            {asset.asset_model}
+                          </span>
+                        </p>
+                        <p>
+                          Numero de Serial:{" "}
+                          <span className="text-gray-500">
+                            {asset.asset_serial}
+                          </span>
+                        </p>
+                        <p>
+                          Numero de Inventario:{" "}
+                          <span className="text-gray-500">
+                            {asset.asset_inventory_number}
+                          </span>
+                        </p>
                       </ListboxItem>
                     ))}
                   </Listbox>

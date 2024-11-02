@@ -102,6 +102,13 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
     setUserMB({ ...userMB, is_active: checked });
   };
 
+  const getBranchById = (id) => {
+    const Branch = store.branchs.find(
+      (branch) => branch.id === id
+    );
+    setBranch(Branch);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     Swal.fire({
