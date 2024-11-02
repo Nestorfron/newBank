@@ -9,6 +9,7 @@ import {
   Select,
   SelectItem,
   Switch,
+  user,
  
 } from "@nextui-org/react";
 import{
@@ -30,7 +31,6 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
     user_id: null,
     extension_phone: "",
     branch_id: null,
-    asset_id: null,
     admins_id: null,
     engineer_id: null,
   });
@@ -125,9 +125,8 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
             userMB.last_names,
             userMB.employee_number,
             userMB.extension_phone,
-            userMB.branch_id,
-            selectedAssets.map((asset) => asset.id), 
             userMB.user_id,
+            userMB.branch_id,
             userMB.admins_id,
             userMB.engineer_id
           )
@@ -138,13 +137,12 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
             userMB.last_names,
             userMB.employee_number,
             userMB.extension_phone,
-            userMB.branch_id,
-            selectedAssets.map((asset) => asset.id), 
             userMB.user_id,
+            userMB.branch_id, 
             userMB.admins_id,
             userMB.engineer_id
           );
-
+          console.log(userMB);
       Swal.fire({
         position: "center",
         icon: "success",
@@ -164,12 +162,10 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
           employee_number: "",
           extension_phone: "",
           branch_id: "",
-          asset_id: "",
           user_id: null,
           admins_id: null,
           engineer_id: null,
-        });
-        setSelectedAssets([]); 
+        }); 
       }
     } catch (error) {
       Swal.fire({
@@ -202,7 +198,6 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
         employee_number: initialUserMB.employee_number || "",
         extension_phone: initialUserMB.extension_phone || "",
         branch_id: initialUserMB.branch_id || "",
-        asset_id: initialUserMB.asset_id || "",
         user_id: initialUserMB.user_id || null,
         admins_id: initialUserMB.admins_id || null,
         engineer_id: initialUserMB.engineer_id || null,
@@ -270,50 +265,6 @@ export const FormUsers_MB = ({ id, btnUserMB, userMB: initialUserMB }) => {
             </SelectItem>
           ))}
         </Select>
-
-        <Select
-          placeholder="Selecciona un activo"
-          name="asset_id"
-          value={selectedAssetId}
-          onChange={(e) => {
-            setSelectedAssetId(e.target.value);
-          }}
-        >
-          {filteredAssets.length > 0 ? (
-            filteredAssets.map((asset) => (
-              <SelectItem key={asset.id} value={asset.id}>
-                {asset.asset_type}
-              </SelectItem>
-            ))
-          ) : (
-            <SelectItem disabled>No hay activos disponibles</SelectItem>
-          )}
-        </Select>
-
-        <Button type="button" onClick={handleAddAsset} color="primary" size="md" >
-        <Plus />
-        </Button>
-
-        <ul className="list-disc pl-5">
-          {selectedAssets.length > 0 ? (
-            selectedAssets.map((asset) => (
-              <li key={asset.id} className="flex justify-between items-center">
-                <span>{asset.asset_type}</span>
-                <Button color="danger" size="xs" variant="link">
-                  <span
-                    className="text-lg text-danger cursor-pointer"
-                    onClick={() => handleRemoveAsset(asset.id)}
-                  >
-                    <DeleteIcon />
-                  </span>
-                </Button>
-              </li>
-            ))
-          ) : (
-            <li>No hay activos seleccionados.</li>
-          )}
-        </ul>
-
         <div className="flex items-center">
           <Switch
             isSelected={userMB.is_active}

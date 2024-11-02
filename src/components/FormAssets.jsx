@@ -30,7 +30,6 @@ export const FormAssets = ({ id, btnAsset, asset: initialAsset }) => {
     user_id: null,
     admins_id: null,
     engineer_id: null,
-    migration_id: null,
     user_mb_id: null,
   });
 
@@ -86,7 +85,6 @@ export const FormAssets = ({ id, btnAsset, asset: initialAsset }) => {
             asset.user_id,
             asset.admins_id,
             asset.engineer_id,
-            asset.migration_id,
             asset.user_mb_id
           )
         : await actions.add_asset(
@@ -100,7 +98,6 @@ export const FormAssets = ({ id, btnAsset, asset: initialAsset }) => {
             asset.user_id,
             asset.admins_id,
             asset.engineer_id,
-            asset.migration_id,
             asset.user_mb_id
           );
       Swal.fire({
@@ -129,7 +126,6 @@ export const FormAssets = ({ id, btnAsset, asset: initialAsset }) => {
           user_id: null,
           admins_id: null,
           engineer_id: null,
-          migration_id: null,
           user_mb_id: null
         });
       }
@@ -172,13 +168,6 @@ export const FormAssets = ({ id, btnAsset, asset: initialAsset }) => {
     setUserMB(UserMB);
   };
 
-  const getMigrationById = (migrationId) => {
-    const Migration = store.migrations.find(
-      (migration) => migration.id === migrationId
-    );
-    setMigration(Migration);
-  };
-
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("es-ES", {
@@ -194,15 +183,15 @@ export const FormAssets = ({ id, btnAsset, asset: initialAsset }) => {
       navigate("/");
       return;
     }
-    actions.getAssets();
     actions.getProviders();
+    actions.getBranchs();
+    actions.getUsersMB();
     actions.getMe();
     addId();
     if (initialAsset) {
       getProviderById(initialAsset.provider_id);
       getBranchById(initialAsset.branch_id);
       getUserMBById(initialAsset.user_mb_id);
-      getMigrationById(initialAsset.migration_id);
       setAsset({
         id: initialAsset.id,
         asset_type: initialAsset.asset_type || "",
@@ -215,7 +204,6 @@ export const FormAssets = ({ id, btnAsset, asset: initialAsset }) => {
         user_id: initialAsset.user_id || null,
         admins_id: initialAsset.admins_id || null,
         engineer_id: initialAsset.engineer_id || null,
-        migration_id: initialAsset.migration_id || null,
         user_mb_id: initialAsset.user_mb_id || null
       });
     }
@@ -300,20 +288,7 @@ export const FormAssets = ({ id, btnAsset, asset: initialAsset }) => {
         >
           {store.usersMB.map((userMB) => (
             <SelectItem key={userMB.id} value={userMB.id}>
-              {userMB.names} - {userMB.last_names}
-            </SelectItem>
-          ))}
-        </Select>
-        <Select
-          label="Migracion"
-          placeholder={migration ? migration.installation_date : ""}
-          name="migration_id"
-          value={asset.migration_id}    
-          onChange={handleChange}
-        >
-          {store.migrations.map((migration) => (
-            <SelectItem key={migration.id} value={migration.id}>
-              {formatDate(migration.installation_date)} - {formatDate(migration.migration_date)}
+              {userMB.names}
             </SelectItem>
           ))}
         </Select>

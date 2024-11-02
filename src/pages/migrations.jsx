@@ -151,7 +151,6 @@ export const Migrations = () => {
           <TableColumn>Fecha de Instalación</TableColumn>
           <TableColumn>Fecha de Migración</TableColumn>
           <TableColumn>Descripción de Migración</TableColumn>
-          <TableColumn>Activos</TableColumn>
           <TableColumn>Estado de Migración</TableColumn>
           <TableColumn>Acciones</TableColumn>
         </TableHeader>
@@ -162,7 +161,6 @@ export const Migrations = () => {
               <TableCell>{formatDate(migration.installation_date)}</TableCell>
               <TableCell>{formatDate(migration.migration_date)}</TableCell>
               <TableCell>{migration.migration_description}</TableCell>
-              <TableCell>{migration.assets.length > 0 ? migration.assets.map(asset => asset.asset_type).join(", ") : "Sin Activos"}</TableCell>
               <TableCell className="capitalize">
                 <Chip
                   color={statusColorMap[migration.migration_status]}

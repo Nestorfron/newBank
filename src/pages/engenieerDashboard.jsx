@@ -25,13 +25,15 @@ export const EngenieerDashboard = () => {
   const me = store.me;
 
   const getMigrationsByProviderId = () => {
-    const user = store.engineers.find(
+    const data = actions.getEngineers();
+    const user = data.engineers.find(
       (user) => user.id === me.id
     );
+    console.log(user);
     actions.getMigrationByProviderId(user.provider_id);
   };
 
-  const migrations = store.migrationsByProviderId;
+  const migrations = store.migrationsByUserId;
 
 
 
@@ -119,7 +121,7 @@ export const EngenieerDashboard = () => {
       return;
     }
     actions.getMe();
-    actions.getMigrations();;
+    actions.getMigrations();
     actions.getEngineers();
     getMigrationsByProviderId();    
   }, []);
@@ -146,7 +148,6 @@ export const EngenieerDashboard = () => {
             <TableColumn>Fecha de Instalación</TableColumn>
             <TableColumn>Fecha de Migración</TableColumn>
             <TableColumn>Descripción de Migración</TableColumn>
-            <TableColumn>Activos</TableColumn>
             <TableColumn>Estado de Migración</TableColumn>
             <TableColumn>Acciones</TableColumn>
           </TableHeader>
@@ -157,7 +158,6 @@ export const EngenieerDashboard = () => {
                 <TableCell>{formatDate(migration.installation_date)}</TableCell>
                 <TableCell>{formatDate(migration.migration_date)}</TableCell>
                 <TableCell>{migration.migration_description}</TableCell>
-                <TableCell>{migration.assets.length > 0 ? migration.assets.map(asset => asset.asset_type).join(", ") : "Sin Activos"}</TableCell>
                 <TableCell className="capitalize">
                   <Chip
                     color={statusColorMap[migration.migration_status]}

@@ -181,16 +181,18 @@ class Migration(db.Model):
     migration_description = db.Column(db.String(250), unique=False, nullable=False)
     migration_status = db.Column(db.String(50), unique=False, nullable=False)
 
-    assets = db.relationship('Assets', backref='migration', lazy=True)
     messages = db.relationship('Message', backref='migration', lazy=True)
     history = db.relationship('History', backref='migration', lazy=True)
     links = db.relationship('Link', backref='migration', lazy=True)
+
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     provider_id = db.Column(db.Integer, db.ForeignKey('provider.id'), nullable=True)
     admins_id = db.Column(db.Integer, db.ForeignKey('admins.id'), nullable=True)
     engineer_id = db.Column(db.Integer, db.ForeignKey('engineer.id'), nullable=True)  
     branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'), nullable=True)
+    asset_id = db.Column(db.Integer, db.ForeignKey('assets.id'), nullable=True)
+
 
     def __repr__(self):
         return f'<Migration {self.id}>'
@@ -207,7 +209,7 @@ class Migration(db.Model):
             "branch_id": self.branch_id,
             "admins_id": self.admins_id,
             "engineer_id": self.engineer_id,  
-            "assets": [asset.serialize() for asset in self.assets],
+            "asset_id": self.asset_id,
             "messages": [message.serialize() for message in self.messages],
             "history": [history.serialize() for history in self.history],
             "links": [link.serialize() for link in self.links]
@@ -311,11 +313,12 @@ class Assets(db.Model):
     admins_id = db.Column(db.Integer, db.ForeignKey('admins.id'), nullable=True)
     engineer_id = db.Column(db.Integer, db.ForeignKey('engineer.id'), nullable=True)  
     branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'), nullable=True)
-    migration_id = db.Column(db.Integer, db.ForeignKey('migration.id'), nullable=True)
     provider_id = db.Column(db.Integer, db.ForeignKey('provider.id'), nullable=True)
     user_mb_id = db.Column(db.Integer, db.ForeignKey('user_mb.id'), nullable= True)
     
     history = db.relationship('History', backref='assets', lazy=True)
+    migrations = db.relationship('Migration', backref='assets', lazy=True)
+
 
     def __repr__(self):
         return f'<Assets {self.asset_type}>'
@@ -333,9 +336,9 @@ class Assets(db.Model):
             "engineer_id": self.engineer_id,  
             "branch_id": self.branch_id,
             "provider_id": self.provider_id,
-            "migration_id": self.migration_id,
             "user_mb_id": self.user_mb_id,
-            "history": [history.serialize() for history in self.history]
+            "history": [history.serialize() for history in self.history],
+            "migrations": [migration.serialize() for migration in self.migrations]
         }
     
     
