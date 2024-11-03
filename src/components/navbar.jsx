@@ -51,27 +51,37 @@ export const Navbar = () => {
           disabled={!jwt}
           className="flex justify-start items-center gap-1 "
           color="foreground"
-          onClick={() => navigate(user.role === "Ingeniero de Campo" ? "/engenieerDashboard" : "/dashboard")}
+          onClick={() =>
+            navigate(
+              user.role === "Ingeniero de Campo"
+                ? "/engenieerDashboard"
+                : "/dashboard"
+            )
+          }
         >
           <Avatar src={img} alt="DR-App" />
         </button>
       </NavbarBrand>
       <NavbarContent className="" justify="start">
         <NavbarMenuToggle size="lg" className="sm:hidden" />
-        <div className="hidden sm:flex gap-4 justify- ml-2">
-          <NavbarContent>
+        <div className="hidden sm:flex gap-4 justify-center ml-2">
+          <NavbarContent className="flex flex-row justify-center">
             <NavbarItem>
               <Button
-                isDisabled={!jwt || user.role === "Ingeniero de Campo"}
+                className={
+                  !jwt || user.role === "Ingeniero de Campo" ? "hidden" : ""
+                }
                 onClick={() => navigate("/users")}
                 variant="link"
               >
                 Usuarios
               </Button>
             </NavbarItem>
-            <NavbarItem className="gap-2">
+            <NavbarItem>
               <Button
-                isDisabled={!jwt || user.role === "Ingeniero de Campo"}
+                className={
+                  !jwt || user.role === "Ingeniero de Campo" ? "hidden" : ""
+                }
                 onClick={() => navigate("/branches")}
                 variant="link"
               >
@@ -80,25 +90,31 @@ export const Navbar = () => {
             </NavbarItem>
             <NavbarItem>
               <Button
-                isDisabled={!jwt || user.role === "Ingeniero de Campo"}
+                className={
+                  !jwt || user.role === "Ingeniero de Campo" ? "hidden" : ""
+                }
                 onClick={() => navigate("/providers")}
                 variant="link"
               >
                 Proveedores
               </Button>
             </NavbarItem>
-            <NavbarItem className="gap-2">  
+            <NavbarItem>
               <Button
-                isDisabled={!jwt || user.role === "Ingeniero de Campo"}
+                className={
+                  !jwt || user.role === "Ingeniero de Campo" ? "hidden" : ""
+                }
                 onClick={() => navigate("/links")}
                 variant="link"
               >
-                Links
+                Enlaces
               </Button>
             </NavbarItem>
             <NavbarItem>
               <Button
-                isDisabled={!jwt || user.role === "Ingeniero de Campo"}
+                className={
+                  !jwt || user.role === "Ingeniero de Campo" ? "hidden" : ""
+                }
                 onClick={() => navigate("/assets")}
                 variant="link"
               >
@@ -107,7 +123,9 @@ export const Navbar = () => {
             </NavbarItem>
             <NavbarItem>
               <Button
-                isDisabled={!jwt || user.role === "Ingeniero de Campo"}
+                className={
+                  !jwt || user.role === "Ingeniero de Campo" ? "hidden" : ""
+                }
                 onClick={() => navigate("/usersMb")}
                 variant="link"
               >
@@ -116,7 +134,9 @@ export const Navbar = () => {
             </NavbarItem>
             <NavbarItem>
               <Button
-                isDisabled={!jwt || user.role === "Ingeniero de Campo"}
+                className={
+                  !jwt || user.role === "Ingeniero de Campo" ? "hidden" : ""
+                }
                 onClick={() => navigate("/migrations")}
                 variant="link"
               >
@@ -135,20 +155,24 @@ export const Navbar = () => {
           )}
         </button>
       </NavbarItem>
-      <NavbarMenu>
+      <NavbarMenu className="flex flex-row justify-center">
         <ul>
           <li>
             <Button
-              disabled={!jwt || user.role === "Ingeniero de Campo"}
+              className={
+                !jwt || user.role === "Ingeniero de Campo" ? "hidden" : ""
+              }
               onClick={() => navigate("/users")}
               variant="link"
             >
               Usuarios
             </Button>
           </li>
-          <li className="gap-2">
+          <li>
             <Button
-              disabled={!jwt || user.role === "Ingeniero de Campo"}
+              className={
+                !jwt || user.role === "Ingeniero de Campo" ? "hidden" : ""
+              }
               onClick={() => navigate("/branches")}
               variant="link"
             >
@@ -157,25 +181,31 @@ export const Navbar = () => {
           </li>
           <li>
             <Button
-              disabled={!jwt || user.role === "Ingeniero de Campo"}
+              className={
+                !jwt || user.role === "Ingeniero de Campo" ? "hidden" : ""
+              }
               onClick={() => navigate("/providers")}
               variant="link"
             >
               Proveedores
             </Button>
           </li>
-          <li className="gap-2">
+          <li>
             <Button
-              disabled={!jwt || user.role === "Ingeniero de Campo"}
+              className={
+                !jwt || user.role === "Ingeniero de Campo" ? "hidden" : ""
+              }
               onClick={() => navigate("/links")}
               variant="link"
             >
-              Links
+              Enlaces
             </Button>
           </li>
           <li>
             <Button
-              disabled={!jwt || user.role === "Ingeniero de Campo"}
+              className={
+                !jwt || user.role === "Ingeniero de Campo" ? "hidden" : ""
+              }
               onClick={() => navigate("/assets")}
               variant="link"
             >
@@ -184,7 +214,9 @@ export const Navbar = () => {
           </li>
           <li>
             <Button
-              disabled={!jwt || user.role === "Ingeniero de Campo"}
+              className={
+                !jwt || user.role === "Ingeniero de Campo" ? "hidden" : ""
+              }
               onClick={() => navigate("/usersMb")}
               variant="link"
             >
@@ -193,7 +225,9 @@ export const Navbar = () => {
           </li>
           <li>
             <Button
-              disabled={!jwt || user.role === "Ingeniero de Campo"}
+              className={
+                !jwt || user.role === "Ingeniero de Campo" ? "hidden" : ""
+              }
               onClick={() => navigate("/migrations")}
               variant="link"
             >
@@ -202,7 +236,7 @@ export const Navbar = () => {
           </li>
         </ul>
       </NavbarMenu>
-      <NavbarItem className={jwt ? "" : "hidden"}>
+      <NavbarItem className={!jwt || user.role === "Ingeniero de Campo" ?   "hidden" : ""}>
         <BellNotifications userId={user.id} />
       </NavbarItem>
       <NavbarItem>
@@ -213,7 +247,9 @@ export const Navbar = () => {
           <DropdownMenu aria-label="Profile Actions" variant="flat">
             <DropdownItem key="profile" className="h-14 gap-2">
               <p className="font-semibold">Iniciaste sesión como</p>
-              <p>{user && user.user_name} - {user && user.role}</p>
+              <p>
+                {user && user.user_name} - {user && user.role}
+              </p>
             </DropdownItem>
             <DropdownItem key="logout" color="danger" onClick={logout}>
               Cerrar Sesión

@@ -19,6 +19,7 @@ export const FormMigrations = ({
   const { store, actions } = useContext(Context);
   const [provider, setProvider] = useState("");
   const [branch, setBranch] = useState("");
+  const [asset, setAsset] = useState("");
   const navigate = useNavigate();
   const [migration, setMigration] = useState({
     installation_date: "",
@@ -27,6 +28,7 @@ export const FormMigrations = ({
     migration_status: "",
     provider_id: "",
     branch_id: "",
+    asset_id: null,
     user_id: null,
     admins_id: null,
     engineer_id: null,
@@ -81,6 +83,7 @@ export const FormMigrations = ({
             migration.migration_status,
             migration.provider_id,
             migration.branch_id,
+            migration.asset_id,
             migration.user_id,
             migration.admins_id,
             migration.engineer_id
@@ -92,6 +95,7 @@ export const FormMigrations = ({
             migration.migration_status,
             migration.provider_id,
             migration.branch_id,
+            migration.asset_id,
             migration.user_id,
             migration.admins_id,
             migration.engineer_id
@@ -112,6 +116,7 @@ export const FormMigrations = ({
           user_id: "",
           provider_id: "",
           branch_id: "",
+          asset_id: null,
           user_id: null,
           admins_id: null,
           engineer_id: null,
@@ -148,6 +153,13 @@ export const FormMigrations = ({
     setBranch(Branch);
   };
 
+  const getAssetById = (assetId) => {
+    const Asset = store.assets.find(
+      (asset) => asset.id === assetId
+    );
+    setAsset(Asset);
+  };
+
   useEffect(() => {
     const jwt = localStorage.getItem("token");
     if (!jwt) {
@@ -162,6 +174,7 @@ export const FormMigrations = ({
     if (initialMigration) {
       getProviderById(initialMigration.provider_id);
       getBranchById(initialMigration.branch_id);
+      getAssetById(initialMigration.asset_id);
       setMigration({
         installation_date: parseDateString(initialMigration.installation_date) || "",
         migration_date: parseDateString(initialMigration.migration_date) || "",
@@ -170,6 +183,7 @@ export const FormMigrations = ({
         user_id: initialMigration.user_id || "",
         provider_id: initialMigration.provider_id || "",
         branch_id: initialMigration.branch_id || "",
+        asset_id: initialMigration.asset_id || null,
         user_id: initialMigration.user_id || null,
         admins_id: initialMigration.admins_id || null,
         engineer_id: initialMigration.engineer_id || null,
@@ -243,6 +257,21 @@ export const FormMigrations = ({
           {store.branchs.map((branch) => (
             <SelectItem key={branch.id} value={branch.id}>
               {branch.branch_cr}
+            </SelectItem>
+          ))}
+        </Select>
+        <Select
+          label="Activo"
+          name="asset_id"
+          required
+          placeholder={asset ? asset.asset_type : ""}
+          value={migration.asset_id}
+          onChange={handleChange}
+          textValue={migration.asset_id}
+        >
+          {store.assets.map((asset) => (
+            <SelectItem key={asset.id} value={asset.id} textValue={asset.id}>
+              {asset.asset_type} - {asset.asset_brand} - {asset.asset_model} - {asset.asset_serial} - {asset.asset_inventory_number}
             </SelectItem>
           ))}
         </Select>

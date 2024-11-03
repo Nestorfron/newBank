@@ -112,10 +112,14 @@ export const Migrations = () => {
   );
 
 
-  const statusColorMap = {
-    Ordered: "danger",
-    In_progress: "warning",
-    Completed: "success",
+  const mapColor = (status) => {
+    if (status === "Ordered") {
+      return "success";
+    } else if (status === "In_progress") {
+      return "warning";
+    } else if (status === "Completed") {
+      return "danger";
+    }
   };
 
   useEffect(() => {
@@ -151,7 +155,6 @@ export const Migrations = () => {
           <TableColumn>Fecha de Instalación</TableColumn>
           <TableColumn>Fecha de Migración</TableColumn>
           <TableColumn>Descripción de Migración</TableColumn>
-          <TableColumn>Activos</TableColumn>
           <TableColumn>Estado de Migración</TableColumn>
           <TableColumn>Acciones</TableColumn>
         </TableHeader>
@@ -162,10 +165,9 @@ export const Migrations = () => {
               <TableCell>{formatDate(migration.installation_date)}</TableCell>
               <TableCell>{formatDate(migration.migration_date)}</TableCell>
               <TableCell>{migration.migration_description}</TableCell>
-              <TableCell>{migration.assets.length > 0 ? migration.assets.map(asset => asset.asset_type).join(", ") : "Sin Activos"}</TableCell>
               <TableCell className="capitalize">
                 <Chip
-                  color={statusColorMap[migration.migration_status]}
+                  color={mapColor(migration.migration_status)}
                   status={migration.migration_status}
                 >
                   {migration.migration_status === "Ordered" ? "Ordenada" : ""}

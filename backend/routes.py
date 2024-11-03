@@ -564,7 +564,6 @@ def add_asset():
     asset_serial = body.get("asset_serial", None)
     asset_inventory_number =  body.get("asset_inventory_number", None)
     branch_id = body.get("branch_id", None)
-    migration_id = body.get("migration_id", None)
     provider_id = body.get("provider_id", None)
     user_mb_id = body.get("user_mb_id", None)
     user_id = body.get("user_id", None)
@@ -580,7 +579,7 @@ def add_asset():
     if asset_type is None or asset_brand is None or asset_model is None or asset_serial is None or asset_inventory_number is None or provider_id is None:
         return jsonify({"error": "faltan datos"}), 400
     try:
-        new_asset = Assets(asset_type=asset_type, asset_brand=asset_brand, asset_model=asset_model, asset_serial=asset_serial, asset_inventory_number=asset_inventory_number, branch_id=branch_id, migration_id=migration_id, provider_id=provider.id, user_mb_id=user_mb_id, user_id=user_id, admins_id=admins_id, engineer_id=engineer_id)
+        new_asset = Assets(asset_type=asset_type, asset_brand=asset_brand, asset_model=asset_model, asset_serial=asset_serial, asset_inventory_number=asset_inventory_number, branch_id=branch_id, provider_id=provider.id, user_mb_id=user_mb_id, user_id=user_id, admins_id=admins_id, engineer_id=engineer_id)
         db.session.add(new_asset)
         db.session.commit()
         return jsonify({"new_asset": new_asset.serialize()}), 201
@@ -602,21 +601,17 @@ def add_userMB():
     extension_phone = body.get("extension_phone", None)
     user_id = body.get("user_id", None)
     branch_id = body.get("branch_id", None)
-    asset_id = body.get("asset_id", None)
     admins_id = body.get("admins_id", None)
     engineer_id = body.get("engineer_id", None)
 
     branch = Branch.query.get(branch_id)
     if branch is None:
         return jsonify({"error": "branch no encontrado"}), 404 
-    asset = Assets.query.get(asset_id)
-    if asset is None:
-        return jsonify({"error": "activo no encontrado"}), 404
-    if is_active is None or names is None or last_names is None or employee_number is None or branch_id is None or asset_id is None or role is None or extension_phone is None:
+    if is_active is None or names is None or last_names is None or employee_number is None or branch_id is None or role is None or extension_phone is None:
         return jsonify({"error": "faltan datos"}), 400
     
     try:
-        new_userMB = UserMB(role=role, is_active=is_active, names=names, last_names=last_names, employee_number=employee_number, extension_phone=extension_phone, branch_id=branch.id, asset_id=asset.id, admins_id=admins_id, engineer_id=engineer_id, user_id=user_id)
+        new_userMB = UserMB(role=role, is_active=is_active, names=names, last_names=last_names, employee_number=employee_number, extension_phone=extension_phone, branch_id=branch.id, admins_id=admins_id, engineer_id=engineer_id, user_id=user_id)
         db.session.add(new_userMB)
         db.session.commit()
         return jsonify({"new_userMB": new_userMB.serialize()}), 201
@@ -641,6 +636,7 @@ def add_migration():
     user_id = body.get("user_id", None)
     admins_id = body.get("admins_id", None)
     engineer_id = body.get("engineer_id", None)
+    asset_id = body.get("asset_id", None)
 
     provider = Provider.query.get(provider_id)
     if provider is None:
@@ -653,7 +649,7 @@ def add_migration():
         return jsonify({"error": "faltan datos"}), 400
 
     try:
-        new_migration = Migration(installation_date=installation_date, migration_date=migration_date, migration_description=migration_description, migration_status=migration_status, provider_id=provider.id, branch_id=branch.id, user_id=user_id, admins_id=admins_id, engineer_id=engineer_id)
+        new_migration = Migration(installation_date=installation_date, migration_date=migration_date, migration_description=migration_description, migration_status=migration_status, provider_id=provider.id, branch_id=branch.id, asset_id=asset_id, user_id=user_id, admins_id=admins_id, engineer_id=engineer_id)
         db.session.add(new_migration)
         db.session.commit()
         return jsonify({"new_migration": new_migration.serialize()}), 201
@@ -955,7 +951,6 @@ def edit_asset():
         asset.asset_inventory_number = body.get("asset_inventory_number", asset.asset_inventory_number)
         asset.user_mb_id = body.get("user_mb_id", asset.user_mb_id)
         asset.branch_id = body.get("branch_id", asset.branch_id)
-        asset.migration_id = body.get("migration_id", asset.migration_id)
         asset.user_id = body.get("user_id", asset.user_id)
         asset.admins_id = body.get("admins_id", asset.admins_id)
         asset.engineer_id = body.get("engineer_id", asset.engineer_id)
@@ -965,6 +960,29 @@ def edit_asset():
     except Exception as error:
         return jsonify({"error": f"{error}"}), 500
 
+# EDIT ASSET USER MB
+
+@api_blueprint.route('/edit_asset_userMB', methods=['PUT'])
+@jwt_required()
+def edit_asset_userMB():
+    try:
+        body = request.json
+        user_data = get_jwt_identity()
+        asset_id = body.get("id")
+        userMB_id = body.get("userMB_id")
+        
+        if not asset_id:
+            return jsonify({'error': 'Missing asset ID or user ID'}), 400
+        
+        asset = Assets.query.filter_by(id=asset_id).first()
+        if asset is None:
+            return jsonify({'error': 'Asset no found'}), 404
+        
+        asset.user_mb_id = userMB_id
+        db.session.commit()
+        return jsonify({"message": "Asset updated successfully"}), 200
+    except Exception as error:
+        return jsonify({"error": f"{error}"}), 500
 
 # EDIT USER MB
 @api_blueprint.route('/edit_userMB', methods=['PUT'])
@@ -989,7 +1007,6 @@ def edit_userMB():
         userMB.employee_number = body.get("employee_number", userMB.employee_number)
         userMB.extension_phone = body.get("extension_phone", userMB.extension_phone)
         userMB.branch_id = body.get("branch_id", userMB.branch_id)
-        userMB.asset_id = body.get("asset_id", userMB.asset_id)
         userMB.user_id = body.get("user_id", userMB.user_id)
         userMB.admins_id = body.get("admins_id", userMB.admins_id)
         userMB.engineer_id = body.get("engineer_id", userMB.engineer_id)
@@ -1023,6 +1040,7 @@ def edit_migration():
         migration.user_id = body.get("user_id", migration.user_id)
         migration.admins_id = body.get("admins_id", migration.admins_id)
         migration.engineer_id = body.get("engineer_id", migration.engineer_id)
+        migration.asset_id = body.get("asset_id", migration.asset_id)
 
         
         db.session.commit()

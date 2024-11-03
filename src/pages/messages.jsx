@@ -26,19 +26,39 @@ export const Messages = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(1);
-  const [provider, setProvider] = useState("");
 
   useTokenExpiration();
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  };
+
+  const getMessages = () => {
+    const messagges = [];
+    if (store.me.role === "Ingeniero de Campo") {
+      store.messages.forEach((message) => {
+        if (message.provider_id === store.engineer.provider_id) {
+          messagges.push(message);
+        }
+      });
+    } else {
+      messagges.push(...store.messages);
+    }
+    return messagges;
+  };
+
   const filteredItems = useMemo(() => {
-    let filteredMessages = [...store.messages];
+    let filteredMessages = [...getMessages()];
 
     if (filterValue) {
       filteredMessages = filteredMessages.filter(
         (message) =>
-          message.message
-            .toLowerCase()
-            .includes(filterValue.toLowerCase()) ||
+          message.message.toLowerCase().includes(filterValue.toLowerCase()) ||
           message.user_id.toLowerCase().includes(filterValue.toLowerCase()) ||
           message.provider_id
             .toLowerCase()
@@ -55,7 +75,7 @@ export const Messages = () => {
     }
 
     return filteredMessages;
-  }, [store.messages, filterValue, statusFilter]);
+  }, [store.messages, filterValue, statusFilter, store.enginer]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
   const items = useMemo(() => {
@@ -81,7 +101,7 @@ export const Messages = () => {
   };
 
   const topContent = (
-    <div className="flex justify-between gap-3 items-center">      
+    <div className="flex justify-between gap-3 items-center">
       <div className="flex justify-start gap-3 items-center">
         <span className="text-default-400 text-lg">
           Total de Mensajes : {store.messages.length}
@@ -92,14 +112,12 @@ export const Messages = () => {
           isClearable
           placeholder="Buscar por Mensaje..."
           value={filterValue}
-          onClear={() => setFilterValue("")}          
+          onClear={() => setFilterValue("")}
           onValueChange={setFilterValue}
           className="w-full"
           startContent={<SearchIcon />}
         />
-        <div>
-          {/* <CreateMessages /> */}
-        </div>
+        <div>{/* <CreateMessages /> */}</div>
       </div>
     </div>
   );
@@ -110,14 +128,6 @@ export const Messages = () => {
     </div>
   );
 
-  const getProviderById = (providerId) => {
-    const Provider = store.providers.find(
-      (provider) => provider.id === providerId
-    );
-    setProvider(Provider);
-  };
-  
-
   useEffect(() => {
     const jwt = localStorage.getItem("token");
     if (!jwt) {
@@ -125,7 +135,11 @@ export const Messages = () => {
       return;
     }
     actions.getMe();
-    actions.getMessages()
+    actions.getMessages();
+    actions.getProviders();
+    actions.getBranchs();
+    actions.getMigrations();
+    getMessages();
   }, []);
 
   return (
@@ -157,9 +171,29 @@ export const Messages = () => {
             <TableRow key={message.id}>
               <TableCell>{message.id}</TableCell>
               <TableCell>{message.message}</TableCell>
-              <TableCell>{message.provider_id}</TableCell>
-              <TableCell>{message.branch_id}</TableCell>
-              <TableCell>{message.migration_id}</TableCell>
+              <TableCell>
+                {message.provider_id
+                  ? store.providers.find(
+                      (provider) => provider.id === message.provider_id
+                    ).company_name
+                  : "No asignado"}
+              </TableCell>
+              <TableCell>
+                {message.branch_id
+                  ? store.branchs.find(
+                      (branch) => branch.id === message.branch_id
+                    ).branch_cr
+                  : "No asignado"}
+              </TableCell>
+              <TableCell>
+                {formatDate(
+                  message.migration_id
+                    ? store.migrations.find(
+                        (migration) => migration.id === message.migration_id
+                      ).migration_date
+                    : "No asignado"
+                )}
+              </TableCell>
               <TableCell>
                 <div className="flex justify-center">
                   <Button variant="link" color="danger">
@@ -172,7 +206,7 @@ export const Messages = () => {
                   </Button>
                   {/* <EditMessages message={message} /> */}
                 </div>
-              </TableCell>              
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

@@ -18,6 +18,7 @@ import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
 import { CreateAssets } from "../components/CreateAsset.jsx";
 import { EditAssets } from "../components/EditAssets.jsx";
 import useTokenExpiration from "../hooks/useTokenExpitarion.jsx";
+import MigrationsList from "../components/migrationsList.jsx";
 
 export const Assets = () => {
   const { store, actions } = useContext(Context);
@@ -123,6 +124,7 @@ export const Assets = () => {
     }
     actions.getMe();
     actions.getAssets();
+    actions.getProviders();
   }, []);
 
   return (
@@ -148,6 +150,8 @@ export const Assets = () => {
           <TableColumn>No. Serial</TableColumn>
           <TableColumn>No. Inventario</TableColumn>
           <TableColumn>Proveedor</TableColumn>
+          <TableColumn>Sucursal</TableColumn>
+          <TableColumn>Migraciones</TableColumn>
           <TableColumn>Acciones</TableColumn>
         </TableHeader>
         <TableBody>
@@ -158,7 +162,9 @@ export const Assets = () => {
               <TableCell>{asset.asset_model}</TableCell>
               <TableCell>{asset.asset_serial}</TableCell>
               <TableCell>{asset.asset_inventory_number}</TableCell>
-              <TableCell>{asset.provider_id}</TableCell>
+              <TableCell>{asset.provider_id ? store.providers.find(provider => provider.id === asset.provider_id).company_name : "No asignado"}</TableCell>
+              <TableCell>{asset.branch_id ? store.branchs.find(branch => branch.id === asset.branch_id).branch_cr : "No asignado"}</TableCell>
+              <TableCell> {asset.migrations.length > 0 ? <MigrationsList asset={asset}/> : "Sin Migraciones"}</TableCell>
               <TableCell>
                 <div className="flex justify-center">
                   <Button variant="link" color="danger">

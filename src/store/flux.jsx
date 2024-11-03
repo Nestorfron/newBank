@@ -6,6 +6,8 @@ const getState = ({ getStore, getActions, setStore }) => {
       new: [],
       me: [],
       user: [],
+      engineer: [],
+      admin: [],
       users: [],
       admins: [],
       engineers: [],
@@ -306,6 +308,13 @@ const getState = ({ getStore, getActions, setStore }) => {
             setStore({ me: data });
           }
           console.log(data);
+          if (data.role === "Master") {
+            actions.getUserById(data.id);
+          }else if (data.role === "Admin") {
+            actions.getAdminsById(data.id);
+          } else if (data.role === "Ingeniero de Campo") {
+            actions.getEngineersById(data.id);
+          }
           return data;
         } catch (error) {
           console.log(error);
@@ -908,6 +917,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             console.log(data);
             setStore({ engineer: data.engineer });
           }
+          actions.getProviderById(data.engineer.provider_id);
         } catch (error) {
           console.log(error);
         }
@@ -1300,7 +1310,6 @@ const getState = ({ getStore, getActions, setStore }) => {
         user_id,
         admins_id,
         engineer_id,
-        migration_id,
         user_mb_id
       ) => {
         const jwt = localStorage.getItem("token");
@@ -1325,7 +1334,6 @@ const getState = ({ getStore, getActions, setStore }) => {
               user_id,
               admins_id,
               engineer_id,
-              migration_id,
               user_mb_id,
             }),
           }
@@ -1364,7 +1372,6 @@ const getState = ({ getStore, getActions, setStore }) => {
         extension_phone,
         user_id,
         branch_id,
-        asset_id,
         admins_id,
         engineer_id
       ) => {
@@ -1388,7 +1395,6 @@ const getState = ({ getStore, getActions, setStore }) => {
               extension_phone,
               user_id,
               branch_id,
-              asset_id,
               admins_id,
               engineer_id,
             }),
@@ -1425,6 +1431,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         migration_status,
         provider_id,
         branch_id,
+        asset_id,
         user_id,
         admins_id,
         engineer_id
@@ -1452,6 +1459,7 @@ const getState = ({ getStore, getActions, setStore }) => {
               migration_status,
               provider_id,
               branch_id,
+              asset_id,
               user_id,
               admins_id,
               engineer_id,
@@ -1957,7 +1965,6 @@ const getState = ({ getStore, getActions, setStore }) => {
         user_id,
         admins_id,
         engineer_id,
-        migration_id,
         user_mb_id
       ) => {
         const asset_id = id;
@@ -1985,7 +1992,6 @@ const getState = ({ getStore, getActions, setStore }) => {
                 user_id,
                 admins_id,
                 engineer_id,
-                migration_id,
                 user_mb_id,
               }),
             }
@@ -2015,6 +2021,52 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
       },
 
+      // EDIT ASSET USER MB
+
+      editAssetUserMB: async (id, userMB_id) => {
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        const store = getStore();
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/edit_asset_userMB",
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                authorization: `Bearer ${jwt}`,
+              },
+              body: JSON.stringify({
+                id,
+                userMB_id,
+              }),
+            }
+          );
+          if (!response.ok) {
+            console.log(response);
+          }
+          const data = await response.json();
+          actions.add_history(
+            "El usuario " +
+              store.me.role +
+              " " +
+              store.me.user_name +
+              " se ha editado el activo id N° " +
+              id,
+            null,
+            null,
+            null,
+            null,
+            today,
+            null
+          );
+          actions.getAssets();
+          return data;
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
       // EDIT USER MB
 
       editUserMB: async (
@@ -2026,7 +2078,6 @@ const getState = ({ getStore, getActions, setStore }) => {
         employee_number,
         extension_phone,
         branch_id,
-        asset_id,
         user_id,
         admins_id,
         engineer_id
@@ -2054,7 +2105,6 @@ const getState = ({ getStore, getActions, setStore }) => {
                 employee_number,
                 extension_phone,
                 branch_id,
-                asset_id,
                 user_id,
                 admins_id,
                 engineer_id,
@@ -2096,6 +2146,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         migration_status,
         provider_id,
         branch_id,
+        asset_id,
         user_id,
         admins_id,
         engineer_id
@@ -2124,9 +2175,12 @@ const getState = ({ getStore, getActions, setStore }) => {
                 migration_date,
                 migration_description,
                 migration_status,
+                provider_id,
+                branch_id,
+                asset_id,
                 user_id,
                 admins_id,
-                engineer_id,
+                engineer_id
               }),
             }
           );

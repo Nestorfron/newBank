@@ -19,6 +19,8 @@ import {
   Chip,
 } from "@nextui-org/react";
 import useTokenExpiration from "../hooks/useTokenExpitarion.jsx";
+import AddAsset from "../components/addAsset.jsx";
+import AssetsList from "../components/assetsList.jsx";
 
 
 export const UsersMB = () => {
@@ -153,7 +155,7 @@ export const UsersMB = () => {
           <TableColumn>Apellidos</TableColumn>
           <TableColumn>Numero de Empleado</TableColumn>
           <TableColumn>Sucursal</TableColumn>
-          <TableColumn>Activos Adjudicados</TableColumn>
+          <TableColumn>Activos</TableColumn>
           <TableColumn>Telefono</TableColumn>
           <TableColumn>Acciones</TableColumn>
         </TableHeader>
@@ -172,8 +174,8 @@ export const UsersMB = () => {
               <TableCell>{userMB.names}</TableCell>
               <TableCell>{userMB.last_names}</TableCell>
               <TableCell>{userMB.employee_number}</TableCell>
-              <TableCell>{userMB.branch_id}</TableCell>
-              <TableCell>{userMB.assets.length > 0 ? userMB.assets.map(asset => asset.asset_type).join(", ") : "Sin Activos"}</TableCell>
+              <TableCell>{userMB.branch_id ? store.branchs.find(branch => branch.id === userMB.branch_id).branch_cr : "No asignado"}</TableCell>
+              <TableCell className="flex justify-center"> {userMB.assets.length > 0 ? <AssetsList userMB={userMB}/> : <p className="text-center text-gray-500 m-auto">Sin Activos</p>} <AddAsset userMB={userMB}  /></TableCell>
               <TableCell>{userMB.extension_phone}</TableCell>
               <TableCell>
                 <div className="flex justify-center">

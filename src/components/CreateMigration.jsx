@@ -121,11 +121,11 @@ export const CreateMigrations = () => {
 
   return (
     <>
-      <Button auto color="primary" onClick={openModal} size="md">
+      <Button onClick={openModal} size="md">
         <span> Agregar Migracion </span>
       </Button>
 
-      <Modal backdrop={backdrop} isOpen={isOpen} onClose={onClose}>
+      <Modal backdrop={backdrop} isOpen={isOpen} onClose={onClose} scrollBehavior="inside">
         <ModalContent>
           {(onClose) => (
             <>
