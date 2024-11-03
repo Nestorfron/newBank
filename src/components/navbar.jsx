@@ -236,7 +236,7 @@ export const Navbar = () => {
           </li>
         </ul>
       </NavbarMenu>
-      <NavbarItem className={jwt ? "" : "hidden"}>
+      <NavbarItem className={!jwt || user.role === "Ingeniero de Campo" ?   "hidden" : ""}>
         <BellNotifications userId={user.id} />
       </NavbarItem>
       <NavbarItem>

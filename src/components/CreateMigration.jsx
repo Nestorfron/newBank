@@ -121,7 +121,7 @@ export const CreateMigrations = () => {
 
   return (
     <>
-      <Button auto color="primary" onClick={openModal} size="md">
+      <Button onClick={openModal} size="md">
         <span> Agregar Migracion </span>
       </Button>
 
