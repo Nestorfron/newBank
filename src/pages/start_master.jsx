@@ -8,7 +8,7 @@ import img from "../assets/drapp_logo.png";
 
 
 
-export const Scrypt = () => {
+export const Start_master = () => {
   const { store, actions } = useContext(Context);
   const navigate = useNavigate();
   const [selected, setSelected] = useState("login");
@@ -40,7 +40,7 @@ export const Scrypt = () => {
   const handleSubmitSignUp = async (e) => {
     e.preventDefault();
     setError("");
-    const success = await actions.scrypt(
+    const success = await actions.start_master(
       user.user_name,
       user.password,
       user.names,
@@ -58,6 +58,13 @@ export const Scrypt = () => {
       setError("Error al crear el usuario");
     }
   };
+
+  useEffect(() => {
+    if (store.users.length > 0) {
+      navigate("/");
+    }
+  }, []);
+  
 
 
   return (
