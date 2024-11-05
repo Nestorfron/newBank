@@ -13,7 +13,7 @@ def initialize_database():
     with app.app_context():
         try:
             # Crea las migraciones
-            #migrate()
+            migrate()
             # Aplica las migraciones
             upgrade()
             print("Database upgraded successfully!")
