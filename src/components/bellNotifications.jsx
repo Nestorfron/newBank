@@ -12,7 +12,13 @@ export default function BellNotifications() {
   const jwt = localStorage.getItem("token");
 
   useEffect(() => {
-    actions.getMessages();
+    const jwt = localStorage.getItem("token");
+    if (!jwt) {
+      navigate("/");
+      return;
+    } else {
+      actions.getMessages();
+    }
   }, []);
 
   return (

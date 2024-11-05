@@ -4,7 +4,7 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import injectContext from "../src/store/appContext.jsx";
 
-import { Scrypt } from "./pages/scrypt.jsx";
+import { Start_master } from "./pages/start_master.jsx";
 import { Home } from "./pages/home.jsx";
 import { Navbar } from "./components/navbar.jsx";
 import { Dashboard } from "./pages/dashboard.jsx";
@@ -26,7 +26,7 @@ function App({ Component, pageProps }) {
         <BrowserRouter {...pageProps}>
           <Navbar />
           <Routes>
-            <Route path="/9DJS470cMFeSks4F$" element={<Scrypt />} />
+            <Route path="/start_master" element={<Start_master />} />
             <Route path="/" element={<Home />} />
             <Route path="/dashboard" element={<Dashboard/>}/>
             <Route path="/users" element={<AllUsers/>}/>

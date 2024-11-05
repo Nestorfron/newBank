@@ -36,7 +36,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
       //SCRYPT
 
-      scrypt: async (
+      start_master: async (
         user_name,
         password,
         names,
@@ -44,17 +44,11 @@ const getState = ({ getStore, getActions, setStore }) => {
         employee_number,
         subzone,
         role,
-        is_active,
-        
+        is_active
       ) => {
-        console.log(user_name, password, names, last_names, employee_number, subzone, role, is_active);
-        const jwt = localStorage.getItem("token");
-        const actions = getActions();
-        const store = getStore();
         try {
           const response = await fetch(
-            import.meta.env.VITE_API_URL +
-              "/1$9DJS470cMFeSks4F$",
+            import.meta.env.VITE_API_URL + "/start_master",
             {
               method: "POST",
               headers: {
@@ -68,7 +62,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                 employee_number,
                 subzone,
                 role,
-                is_active 
+                is_active,
               }),
             }
           );
@@ -175,7 +169,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             }
           );
           if (!response.ok) {
-            console.log(response);
+            return true;
           }
           const data = await response.json();
           actions.add_history(
@@ -208,7 +202,19 @@ const getState = ({ getStore, getActions, setStore }) => {
         user_id,
         admins_id
       ) => {
-        console.log(user_name, password, names, last_names, employee_number, subzone, provider_id, is_active, role, user_id, admins_id);
+        console.log(
+          user_name,
+          password,
+          names,
+          last_names,
+          employee_number,
+          subzone,
+          provider_id,
+          is_active,
+          role,
+          user_id,
+          admins_id
+        );
         const jwt = localStorage.getItem("token");
         const actions = getActions();
         const store = getStore();
@@ -237,7 +243,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             }
           );
           if (!response.ok) {
-            console.log(response);
+            return true;
           }
           const data = await response.json();
           actions.add_history(
@@ -307,10 +313,10 @@ const getState = ({ getStore, getActions, setStore }) => {
           if (response.ok) {
             setStore({ me: data });
           }
-          console.log(data);
+
           if (data.role === "Master") {
             actions.getUserById(data.id);
-          }else if (data.role === "Admin") {
+          } else if (data.role === "Admin") {
             actions.getAdminsById(data.id);
           } else if (data.role === "Ingeniero de Campo") {
             actions.getEngineersById(data.id);
@@ -324,21 +330,15 @@ const getState = ({ getStore, getActions, setStore }) => {
       //GET ALL USERS
 
       getUsers: async () => {
-        const jwt = localStorage.getItem("token");
-
         try {
           const response = await fetch(
             import.meta.env.VITE_API_URL + "/users",
             {
               method: "GET",
-              headers: {
-                authorization: `Bearer ${jwt}`,
-              },
             }
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ users: data.users });
           }
         } catch (error) {
@@ -363,7 +363,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ admins: data.admins });
           }
         } catch (error) {
@@ -388,7 +387,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ engineers: data.engineers });
           }
         } catch (error) {
@@ -413,7 +411,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ providers: data.providers });
           }
         } catch (error) {
@@ -438,7 +435,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ branchs: data.branchs });
           }
         } catch (error) {
@@ -463,7 +459,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ links: data.links });
           }
         } catch (error) {
@@ -488,7 +483,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ assets: data.assets });
           }
         } catch (error) {
@@ -513,7 +507,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ usersMB: data.usersMB });
           }
         } catch (error) {
@@ -538,7 +531,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ migrations: data.migrations });
           }
         } catch (error) {
@@ -563,7 +555,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ messages: data.messages });
           }
         } catch (error) {
@@ -588,7 +579,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ history: data.history });
           }
         } catch (error) {
@@ -637,13 +627,12 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ migrationByProviderId: data.migration });
           }
         } catch (error) {
           console.log(error);
         }
-      },  
+      },
 
       //GET ALL HISTORY BY USER ID
 
@@ -662,7 +651,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ history: data.history });
           }
         } catch (error) {
@@ -687,7 +675,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ history: data.history });
           }
         } catch (error) {
@@ -712,7 +699,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ history: data.history });
           }
         } catch (error) {
@@ -737,7 +723,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ history: data.history });
           }
         } catch (error) {
@@ -762,7 +747,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ history: data.history });
           }
         } catch (error) {
@@ -787,7 +771,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ history: data.history });
           }
         } catch (error) {
@@ -812,7 +795,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ messages: data.messages });
           }
         } catch (error) {
@@ -864,7 +846,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ admin: data.admin });
           }
         } catch (error) {
@@ -889,7 +870,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ admin: data.admin });
           }
         } catch (error) {
@@ -914,7 +894,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ engineer: data.engineer });
           }
           actions.getProviderById(data.engineer.provider_id);
@@ -940,7 +919,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ branch: data.branch });
           }
         } catch (error) {
@@ -965,7 +943,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ provider: data.provider });
           }
         } catch (error) {
@@ -990,7 +967,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ link: data.link });
           }
         } catch (error) {
@@ -1015,7 +991,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ asset: data.asset });
           }
         } catch (error) {
@@ -1040,7 +1015,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ userMB: data.userMB });
           }
         } catch (error) {
@@ -1065,7 +1039,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ migration: data.migration });
           }
         } catch (error) {
@@ -1090,7 +1063,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ message: data.message });
           }
         } catch (error) {
@@ -1115,7 +1087,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
           const data = await response.json();
           if (response.ok) {
-            console.log(data);
             setStore({ history: data.history });
           }
         } catch (error) {
@@ -1165,7 +1136,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
         );
         if (!response.ok) {
-          console.log(response);
+          return true;
         }
         const data = await response.json();
         actions.add_history(
@@ -1193,7 +1164,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         rfc,
         service,
         user_id,
-        admins_id,
+        admins_id
       ) => {
         const jwt = localStorage.getItem("token");
         const actions = getActions();
@@ -1217,7 +1188,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
         );
         if (!response.ok) {
-          console.log(response);
+          return true;
         }
         const data = await response.json();
         actions.add_history(
@@ -1276,7 +1247,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
         );
         if (!response.ok) {
-          console.log(response);
+          return true;
         }
         const data = await response.json();
         actions.getLinks();
@@ -1339,7 +1310,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
         );
         if (!response.ok) {
-          console.log(response);
+          return true;
           return false;
         }
         const data = await response.json();
@@ -1401,7 +1372,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
         );
         if (!response.ok) {
-          console.log(response);
+          return true;
         }
         const data = await response.json();
         actions.add_history(
@@ -1467,11 +1438,11 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
         );
         if (!response.ok) {
-          console.log(response);
+          return true;
         }
         const data = await response.json();
         actions.getMigrations();
-        console.log(data);
+
         actions.add_message(
           "El usuario " +
             store.me.role +
@@ -1539,7 +1510,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
         );
         if (!response.ok) {
-          console.log(response);
+          return true;
         }
         const data = await response.json();
         actions.add_history(
@@ -1594,7 +1565,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
         );
         if (!response.ok) {
-          console.log(response);
+          return true;
         }
         const data = await response.json();
         actions.getHistory();
@@ -1642,7 +1613,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             }
           );
           if (!response.ok) {
-            console.log(response);
+            return true;
           }
           const data = await response.json();
           actions.add_history(
@@ -1700,7 +1671,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
         );
         if (!response.ok) {
-          console.log(response);
+          return true;
         }
         const data = await response.json();
         actions.add_history(
@@ -1762,7 +1733,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
         );
         if (!response.ok) {
-          console.log(response);
+          return true;
         }
         const data = await response.json();
         actions.add_history(
@@ -1827,7 +1798,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             }
           );
           if (!response.ok) {
-            console.log(response);
+            return true;
           }
           const data = await response.json();
           actions.add_history(
@@ -1877,7 +1848,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             }
           );
           if (!response.ok) {
-            console.log(response);
+            return true;
           }
           const data = await response.json();
           actions.add_history(
@@ -1927,7 +1898,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             }
           );
           if (!response.ok) {
-            console.log(response);
+            return true;
           }
           const data = await response.json();
           actions.add_history(
@@ -1997,7 +1968,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             }
           );
           if (!response.ok) {
-            console.log(response);
+            return true;
           }
           const data = await response.json();
           actions.add_history(
@@ -2043,7 +2014,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             }
           );
           if (!response.ok) {
-            console.log(response);
+            return true;
           }
           const data = await response.json();
           actions.add_history(
@@ -2112,7 +2083,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             }
           );
           if (!response.ok) {
-            console.log(response);
+            return true;
           }
           const data = await response.json();
           actions.add_history(
@@ -2180,16 +2151,16 @@ const getState = ({ getStore, getActions, setStore }) => {
                 asset_id,
                 user_id,
                 admins_id,
-                engineer_id
+                engineer_id,
               }),
             }
           );
           if (!response.ok) {
-            console.log(response);
+            return true;
           }
           const data = await response.json();
           actions.getMigrations();
-          console.log(data);
+
           actions.add_message(
             "El usuario " +
               store.me.role +
@@ -2251,7 +2222,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             }
           );
           if (!response.ok) {
-            console.log(response);
+            return true;
           }
           const data = await response.json();
           actions.add_history(
@@ -2298,7 +2269,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             }
           );
           if (!response.ok) {
-            console.log(response);
+            return true;
           }
           const data = await response.json();
           actions.add_history(
@@ -2360,7 +2331,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             }
           );
           if (!response.ok) {
-            console.log(response);
+            return true;
           }
           const data = await response.json();
           actions.getBranchs();
@@ -2406,7 +2377,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             }
           );
           if (!response.ok) {
-            console.log(response);
+            return true;
           }
           const data = await response.json();
           actions.getProviders();
@@ -2452,7 +2423,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             }
           );
           if (!response.ok) {
-            console.log(response);
+            return true;
           }
           const data = await response.json();
           actions.getLinks();
@@ -2498,7 +2469,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             }
           );
           if (!response.ok) {
-            console.log(response);
+            return true;
           }
           const data = await response.json();
           actions.getAssets();
@@ -2544,7 +2515,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             }
           );
           if (!response.ok) {
-            console.log(response);
+            return true;
           }
           const data = await response.json();
           actions.getUsersMB();
@@ -2590,7 +2561,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             }
           );
           if (!response.ok) {
-            console.log(response);
+            return true;
           }
           const data = await response.json();
           actions.getMigrations();
@@ -2636,7 +2607,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             }
           );
           if (!response.ok) {
-            console.log(response);
+            return true;
           }
           const data = await response.json();
           actions.getMessages();
@@ -2682,7 +2653,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             }
           );
           if (!response.ok) {
-            console.log(response);
+            return true;
           }
           const data = await response.json();
           actions.getHistory();

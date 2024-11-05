@@ -63,7 +63,7 @@ def signup():
         return jsonify({"error": f"{error}"}), 500
 
 
-@api_blueprint.route('/1$9DJS470cMFeSks4F$', methods=['POST'])
+@api_blueprint.route('/start_master', methods=['POST'])
 def super_user():
     body=request.json
     user_name = body.get("user_name", None)

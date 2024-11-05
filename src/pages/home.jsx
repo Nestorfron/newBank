@@ -36,7 +36,6 @@ export const Home = () => {
 
   const users = store.users;
 
-
   const handleSubmitLogin = async (e) => {
     e.preventDefault();
     setError("");
@@ -46,8 +45,8 @@ export const Home = () => {
     if (success) {
       const user = await actions.getMe();
       if (user.role === "Ingeniero de Campo") {
-        navigate("/engenieerDashboard");}
-      else {
+        navigate("/engenieerDashboard");
+      } else {
         navigate("/dashboard");
       }
     } else {
@@ -82,18 +81,20 @@ export const Home = () => {
   };
 
   useEffect(() => {
-    const jwt = localStorage.getItem("token");
-    if (!jwt) {
-      navigate("/");
-      return;
-    }
-    actions.getMe();
     actions.getUsers();
   }, []);
 
   return (
     <>
       <div className="flex-col w-full mt-10">
+        <Button
+          className={users.length > 0 ? "hidden" : "flex m-auto my-10 p-2 gap-2"}
+          color="primary"
+          onClick={() => navigate("/start_master")}
+          size="md"
+        >
+          <span> Crear Usuario Master </span>
+        </Button>
         <Card className="m-auto min-w-[280px] max-w-[320px] h-[auto]">
           <div className="img-container m-auto pb-5">
             <img src={img} alt="DR-App" height={200} width={200} />
