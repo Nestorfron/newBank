@@ -23,9 +23,8 @@ export const FormAdmins = ({ id, btnAdmins, admin: initialAdmin }) => {
     employee_number: "",
     subzone: "",
     is_active: "",
-    role: "",
+    role: "Admin",
   });
-  const role = ["Admin"]
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -166,20 +165,6 @@ export const FormAdmins = ({ id, btnAdmins, admin: initialAdmin }) => {
           onChange={handleChange}
           required
         />
-        <Select
-          label="Rol"
-          placeholder={admin.role}
-          name="role"
-          required
-          value={admin.role}
-          onChange={handleChange}
-        >
-          {role.map((role) => (
-            <SelectItem key={role} value={role}>
-              {role}
-            </SelectItem>
-          ))}
-        </Select>
         <div className="flex items-center">
           <Switch
             name="is_active"
