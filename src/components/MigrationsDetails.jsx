@@ -73,8 +73,6 @@ export const MigrationsDetails = ({ migration, id }) => {
   
     const openModal = () => onOpen();
 
-   
-
   return (
     <>
       <Button className="w-3/4" content="Edit migracion" auto onClick={openModal}>
