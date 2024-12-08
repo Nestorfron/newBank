@@ -1048,6 +1048,31 @@ def edit_migration():
     except Exception as error:
         return jsonify({"error": f"{error}"}), 500
     
+    
+    # EDIT MIGRATION STATUS
+@api_blueprint.route('/edit_migration_status', methods=['PUT'])
+@jwt_required()
+def edit_migration_status():
+    try:
+        body = request.json
+        user_data = get_jwt_identity()
+        migration_id = body.get("id")
+        new_status = body.get("status")
+        
+        if not migration_id:
+            return jsonify({'error': 'Missing migration ID or user ID'}), 400
+        
+        migration = Migration.query.filter_by(id=migration_id).first()
+        if migration is None:
+            return jsonify({'error': 'Migration no found'}), 404
+        
+        migration.migration_status = new_status
+        
+        db.session.commit()
+        return jsonify({"message": "Migration status updated successfully"}), 200
+    except Exception as error:
+        return jsonify({"error": f"{error}"}), 500
+    
 
 # EDIT MESSAGE
 @api_blueprint.route('/edit_message', methods=['PUT'])

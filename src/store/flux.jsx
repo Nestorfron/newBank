@@ -2199,6 +2199,35 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
       },
 
+      //EDIT MIGRATION STATUS
+
+      editMigrationStatus: async (id, status) => {
+        const jwt = localStorage.getItem("token");
+        const actions = getActions();
+        try {
+          const response = await fetch(
+            import.meta.env.VITE_API_URL + "/edit_migration_status",
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                authorization: `Bearer ${jwt}`,
+              },
+              body: JSON.stringify({ id, status }),
+            }
+          );
+          if (!response.ok) {
+            return console.log(
+              "No se pudo actualizar el estado de la migración"
+            );
+          }
+          const data = await response.json();
+          actions.getMigrations(); // Si es necesario, actualiza la lista de migraciones
+          return data;
+        } catch (error) {
+          console.log(error);
+        }
+      },
       //EDIT MESSAGE
 
       editMessage: async (id, message) => {
