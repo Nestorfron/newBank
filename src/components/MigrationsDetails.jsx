@@ -85,7 +85,6 @@ export const MigrationsDetails = ({ migration, id }) => {
       <Modal backdrop={backdrop} isOpen={isOpen} onClose={onClose} className="w-full max-w-5xl">
         <ModalContent>
           <ModalBody className="w-full">
-            <p>Hola mundo</p>
             <Card className="w-full max-w-4xl border-none shadow-none">
               <CardHeader className="w-full">
                 <div className="flex justify-between items-center w-full">
