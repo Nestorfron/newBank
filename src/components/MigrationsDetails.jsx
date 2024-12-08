@@ -84,7 +84,7 @@ export const MigrationsDetails = ({ migration, id }) => {
         </span>
       </Button>
 
-      <Modal backdrop={backdrop} isOpen={isOpen} onClose={onClose} className="w-full max-w-4xl">
+      <Modal backdrop={backdrop} isOpen={isOpen} onClose={onClose} className="w-full max-w-5xl">
         <ModalContent>
           <ModalBody className="w-full">
             <Card className="w-full max-w-4xl border-none shadow-none">
