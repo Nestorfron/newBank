@@ -200,7 +200,7 @@ export const Migrations = () => {
                         status={migration.migration_status}
                         variant="shadow"
                       >
-                        {migration.migration_status}
+                        {migration.migration_status === "Ordered" ? "Ordenada" : migration.migration_status === "In_progress" ? "En Progreso" : "Completada"}
                       </Chip>
                     </div>
                   </CardHeader>
