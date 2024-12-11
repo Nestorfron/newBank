@@ -145,13 +145,13 @@ export const MigrationsDetails = ({ migration, id }) => {
   return (
     <>
       <Button
-        className="w-3/4"
+        className="w-3/4 border-gary-800 border-1 border-solid dark:border-gray-500 bg-transparent hover:scale-95"
         content="Edit migracion"
         auto
         onClick={openModal}
       >
         <FileText className="mr-2 h-4 w-4" />
-        <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+        <span className="text-lg  cursor-pointer active:opacity-50">
           Gestionar Migración
         </span>
       </Button>
