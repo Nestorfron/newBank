@@ -7,52 +7,44 @@ import { EditProviders } from "../components/EditProviders.jsx";
 import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
 import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
 import { EngineersList } from "../components/engineersList.jsx";
-
-
-
+import { ArrowUp, ArrowDown } from 'lucide-react';
 import {
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-  TableColumn,
   Input,
   Pagination,
-  Accordion,
-  AccordionItem,
+  Card,
+  CardBody,
+  CardHeader,
+  CardFooter,
+  Chip,
 } from "@nextui-org/react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export const Providers = () => {
   const { store, actions } = useContext(Context);
   const navigate = useNavigate();
   const [filterValue, setFilterValue] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [page, setPage] = useState(1);
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const cardsPerPage = 6;
 
   const filteredProviders = useMemo(() => {
-    let filteredProviders = [...store.providers];
+    let providers = [...store.providers];
 
     if (filterValue) {
-      filteredProviders = filteredProviders.filter((provider) =>
+      providers = providers.filter((provider) =>
         provider.company_name.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
-    if (statusFilter !== "all") {
-      filteredProviders = filteredProviders.filter(
-        (provider) => provider.status === statusFilter // Cambia según tus datos
-      );
-    }
-    return filteredProviders;
-  }, [store.providers, filterValue, statusFilter]);
 
-  const pages = Math.ceil(filteredProviders.length / rowsPerPage);
-  const items = useMemo(() => {
-    const start = (page - 1) * rowsPerPage;
-    return filteredProviders.slice(start, start + rowsPerPage);
-  }, [page, filteredProviders, rowsPerPage]);
+    return providers.sort((a, b) => {
+      return sortOrder === "asc" ? a.id - b.id : b.id - a.id;
+    });
+  }, [store.providers, filterValue, sortOrder]);
+
+  const indexOfLastCard = currentPage * cardsPerPage;
+  const indexOfFirstCard = indexOfLastCard - cardsPerPage;
+  const currentCards = filteredProviders.slice(indexOfFirstCard, indexOfLastCard);
 
   const deleteProvider = (id) => {
     Swal.fire({
@@ -71,36 +63,6 @@ export const Providers = () => {
     });
   };
 
-  const topContent = (
-    <div className="flex justify-between gap-3 items-center">
-      <div className="flex justify-start gap-3 items-center">
-        <span className="text-default-400 text-lg">
-          Total de Proveedores : {store.providers.length}
-        </span>
-      </div>
-      <div className="flex gap-2 items-center">
-        <Input
-          isClearable
-          placeholder="Buscar por Proveedor..."
-          value={filterValue}
-          onClear={() => setFilterValue("")}
-          onValueChange={setFilterValue}
-          className="w-full"
-          startContent={<SearchIcon />}
-        />
-        <div>
-          <CreateProviders />
-        </div>
-      </div>
-    </div>
-  );
-
-  const bottomContent = (
-    <div className="flex justify-center mt-4">
-      <Pagination showControls page={page} total={pages} onChange={setPage} />
-    </div>
-  );
-
   useEffect(() => {
     const jwt = localStorage.getItem("token");
     if (!jwt) {
@@ -114,54 +76,136 @@ export const Providers = () => {
 
   return (
     <div className="m-5">
-      <div className="flex justify-start gap-4 mt-4 mb-4">
-        <span className="text-lg font-bold">Gestor de Provedores</span>
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold ml-2">Gestor de Proveedores</h2>
+          <CreateProviders className="w-full" />
+        </div>
+
+        {/* Filtros de búsqueda y orden */}
+        <Card className="mb-5">
+          <CardBody>
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div className="w-full md:w-1/3">
+                <Input
+                  isClearable
+                  placeholder="Buscar por Proveedor..."
+                  value={filterValue}
+                  onClear={() => setFilterValue("")}
+                  onValueChange={setFilterValue}
+                  className="pl-2 w-full"
+                  startContent={<SearchIcon />}
+                />
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="light"
+                  size="sm"
+                  onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+                  className="flex items-center space-x-2 border border-transparent hover:border-gray-300 px-3 py-2 rounded-full"
+                >
+                  {sortOrder === "asc" ? (
+                    <>
+                      <ArrowUp className="h-5 w-5 text-primary-500" />
+                      <span className="ml-1">ID Ascendente</span>
+                    </>
+                  ) : (
+                    <>
+                      <ArrowDown className="h-5 w-5 text-primary-500" />
+                      <span className="ml-1">ID Descendente</span>
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </CardBody>
+        </Card>
+
+        {/* Tarjetas de proveedores */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+          <AnimatePresence>
+            {currentCards.map((provider) => (
+              <motion.div
+                key={provider.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.3 }}
+                layout
+              >
+                <Card className="h-full w-2/2 flex flex-col hover:shadow-lg transition-shadow duration-200">
+                  <CardHeader className="flex justify-between items-start mt-2 ml-2">
+                    <div>
+                      <h2 className="text-xl font-bold">
+                        Proveedor #{provider.id}
+                      </h2>
+                      <p className="text-gray-600 dark:text-gray-300">
+                        {provider.company_name}
+                      </p>
+                    </div>
+                    <div>
+                      {/* <Chip
+                        color="primary"
+                        variant="shadow"
+                        size="sm"
+                        className="mr-3"
+                      >
+                        {provider.rfc}
+                      </Chip> */}
+                    </div>
+                  </CardHeader>
+                  <CardBody className="ml-2">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      RFC: {provider.rfc}
+                    </p>
+                    <div className="mt-2 flex items-center">
+                      <span className="text-sm font-semibold mr-2">Ingenieros de Campo:</span>
+                      {provider.engineers.length > 0 ? (
+                        <EngineersList provider={provider} />
+                      ) : (
+                        <span className="text-gray-400 cursor-not-allowed" title="Sin Ingenieros">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                            <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                          </svg>
+                        </span>
+                      )}
+                    </div>
+                  </CardBody>
+                  <CardFooter className="mb-2">
+                    <div className="flex justify-center w-full space-x-2">
+                      <EditProviders provider={provider} />
+                      <Button
+                        color="danger"
+                        variant="flat"
+                        size="sm"
+                        onClick={() => deleteProvider(provider.id)}
+                      >
+                        <DeleteIcon />
+                        Eliminar
+                      </Button>
+                    </div>
+                  </CardFooter>
+                </Card>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+
+        {/* Paginación */}
+        <div className="flex justify-center mt-6">
+          <Pagination
+            loop
+            showControls
+            color="primary"
+            total={Math.ceil(filteredProviders.length / cardsPerPage)}
+            page={currentPage}
+            onChange={(page) => setCurrentPage(page)}
+          />
+        </div>
       </div>
-      <Table
-        aria-label="Tabla de proveedores"
-        isHeaderSticky
-        isStriped
-        topContent={topContent}
-        bottomContent={bottomContent}
-        classNames={{
-          td: "text-center",
-          th: "text-center",
-        }}
-      >
-        <TableHeader>
-          <TableColumn>#</TableColumn>
-          <TableColumn>Nombre</TableColumn>
-          <TableColumn>RFC</TableColumn>
-          <TableColumn>Servicio</TableColumn>
-          <TableColumn>Ingenieros de Campo</TableColumn>
-          <TableColumn>Acciones</TableColumn>
-        </TableHeader>
-        <TableBody>
-          {items.map((provider) => (
-            <TableRow key={provider.id}>
-              <TableCell>{provider.id}</TableCell>
-              <TableCell>{provider.company_name}</TableCell>
-              <TableCell>{provider.rfc}</TableCell>
-              <TableCell>{provider.service}</TableCell>
-              <TableCell>
-                {provider.engineers.length ? (<EngineersList provider={provider}/>) : "Sin Ingenieros"}
-              </TableCell>
-              <TableCell>
-                <div className="flex justify-center">
-                  <Button
-                    variant="link"
-                    className="text-lg text-danger cursor-pointer"
-                    onClick={() => deleteProvider(provider.id)}
-                  >
-                    <DeleteIcon />
-                  </Button>
-                  <EditProviders provider={provider} />
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
     </div>
   );
 };
+

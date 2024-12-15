@@ -6,17 +6,18 @@ import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
 import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
 import { CreateBranches } from "../components/CreateBranches.jsx";
 import { EditBranches } from "../components/EditBranches.jsx";
+import { ArrowUp, ArrowDown } from 'lucide-react';
 import {
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-  TableColumn,
   Input,
+  Card,
+  CardBody,
+  CardHeader,
+  CardFooter,
   Pagination,
+  Chip,
 } from "@nextui-org/react";
+import { motion, AnimatePresence } from "framer-motion";
 import useTokenExpiration from "../hooks/useTokenExpitarion.jsx";
 import AssetsListBranch from "../components/assetsListBranch.jsx";
 import MigrationsListBranch from "../components/migrationsListBranch.jsx";
@@ -26,36 +27,11 @@ export const Branches = () => {
   const { store, actions } = useContext(Context);
   const navigate = useNavigate();
   const [filterValue, setFilterValue] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [page, setPage] = useState(1);
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const cardsPerPage = 6;
 
   useTokenExpiration();
-
-  const filteredItems = useMemo(() => {
-    let filteredBranches = [...store.branchs];
-
-    if (filterValue) {
-      filteredBranches = filteredBranches.filter((branch) =>
-        branch.branch_cr.toLowerCase().includes(filterValue.toLowerCase())
-      );
-    }
-
-    // Asegúrate de que 'status' esté en tus datos para filtrar adecuadamente
-    if (statusFilter !== "all") {
-      filteredBranches = filteredBranches.filter(
-        (branch) => branch.status === statusFilter // Cambia según tus datos
-      );
-    }
-
-    return filteredBranches;
-  }, [store.branchs, filterValue, statusFilter]);
-
-  const pages = Math.ceil(filteredItems.length / rowsPerPage);
-  const items = useMemo(() => {
-    const start = (page - 1) * rowsPerPage;
-    return filteredItems.slice(start, start + rowsPerPage);
-  }, [page, filteredItems, rowsPerPage]);
 
   const deleteBranch = (id) => {
     Swal.fire({
@@ -74,36 +50,6 @@ export const Branches = () => {
     });
   };
 
-  const topContent = (
-    <div className="flex justify-between gap-3 items-center">
-      <div className="flex justify-start gap-3 items-center">
-        <span className="text-default-400 text-lg">
-          Total de Sucursales : {store.branchs.length}
-        </span>
-      </div>
-      <div className="flex gap-2 items-center">
-        <Input
-          isClearable
-          placeholder="Buscar por Sucursal..."
-          value={filterValue}
-          onClear={() => setFilterValue("")}
-          onValueChange={setFilterValue}
-          className="w-full"
-          startContent={<SearchIcon />}
-        />
-        <div>
-          <CreateBranches />
-        </div>
-      </div>
-    </div>
-  );
-
-  const bottomContent = (
-    <div className="flex justify-center mt-4">
-      <Pagination showControls page={page} total={pages} onChange={setPage} />
-    </div>
-  );
-
   useEffect(() => {
     const jwt = localStorage.getItem("token");
     if (!jwt) {
@@ -111,64 +57,189 @@ export const Branches = () => {
       return;
     }
     actions.getMe();
-    actions.getBranchs()
+    actions.getBranchs();
   }, []);
+
+  const filteredBranches = useMemo(() => {
+    let branches = [...store.branchs];
+
+    if (filterValue) {
+      branches = branches.filter((branch) =>
+        branch.branch_cr.toLowerCase().includes(filterValue.toLowerCase())
+      );
+    }
+
+    return branches.sort((a, b) => {
+      return sortOrder === "asc" ? a.id - b.id : b.id - a.id;
+    });
+  }, [store.branchs, filterValue, sortOrder]);
+
+  const indexOfLastCard = currentPage * cardsPerPage;
+  const indexOfFirstCard = indexOfLastCard - cardsPerPage;
+  const currentCards = filteredBranches.slice(indexOfFirstCard, indexOfLastCard);
 
   return (
     <div className="m-5">
-      <div className="flex justify-start gap-4 mt-4 mb-4">
-        <span className="text-lg font-bold">Gestor de Sucursales</span>
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold ml-2">Gestor de Sucursales</h2>
+          <CreateBranches className="w-full" />
+        </div>
+
+        {/* Filtros de búsqueda y orden */}
+        <Card className="mb-5">
+          <CardBody>
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div className="w-full md:w-1/3">
+                <Input
+                  isClearable
+                  placeholder="Buscar por Sucursal..."
+                  value={filterValue}
+                  onClear={() => setFilterValue("")}
+                  onValueChange={setFilterValue}
+                  className="pl-2 w-full"
+                  startContent={<SearchIcon />}
+                />
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="light"
+                  size="sm"
+                  onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+                  className="flex items-center space-x-2 border border-transparent hover:border-gray-300 px-3 py-2 rounded-full"
+                >
+                  {sortOrder === "asc" ? (
+                    <>
+                      <ArrowUp className="h-5 w-5 text-primary-500" />
+                      <span className="ml-1">ID Ascendente</span>
+                    </>
+                  ) : (
+                    <>
+                      <ArrowDown className="h-5 w-5 text-primary-500" />
+                      <span className="ml-1">ID Descendente</span>
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </CardBody>
+        </Card>
+
+        {/* Tarjetas de sucursales */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+          <AnimatePresence>
+            {currentCards.map((branch) => (
+              <motion.div
+                key={branch.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.3 }}
+                layout
+              >
+                <Card className="h-full w-2/2 flex flex-col hover:shadow-lg transition-shadow duration-200">
+                  <CardHeader className="flex justify-between items-start mt-2 ml-2">
+                    <div>
+                      <h2 className="text-xl font-bold">
+                        Sucursal #{branch.id}
+                      </h2>
+                      <p className="text-gray-600 dark:text-gray-300">
+                        {branch.branch_cr}
+                      </p>
+                    </div>
+                    <div>
+                      <Chip
+                        color="primary"
+                        variant="shadow"
+                        size="sm"
+                        className="mr-3"
+                      >
+                        {branch.branch_zone}
+                      </Chip>
+                    </div>
+                  </CardHeader>
+                  <CardBody className="ml-2">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      SubZona: {branch.branch_subzone}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      Dirección: {branch.branch_address}
+                    </p>
+                    <div className="mt-2 flex items-center ">
+                      <div className="flex items-center">
+                        <span className="text-sm font-semibold mr-2">Activos:</span>
+                        {branch.assets.length > 0 ? (
+                          <AssetsListBranch branch={branch} />
+                        ) : (
+                          <span className="text-gray-400 cursor-not-allowed" title="Sin Activos">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                              <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                            </svg>
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center">
+                        <span className="text-sm font-semibold mr-2">Migraciones:</span>
+                        {branch.migrations.length > 0 ? (
+                          <MigrationsListBranch branch={branch} />
+                        ) : (
+                          <span className="text-gray-400 cursor-not-allowed" title="Sin Migraciones">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                              <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                            </svg>
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center">
+                        <span className="text-sm font-semibold mr-2">Historial:</span>
+                        {branch.history.length > 0 ? (
+                          <HistoryListBranch branch={branch} />
+                        ) : (
+                          <span className="text-gray-400 cursor-not-allowed" title="Sin Historial">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                              <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                            </svg>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </CardBody>
+                  <CardFooter className="mb-2">
+                    <div className="flex justify-center w-full space-x-2">
+                      <EditBranches branch={branch} />
+                      <Button
+                        color="danger"
+                        variant="flat"
+                        size="sm"
+                        onClick={() => deleteBranch(branch.id)}
+                      >
+                        <DeleteIcon />
+                        Eliminar
+                      </Button>
+                    </div>
+                  </CardFooter>
+                </Card>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+
+        {/* Paginación */}
+        <div className="flex justify-center mt-6">
+          <Pagination
+            loop
+            showControls
+            color="primary"
+            total={Math.ceil(filteredBranches.length / cardsPerPage)}
+            page={currentPage}
+            onChange={(page) => setCurrentPage(page)}
+          />
+        </div>
       </div>
-      <Table
-        aria-label="Tabla de sucursales"
-        isStriped
-        isHeaderSticky
-        topContent={topContent}
-        bottomContent={bottomContent}
-        classNames={{
-          td: "text-center w-32",
-          th: "text-center",
-        }}
-      >
-        <TableHeader>
-          <TableColumn>ID</TableColumn>
-          <TableColumn>Cr</TableColumn>
-          <TableColumn>Zona</TableColumn>
-          <TableColumn>SubZona</TableColumn>
-          <TableColumn>Dirección</TableColumn>
-          <TableColumn>Activos</TableColumn>
-          <TableColumn>Migrations</TableColumn>
-          <TableColumn>Historial</TableColumn>
-          <TableColumn>Acciones</TableColumn>
-        </TableHeader>
-        <TableBody>
-          {items.map((branch) => (
-            <TableRow key={branch.id}>
-              <TableCell>{branch.id}</TableCell>
-              <TableCell>{branch.branch_cr}</TableCell>
-              <TableCell>{branch.branch_zone}</TableCell>
-              <TableCell>{branch.branch_subzone}</TableCell>
-              <TableCell>{branch.branch_address}</TableCell>
-              <TableCell className="justify-center"> {branch.assets.length > 0 ? <AssetsListBranch branch={branch}/> : <p className="text-center text-gray-500 m-auto">Sin Activos</p>} </TableCell>
-              <TableCell className="justify-center"> {branch.migrations.length > 0 ? <MigrationsListBranch branch={branch}/> : <p className="text-center text-gray-500 m-auto">Sin Migraciones</p>} </TableCell>
-              <TableCell className="justify-center"> {branch.history.length > 0 ? <HistoryListBranch branch={branch}/> : <p className="text-center text-gray-500 m-auto">Sin Historial</p>} </TableCell>
-              <TableCell>
-                <div className="flex justify-center">
-                  <Button variant="link" color="danger">
-                    <span
-                      className="text-lg text-danger cursor-pointer"
-                      onClick={() => deleteBranch(branch.id)}
-                    >
-                      <DeleteIcon />
-                    </span>
-                  </Button>
-                  <EditBranches branch={branch} />
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
     </div>
   );
 };
