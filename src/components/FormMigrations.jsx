@@ -1,26 +1,23 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
 import { Context } from "../store/appContext";
 import {
   Input,
   Button,
-  Spacer,
-  ModalFooter,
   Select,
   SelectItem,
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
 } from "@nextui-org/react";
+import { CheckCircle } from "lucide-react";
 import Swal from "sweetalert2";
 
-export const FormMigrations = ({
-  id,
-  btnMigration,
-  migration: initialMigration,
-}) => {
+export const FormMigrations = ({ id, btnMigration, migration: initialMigration }) => {
   const { store, actions } = useContext(Context);
   const [provider, setProvider] = useState("");
   const [branch, setBranch] = useState("");
   const [asset, setAsset] = useState("");
-  const navigate = useNavigate();
   const [migration, setMigration] = useState({
     installation_date: "",
     migration_date: "",
@@ -36,28 +33,27 @@ export const FormMigrations = ({
 
   const me = store.me;
 
+  const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const addId = ()  => {
-    if (me.role === "Master") {
-      setMigration({ ...migration, user_id: me.id });
-    } else if (me.role === "Admin") {
-      setMigration({ ...migration, admins_id: me.id });
-    } else if (me.role === "Ingeniero de Campo") {
-      setMigration({ ...migration, engineer_id: me.id });
-    }
-  }
-
-  const parseDateString = (dateString) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
+  const steps = [
+    {
+      title: "Información General",
+      fields: ["installation_date", "migration_date", "migration_description", "migration_status"],
+    },
+    {
+      title: "Proveedor y Sucursal",
+      fields: ["provider_id", "branch_id"],
+    },
+    {
+      title: "Activo",
+      fields: ["asset_id"],
+    },
+  ];
 
   const handleChange = (e) => {
-    setMigration({ ...migration, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setMigration({ ...migration, [name]: value });
   };
 
   const handleSubmit = async (e) => {
@@ -83,10 +79,7 @@ export const FormMigrations = ({
             migration.migration_status,
             migration.provider_id,
             migration.branch_id,
-            migration.asset_id,
-            migration.user_id,
-            migration.admins_id,
-            migration.engineer_id
+            migration.asset_id
           )
         : await actions.add_migration(
             migration.installation_date,
@@ -95,10 +88,7 @@ export const FormMigrations = ({
             migration.migration_status,
             migration.provider_id,
             migration.branch_id,
-            migration.asset_id,
-            migration.user_id,
-            migration.admins_id,
-            migration.engineer_id
+            migration.asset_id
           );
       Swal.fire({
         position: "center",
@@ -113,13 +103,9 @@ export const FormMigrations = ({
           migration_date: "",
           migration_description: "",
           migration_status: "",
-          user_id: "",
           provider_id: "",
           branch_id: "",
           asset_id: null,
-          user_id: null,
-          admins_id: null,
-          engineer_id: null,
         });
       }
     } catch (error) {
@@ -133,11 +119,15 @@ export const FormMigrations = ({
     }
   };
 
-  const options = [
-    { value: "Ordered", label: "Ordenada" },
-    { value: "In_progress", label: "En proceso" },
-    { value: "Completed", label: "Completada" },
-  ];
+  const isStepComplete = (step) => {
+    return steps[step].fields.every(
+      (field) => migration[field] !== "" && migration[field] !== null
+    );
+  };
+
+  const allStepsComplete = steps.every((_, index) => isStepComplete(index));
+
+  
 
   const getProviderById = (providerId) => {
     const Provider = store.providers.find(
@@ -163,24 +153,23 @@ export const FormMigrations = ({
   useEffect(() => {
     const jwt = localStorage.getItem("token");
     if (!jwt) {
-      navigate("/");
+      navigate("/");  
       return;
     }
     actions.getMigrations();
     actions.getProviders();
     actions.getBranchs();
     actions.getMe();
-    addId();
+
     if (initialMigration) {
       getProviderById(initialMigration.provider_id);
       getBranchById(initialMigration.branch_id);
       getAssetById(initialMigration.asset_id);
       setMigration({
-        installation_date: parseDateString(initialMigration.installation_date) || "",
-        migration_date: parseDateString(initialMigration.migration_date) || "",
+        installation_date:initialMigration.installation_date || "",
+        migration_date:initialMigration.migration_date || "",
         migration_description: initialMigration.migration_description || "",
         migration_status: initialMigration.migration_status || "",
-        user_id: initialMigration.user_id || "",
         provider_id: initialMigration.provider_id || "",
         branch_id: initialMigration.branch_id || "",
         asset_id: initialMigration.asset_id || null,
@@ -192,96 +181,128 @@ export const FormMigrations = ({
   }, []);
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="flex flex-col gap-4">
-        <Input
-          label="Fecha de Instalación"
-          name="installation_date"
-          type="date"
-          value={migration.installation_date}
-          onChange={handleChange}
-          required
-        />
-        <Input
-          label="Fecha de Migración"
-          name="migration_date"
-          type="date"
-          value={migration.migration_date}
-          onChange={handleChange}
-          required
-        />
-        <Input
-          label="Descripción de la Migración"
-          name="migration_description"
-          value={migration.migration_description}
-          onChange={handleChange}
-          required
-        />
-        <Select
-          label="Estado de la Migración"
-          name="migration_status"
-          placeholder={migration.migration_status}
-          value={migration.migration_status}
-          onChange={handleChange}
-          required
-        >
-          {options.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
-            </SelectItem>
-          ))}
-        </Select>
-        <Select
-          label="Selecciona un proveedor"
-          name="provider_id"
-          required
-          placeholder={provider ? provider.company_name : ""}
-          value={migration.provider_id}
-          onChange={handleChange}
-        >
-          {store.providers.map((provider) => (
-            <SelectItem key={provider.id} value={provider.id}>
-              {provider.company_name}
-            </SelectItem>
-          ))}
-        </Select>
+    <Card className="w-full max-w-4xl">
+      <CardHeader>
+        <h2>{id ? "Editar Migración" : "Nueva Migración"}</h2>
+      </CardHeader>
+      <CardBody>
+        {/* Barra de Pasos */}
+        <div className="mb-6">
+          <div className="flex justify-between mb-2">
+            {steps.map((step, index) => (
+              <Button
+                key={index}
+                variant={activeStep === index ? "default" : "outline"}
+                onClick={() => setActiveStep(index)}
+                disabled={index > 0 && !isStepComplete(index - 1)}
+                className="flex items-center"
+              >
+                {isStepComplete(index) ? (
+                  <CheckCircle className="mr-2 text-success" />
+                ) : null}
+                {step.title}
+              </Button>
+            ))}
+          </div>
+          <div className="w-full bg-gray-200 h-2 rounded-full">
+            <div
+              className="bg-primary h-2 rounded-full transition-all duration-300 ease-in-out"
+              style={{ width: `${((activeStep + 1) / steps.length) * 100}%` }}
+            ></div>
+          </div>
+        </div>
 
-        <Select
-          label="Sucursal"
-          name="branch_id"
-          required
-          placeholder={branch ? branch.branch_cr : ""}
-          value={migration.branch_id}
-          onChange={handleChange}
-        >
-          {store.branchs.map((branch) => (
-            <SelectItem key={branch.id} value={branch.id}>
-              {branch.branch_cr}
-            </SelectItem>
+        {/* Formulario: Campos del Paso Actual */}
+        <div className="space-y-4">
+          {steps[activeStep].fields.map((field) => (
+            <div key={field}>
+              {field === "migration_status" ? (
+                <Select
+                  label="Estado de la Migración"
+                  name="migration_status"
+                  value={migration.migration_status}
+                  onChange={handleChange}
+                  required
+                >
+                  {["Ordered", "In_progress", "Completed"].map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {status}
+                    </SelectItem>
+                  ))}
+                </Select>
+              ) : field === "provider_id" ? (
+                <Select
+                  label="Selecciona un proveedor"
+                  name="provider_id"
+                  value={migration.provider_id}
+                  onChange={handleChange}
+                  required
+                >
+                  {store.providers.map((provider) => (
+                    <SelectItem key={provider.id} value={provider.id}>
+                      {provider.company_name}
+                    </SelectItem>
+                  ))}
+                </Select>
+              ) : field === "branch_id" ? (
+                <Select
+                  label="Sucursal"
+                  name="branch_id"
+                  value={migration.branch_id}
+                  onChange={handleChange}
+                  required
+                >
+                  {store.branchs.map((branch) => (
+                    <SelectItem key={branch.id} value={branch.id}>
+                      {branch.branch_cr}
+                    </SelectItem>
+                  ))}
+                </Select>
+              ) : field === "asset_id" ? (
+                <Select
+                  label="Activo"
+                  name="asset_id"
+                  value={migration.asset_id}
+                  onChange={handleChange}
+                  required
+                >
+                  {store.assets.map((asset) => (
+                    <SelectItem key={asset.id} value={asset.id}>
+                      {`${asset.asset_type} - ${asset.asset_brand} - ${asset.asset_model} - ${asset.asset_serial}`}
+                    </SelectItem>
+                  ))}
+                </Select>
+              ) : (
+                <Input
+                  label={field.replace("_", " ").toUpperCase()}
+                  name={field}
+                  value={migration[field]}
+                  onChange={handleChange}
+                  required
+                  type={field.includes("date") ? "date" : "text"}
+                />
+              )}
+            </div>
           ))}
-        </Select>
-        <Select
-          label="Activo"
-          name="asset_id"
-          required
-          placeholder={asset ? asset.asset_type : ""}
-          value={migration.asset_id}
-          onChange={handleChange}
-          textValue={migration.asset_id}
-        >
-          {store.assets.map((asset) => (
-            <SelectItem key={asset.id} value={asset.id} textValue={asset.id}>
-              {asset.asset_type} - {asset.asset_brand} - {asset.asset_model} - {asset.asset_serial} - {asset.asset_inventory_number}
-            </SelectItem>
-          ))}
-        </Select>
-      </div>
-      <Spacer />
-      <ModalFooter>
-        <Button type="submit" color="primary" disabled={loading}>
-          {btnMigration}
+        </div>
+      </CardBody>
+      <CardFooter className="flex justify-between">
+        <Button onClick={() => setActiveStep(0)} color="error">
+          Cancelar
         </Button>
-      </ModalFooter>
-    </form>
+        {activeStep < steps.length - 1 ? (
+          <Button
+            onClick={() => setActiveStep(activeStep + 1)}
+            disabled={!isStepComplete(activeStep)}
+          >
+            Siguiente
+          </Button>
+        ) : (
+          <Button onClick={handleSubmit} disabled={!allStepsComplete}>
+            {id ? "Actualizar Migración" : "Crear Migración"}
+          </Button>
+        )}
+      </CardFooter>
+    </Card>
   );
 };

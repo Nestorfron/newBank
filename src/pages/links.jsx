@@ -6,65 +6,50 @@ import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
 import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
 import { CreateLinks } from "../components/CreateLinks.jsx";
 import { EditLinks } from "../components/EditLinks.jsx";
+import { ArrowUp, ArrowDown } from 'lucide-react';
 import {
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-  TableColumn,
   Input,
   Pagination,
+  Card,
+  CardBody,
+  CardHeader,
+  CardFooter,
   Chip,
 } from "@nextui-org/react";
+import { motion, AnimatePresence } from "framer-motion";
 import useTokenExpiration from "../hooks/useTokenExpitarion.jsx";
 
 export const Links = () => {
   const { store, actions } = useContext(Context);
   const navigate = useNavigate();
   const [filterValue, setFilterValue] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [page, setPage] = useState(1);
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const cardsPerPage = 6;
 
   useTokenExpiration();
 
-  const filteredItems = useMemo(() => {
-    let filteredLinks = [...store.links];
+  const filteredLinks = useMemo(() => {
+    let links = [...store.links];
 
     if (filterValue) {
-      filteredLinks = filteredLinks.filter((link) =>
-        link.type
-          .toLowerCase()
-          .includes(filterValue.toLowerCase()) ||
-        link.description
-          .toLowerCase()
-          .includes(filterValue.toLowerCase()) ||
-        link.speed
-          .toLowerCase()
-          .includes(filterValue.toLowerCase()) ||
-        link.status
-          .toLowerCase()
-          .includes(filterValue.toLowerCase())
+      links = links.filter((link) =>
+        link.type.toLowerCase().includes(filterValue.toLowerCase()) ||
+        link.description.toLowerCase().includes(filterValue.toLowerCase()) ||
+        link.speed.toLowerCase().includes(filterValue.toLowerCase()) ||
+        link.status.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
 
-    // Asegúrate de que 'status' esté en tus datos para filtrar adecuadamente
-    if (statusFilter !== "all") {
-      filteredLinks = filteredLinks.filter(
-        (link) => link.status === statusFilter // Cambia según tus datos
-      );
-    }
+    return links.sort((a, b) => {
+      return sortOrder === "asc" ? a.id - b.id : b.id - a.id;
+    });
+  }, [store.links, filterValue, sortOrder]);
 
-    return filteredLinks;
-  }, [store.links, filterValue, statusFilter]);
-
-  const pages = Math.ceil(filteredItems.length / rowsPerPage);
-  const items = useMemo(() => {
-    const start = (page - 1) * rowsPerPage;
-    return filteredItems.slice(start, start + rowsPerPage);
-  }, [page, filteredItems, rowsPerPage]);
+  const indexOfLastCard = currentPage * cardsPerPage;
+  const indexOfFirstCard = indexOfLastCard - cardsPerPage;
+  const currentCards = filteredLinks.slice(indexOfFirstCard, indexOfLastCard);
 
   const deleteLink = (id) => {
     Swal.fire({
@@ -83,36 +68,6 @@ export const Links = () => {
     });
   };
 
-  const topContent = (
-    <div className="flex justify-between gap-3 items-center">
-      <div className="flex justify-start gap-3 items-center">
-        <span className="text-default-400 text-lg">
-          Total de Links : {store.links.length}
-        </span>
-      </div>
-      <div className="flex gap-2 items-center">
-        <Input
-          isClearable
-          placeholder="Buscar por Link..."
-          value={filterValue}
-          onClear={() => setFilterValue("")}
-          onValueChange={setFilterValue}
-          className="w-full"
-          startContent={<SearchIcon />}
-        />
-        <div>
-          <CreateLinks />
-        </div>
-      </div>
-    </div>
-  );
-
-  const bottomContent = (
-    <div className="flex justify-center mt-4">
-      <Pagination showControls page={page} total={pages} onChange={setPage} />
-    </div>
-  );
-
   useEffect(() => {
     const jwt = localStorage.getItem("token");
     if (!jwt) {
@@ -121,57 +76,136 @@ export const Links = () => {
     }
     actions.getMe();
     actions.getLinks();
-  }, []);    
+  }, []);
+
+  const statusColor = {
+    active: "success",
+    inactive: "danger",
+    pending: "warning",
+  };
 
   return (
     <div className="m-5">
-      <div className="flex justify-start gap-4 mt-4 mb-4">
-        <span className="text-lg font-bold">Gestor de Links</span>
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold ml-2">Gestor de Links</h2>
+          <CreateLinks className="w-full" />
+        </div>
+
+        {/* Filtros de búsqueda y orden */}
+        <Card className="mb-5">
+          <CardBody>
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div className="w-full md:w-1/3">
+                <Input
+                  isClearable
+                  placeholder="Buscar por Link..."
+                  value={filterValue}
+                  onClear={() => setFilterValue("")}
+                  onValueChange={setFilterValue}
+                  className="pl-2 w-full"
+                  startContent={<SearchIcon />}
+                />
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="light"
+                  size="sm"
+                  onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+                  className="flex items-center space-x-2 border border-transparent hover:border-gray-300 px-3 py-2 rounded-full"
+                >
+                  {sortOrder === "asc" ? (
+                    <>
+                      <ArrowUp className="h-5 w-5 text-primary-500" />
+                      <span className="ml-1">ID Ascendente</span>
+                    </>
+                  ) : (
+                    <>
+                      <ArrowDown className="h-5 w-5 text-primary-500" />
+                      <span className="ml-1">ID Descendente</span>
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </CardBody>
+        </Card>
+
+        {/* Tarjetas de links */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+          <AnimatePresence>
+            {currentCards.map((link) => (
+              <motion.div
+                key={link.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.3 }}
+                layout
+              >
+                <Card className="h-full w-2/2 flex flex-col hover:shadow-lg transition-shadow duration-200">
+                  <CardHeader className="flex justify-between items-start mt-2 ml-2">
+                    <div>
+                      <h2 className="text-xl font-bold">
+                        Link #{link.id}
+                      </h2>
+                      <p className="text-gray-600 dark:text-gray-300">
+                        {link.type}
+                      </p>
+                    </div>
+                    <div>
+                      <Chip
+                        color={statusColor[link.status.toLowerCase()]}
+                        variant="shadow"
+                        size="sm"
+                        className="mr-3"
+                      >
+                        {link.status}
+                      </Chip>
+                    </div>
+                  </CardHeader>
+                  <CardBody className="ml-2">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      Descripción: {link.description}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      Velocidad: {link.speed}
+                    </p>
+                  </CardBody>
+                  <CardFooter className="mb-2">
+                    <div className="flex justify-center w-full space-x-2">
+                      <EditLinks link={link} />
+                      <Button
+                        color="danger"
+                        variant="flat"
+                        size="sm"
+                        onClick={() => deleteLink(link.id)}
+                      >
+                        <DeleteIcon />
+                        Eliminar
+                      </Button>
+                    </div>
+                  </CardFooter>
+                </Card>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+
+        {/* Paginación */}
+        <div className="flex justify-center mt-6">
+          <Pagination
+            loop
+            showControls
+            color="primary"
+            total={Math.ceil(filteredLinks.length / cardsPerPage)}
+            page={currentPage}
+            onChange={(page) => setCurrentPage(page)}
+          />
+        </div>
       </div>
-      <Table
-        aria-label="Tabla de links"
-        isHeaderSticky
-        isStriped
-        topContent={topContent}
-        bottomContent={bottomContent}
-        classNames={{
-          td: "text-center",
-          th: "text-center",
-        }}
-      >
-        <TableHeader>
-          <TableColumn>ID</TableColumn>
-          <TableColumn>Tipo</TableColumn>
-          <TableColumn>Descripción</TableColumn>
-          <TableColumn>Velocidad</TableColumn>
-          <TableColumn>Estado</TableColumn>
-          <TableColumn>Acciones</TableColumn>
-        </TableHeader>
-        <TableBody>
-          {items.map((link) => (
-            <TableRow key={link.id}>
-              <TableCell>{link.id}</TableCell>
-              <TableCell>{link.type}</TableCell>
-              <TableCell>{link.description}</TableCell>
-              <TableCell>{link.speed}</TableCell>
-              <TableCell>{link.status}</TableCell>
-              <TableCell>
-                <div className="flex justify-center">
-                  <Button variant="link" color="danger">
-                    <span
-                      className="text-lg text-danger cursor-pointer"
-                      onClick={() => deleteLink(link.id)}
-                    >
-                      <DeleteIcon />
-                    </span>
-                  </Button>
-                  <EditLinks link={link} />
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
     </div>
   );
 };
+

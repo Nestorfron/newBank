@@ -1,36 +1,39 @@
 import React, { useContext, useState, useMemo, useEffect } from "react";
 import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
+import { MigrationsDetails } from "../components/MigrationsDetails.jsx";
 import Swal from "sweetalert2";
 import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
 import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
 import { CreateMigrations } from "../components/CreateMigration.jsx";
 import { EditMigrations } from "../components/EditMigrations.jsx";
+import { ArrowUp, ArrowDown } from "lucide-react";
 import {
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-  TableColumn,
   Input,
-  Pagination,
   Chip,
+  Card,
+  CardBody,
+  CardHeader,
+  CardFooter,
+  Tabs,
+  Tab,
+  Pagination,
 } from "@nextui-org/react";
+import { motion, AnimatePresence } from "framer-motion";
 import useTokenExpiration from "../hooks/useTokenExpitarion.jsx";
+import { s } from "framer-motion/client";
 
 export const Migrations = () => {
   const { store, actions } = useContext(Context);
   const navigate = useNavigate();
   const [filterValue, setFilterValue] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [page, setPage] = useState(1);
+  const [activeTab, setActiveTab] = useState("all");
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const cardsPerPage = 6;
 
   useTokenExpiration();
-
-  const me = store.me;
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -40,33 +43,6 @@ export const Migrations = () => {
       day: "2-digit",
     });
   };
-
-  const filteredItems = useMemo(() => {
-    let filteredMigrations = [...store.migrations];
-
-    if (filterValue) {
-      filteredMigrations = filteredMigrations.filter((migration) =>
-        [migration.installation_date, migration.migration_date, migration.migration_description, migration.migration_status, migration.provider_id, migration.branch_id].some(field => 
-          field ? field.toString().toLowerCase().includes(filterValue.toLowerCase()) : false
-        )
-      );
-    }
-
-    if (statusFilter !== "all") {
-      filteredMigrations = filteredMigrations.filter(
-        (migration) => migration.migration_status === statusFilter
-      );
-    }
-
-    return filteredMigrations;
-  }, [store.migrations, filterValue, statusFilter]);
-
-
-  const pages = Math.ceil(filteredItems.length / rowsPerPage);
-  const items = useMemo(() => {
-    const start = (page - 1) * rowsPerPage;
-    return filteredItems.slice(start, start + rowsPerPage);
-  }, [page, filteredItems, rowsPerPage]);
 
   const deleteMigration = (id) => {
     Swal.fire({
@@ -85,41 +61,11 @@ export const Migrations = () => {
     });
   };
 
-  const topContent = (
-    <div className="flex justify-between gap-3 items-center">
-      <span className="text-default-400 text-lg">
-        Total de Migraciones: {store.migrations.length}
-      </span>
-      <div className="flex gap-2 items-center">
-        <Input
-          isClearable
-          placeholder="Buscar por Migración..."
-          value={filterValue}
-          onClear={() => setFilterValue("")}
-          onValueChange={setFilterValue}
-          className="w-full"
-          startContent={<SearchIcon />}
-        />
-        <CreateMigrations />
-      </div>
-    </div>
-  );
-
-  const bottomContent = (
-    <div className="flex justify-center mt-4">
-      <Pagination showControls page={page} total={pages} onChange={setPage} />
-    </div>
-  );
-
-
-  const mapColor = (status) => {
-    if (status === "Ordered") {
-      return "success";
-    } else if (status === "In_progress") {
-      return "warning";
-    } else if (status === "Completed") {
-      return "danger";
-    }
+  const statusColor = {
+    all : "secondary",
+    Ordered: "primary",
+    In_progress: "warning",
+    Completed: "success",
   };
 
   useEffect(() => {
@@ -134,65 +80,167 @@ export const Migrations = () => {
     actions.getProviders();
   }, []);
 
+  // Filtrar y ordenar las migraciones según los filtros
+  const filteredMigrations = useMemo(() => {
+    let migrations = [...store.migrations];
+
+    // Filtrar por estado de la migración (si no es "todos")
+    if (activeTab !== "all") {
+      migrations = migrations.filter(
+        (migration) => migration.migration_status === activeTab
+      );
+    }
+
+    // Filtrar por descripción de migración
+    if (filterValue) {
+      migrations = migrations.filter((migration) =>
+        migration.migration_description
+          .toLowerCase()
+          .includes(filterValue.toLowerCase())
+      );
+    }
+
+    // Ordenar por fecha
+    return migrations.sort((a, b) => {
+      const dateA = new Date(a.installation_date);
+      const dateB = new Date(b.installation_date);
+      return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+    });
+  }, [store.migrations, activeTab, filterValue, sortOrder]);
+
+  
+  const indexOfLastCard = currentPage * cardsPerPage;
+  const indexOfFirstCard = indexOfLastCard - cardsPerPage;
+  const currentCards = filteredMigrations.slice(indexOfFirstCard, indexOfLastCard);
+
   return (
     <div className="m-5">
-      <div className="flex justify-start gap-4 mt-4 mb-4">
-        <span className="text-lg font-bold">Gestor de Migraciones</span>
-      </div>
-      <Table
-        aria-label="Tabla de migraciones"
-        isHeaderSticky
-        isStriped
-        topContent={topContent}
-        bottomContent={bottomContent}
-        classNames={{
-          td: "text-center",
-          th: "text-center",
-        }}
-      >
-        <TableHeader>
-          <TableColumn>ID</TableColumn>
-          <TableColumn>Fecha de Instalación</TableColumn>
-          <TableColumn>Fecha de Migración</TableColumn>
-          <TableColumn>Descripción de Migración</TableColumn>
-          <TableColumn>Estado de Migración</TableColumn>
-          <TableColumn>Acciones</TableColumn>
-        </TableHeader>
-        <TableBody>
-          {items.map((migration) => (
-            <TableRow key={migration.id}>
-              <TableCell>{migration.id}</TableCell>
-              <TableCell>{formatDate(migration.installation_date)}</TableCell>
-              <TableCell>{formatDate(migration.migration_date)}</TableCell>
-              <TableCell>{migration.migration_description}</TableCell>
-              <TableCell className="capitalize">
-                <Chip
-                  color={mapColor(migration.migration_status)}
-                  status={migration.migration_status}
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold ml-2">Gestor de Migraciones</h2>
+          <CreateMigrations className="w-full" />
+        </div>
+
+        {/* Filtros de búsqueda y orden */}
+        <Card className="mb-5">
+          <CardBody>
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div className="w-full md:w-1/3">
+                <Input
+                  isClearable
+                  placeholder="Buscar por Migración..."
+                  value={filterValue}
+                  onClear={() => setFilterValue("")}
+                  onValueChange={setFilterValue}
+                  className="pl-2 w-full"
+                  startContent={<SearchIcon />}
+                />
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="light"
+                  size="sm"
+                  onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+                  className="flex items-center space-x-2 border border-transparent hover:border-gray-300 px-3 py-2 rounded-full"
                 >
-                  {migration.migration_status === "Ordered" ? "Ordenada" : ""}
-                  {migration.migration_status === "In_progress" ? "En proceso" : ""}
-                  {migration.migration_status === "Completed" ? "Completada" : ""}
-                </Chip>
-              </TableCell>
-              <TableCell>
-                <div className="flex justify-center">
-                 {store.me.role == "Master" ? 
-                    <Button variant="link" color="danger">
-                    <span
-                      className="text-lg text-danger cursor-pointer"
-                      onClick={() => deleteMigration(migration.id)}
-                    >
-                      <DeleteIcon />
-                    </span>
-                  </Button>: null}
-                  <EditMigrations migration={migration} />
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+                  {sortOrder === "asc" ? (
+                    <>
+                      <ArrowUp className="h-5 w-5 text-primary-500" />
+                      <span className="ml-1">Más antiguo</span>
+                    </>
+                  ) : (
+                    <>
+                      <ArrowDown className="h-5 w-5 text-primary-500" />
+                      <span className="ml-1">Más reciente</span>
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </CardBody>
+        </Card>
+
+        {/* Tabs */}
+        <Tabs
+          aria-label="Options"
+          selectedKey={activeTab}
+          onSelectionChange={setActiveTab}
+          variant="bordered"
+          color={statusColor[activeTab]}
+        >
+          <Tab key="all" title="Todos" />
+          <Tab key="Ordered" title="Ordenadas" />
+          <Tab key="In_progress" title="En progreso" />
+          <Tab key="Completed" title="Completadas" />
+        </Tabs>
+
+        {/* Tarjetas filtradas y ordenadas */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+                    <AnimatePresence>
+            {currentCards.map((migration) => (
+              <motion.div
+              key={migration.id}
+              initial={{ opacity: 0, scale: 0.9 }}   
+              animate={{ opacity: 1, scale: 1 }}     
+              exit={{ opacity: 0, scale: 0.9 }}      
+              transition={{ duration: 0.3 }}        
+              layout                                  
+            >
+                <Card className="h-full w-2/2 flex flex-col hover:shadow-lg transition-shadow duration-200">
+                  <CardHeader className="flex justify-between items-start mt-2 ml-2">
+                    <div>
+                      <h2 className="text-xl font-bold">
+                        Migración #{migration.id}
+                      </h2>
+                      <p className="text-gray-600 dark:text-gray-300">
+                        {migration.migration_description}
+                      </p>
+                    </div>
+                    <div>
+                      <Chip
+                        color={statusColor[migration.migration_status]}
+                        status={migration.migration_status}
+                        variant="shadow"
+                        size="sm"
+                        className="mr-3"
+                      >
+                        {migration.migration_status === "Ordered" ? "Ordenada" : migration.migration_status === "In_progress" ? "En Progreso" : "Completada"}
+                      </Chip>
+                    </div>
+                  </CardHeader>
+                  <CardBody className="ml-2">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      Fecha de Instalación:{" "}
+                      {formatDate(migration.installation_date)}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      Fecha de Migración: {formatDate(migration.migration_date)}
+                    </p>
+                  </CardBody>
+                  <CardFooter className="mb-2">
+                    <div className="flex justify-center w-full">
+                      <MigrationsDetails migration={migration} id={migration.id} />
+                    </div>
+                  </CardFooter>
+                </Card>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+
+        {/* Paginación */}
+        <div className="flex justify-center mt-6">
+          <Pagination
+            loop
+            showControls
+            color="primary"
+            total={Math.ceil(filteredMigrations.length / cardsPerPage)}
+            page={currentPage}
+            onChange={(page) => setCurrentPage(page)}
+          />
+        </div>
+      </div>
     </div>
   );
 };

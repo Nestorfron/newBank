@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { Context } from "../store/appContext";
 import { FormMigrations } from "./FormMigrations.jsx";
 import Swal from "sweetalert2";
+import { PlusCircle } from "lucide-react";
 import * as XLSX from "xlsx"; // Importamos la librería xlsx para leer el archivo Excel
 import {
   Button,
@@ -11,6 +12,7 @@ import {
   ModalContent,
   ModalBody,
   useDisclosure,
+  ModalFooter,
 } from "@nextui-org/react";
 
 export const CreateMigrations = () => {
@@ -121,40 +123,25 @@ export const CreateMigrations = () => {
 
   return (
     <>
-      <Button onClick={openModal} size="md">
-        <span> Agregar Migracion </span>
+      <Button auto onClick={openModal} size="md" color="primary">
+        <PlusCircle/> Agregar Migracion
       </Button>
 
-      <Modal backdrop={backdrop} isOpen={isOpen} onClose={onClose} scrollBehavior="inside">
+      <Modal backdrop={backdrop} isOpen={isOpen} onClose={onClose} scrollBehavior="inside" size="2xl">  
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader>Crear Migracion</ModalHeader>
-              <ModalBody>
-                <h5>Cargar Archivo Excel</h5>
-                <Input
-                  type="file"
-                  accept=".xlsx"
-                  onChange={handleFileChange}
-                  label="Selecciona un archivo"
-                  fullWidth
-                />
-                <Button
-                  onClick={handleFileUpload}
-                  color="primary"
-                  auto
-                  style={{ marginTop: "10px" }}
-                >
-                  Cargar Archivo Excel
-                </Button>
-                <h5 style={{ marginTop: "20px" }}>
-                  Formulario de Agregar Migracion
-                </h5>
+             
+                
+                
                 <FormMigrations btnMigration={"Crear"} />
-              </ModalBody>
+              
             </>
           )}
+
+          
         </ModalContent>
+      
       </Modal>
     </>
   );

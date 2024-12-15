@@ -8,7 +8,7 @@ import {
   ModalBody,
   useDisclosure,
 } from "@nextui-org/react";
-import { EditIcon } from "../assets/icons/EditIcon.jsx";
+import { Edit2 } from "lucide-react";
 export const EditMigrations = ({ migration }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [backdrop, setBackdrop] = React.useState("blur");
@@ -21,24 +21,21 @@ export const EditMigrations = ({ migration }) => {
 
   return (
     <>
-      <Button variant="link" content="Edit migracion" auto onClick={openModal}>
-        <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-          <EditIcon />
+      <Button className="w-full" content="Edit migracion" auto onClick={openModal}>
+      <Edit2 className="h-5 w-5" /> 
+        <span className="text-lg text-default-700 cursor-pointer active:opacity-50">
+         Editar
         </span>
       </Button>
 
-      <Modal backdrop={backdrop} isOpen={isOpen} onClose={onClose}>
+      <Modal backdrop={backdrop} isOpen={isOpen} onClose={onClose} scrollBehavior="inside" size="2xl">
         <ModalContent>
-          <ModalHeader className="flex flex-col gap-1">
-            Editar Migracion
-          </ModalHeader>
-          <ModalBody>
+        
             <FormMigrations
               btnMigration={"Actualizar"}
               migration={migration}
               id={migration.id}
             />
-          </ModalBody>
         </ModalContent>
       </Modal>
     </>
