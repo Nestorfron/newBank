@@ -22,6 +22,7 @@ import useTokenExpiration from "../hooks/useTokenExpitarion.jsx";
 import AssetsListBranch from "../components/assetsListBranch.jsx";
 import MigrationsListBranch from "../components/migrationsListBranch.jsx";
 import HistoryListBranch from "../components/historyListBranch.jsx";
+import { EyeIcon } from "../assets/icons/EyeIcon.jsx";
 
 export const Branches = () => {
   const { store, actions } = useContext(Context);
@@ -166,17 +167,14 @@ export const Branches = () => {
                     <p className="text-sm text-gray-600 dark:text-gray-300">
                       Dirección: {branch.branch_address}
                     </p>
-                    <div className="mt-2 flex items-center ">
+                    <div className="mt-2 flex-col gap-2">
                       <div className="flex items-center">
                         <span className="text-sm font-semibold mr-2">Activos:</span>
                         {branch.assets.length > 0 ? (
                           <AssetsListBranch branch={branch} />
                         ) : (
-                          <span className="text-gray-400 cursor-not-allowed" title="Sin Activos">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                              <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
-                            </svg>
+                          <span className="text-sm font-semibold mr-2 text-gray-400 cursor-not-allowed" title="Sin Activos">
+                            <EyeIcon />
                           </span>
                         )}
                       </div>
@@ -185,11 +183,8 @@ export const Branches = () => {
                         {branch.migrations.length > 0 ? (
                           <MigrationsListBranch branch={branch} />
                         ) : (
-                          <span className="text-gray-400 cursor-not-allowed" title="Sin Migraciones">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                              <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
-                            </svg>
+                          <span className="text-sm font-semibold mr-2 text-gray-400 cursor-not-allowed" title="Sin Migraciones">
+                            <EyeIcon />
                           </span>
                         )}
                       </div>
@@ -198,11 +193,8 @@ export const Branches = () => {
                         {branch.history.length > 0 ? (
                           <HistoryListBranch branch={branch} />
                         ) : (
-                          <span className="text-gray-400 cursor-not-allowed" title="Sin Historial">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                              <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
-                            </svg>
+                          <span className="text-sm font-semibold mr-2 text-gray-400 cursor-not-allowed" title="Sin Historial">
+                            <EyeIcon />
                           </span>
                         )}
                       </div>
