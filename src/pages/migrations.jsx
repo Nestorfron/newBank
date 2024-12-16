@@ -3,10 +3,8 @@ import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
 import { MigrationsDetails } from "../components/MigrationsDetails.jsx";
 import Swal from "sweetalert2";
-import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
 import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
 import { CreateMigrations } from "../components/CreateMigration.jsx";
-import { EditMigrations } from "../components/EditMigrations.jsx";
 import { ArrowUp, ArrowDown } from "lucide-react";
 import {
   Button,
@@ -22,7 +20,6 @@ import {
 } from "@nextui-org/react";
 import { motion, AnimatePresence } from "framer-motion";
 import useTokenExpiration from "../hooks/useTokenExpitarion.jsx";
-import { s } from "framer-motion/client";
 
 export const Migrations = () => {
   const { store, actions } = useContext(Context);

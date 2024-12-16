@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FormEngineers } from "./FormEngineers.jsx";
+import { PlusCircle } from "lucide-react";
 import {
   Button,
   Modal,
@@ -16,7 +17,7 @@ export const CreateEngineers = () => {
   return (
     <>
       <Button auto color="primary" onClick={onOpen} size="md">
-        Agregar Ingeniero
+       <PlusCircle/> Agregar Ingeniero
       </Button>
 
       <Modal backdrop={backdrop} isOpen={isOpen} onClose={onClose}>
