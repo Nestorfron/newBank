@@ -40,20 +40,20 @@ export const MigrationsDetails = ({ migration, id }) => {
     },
     {
       id: "2",
-      description: "Transporte al área de logística",
-      assignee: "Equipo de Logística",
+      description: "Recolección en sucursal",
+      assignee: "Equipo de Recolección",
       status: "pending",
     },
     {
       id: "3",
-      description: "Verificación y registro",
-      assignee: "Encargado de Inventario",
+      description: "Envío al almacén central",
+      assignee: "Equipo de Logística",
       status: "pending",
     },
     {
       id: "4",
-      description: "Almacenamiento",
-      assignee: "Encargado de Almacén",
+      description: "Recepción y verificación en almacén",
+      assignee: "Equipo de Recepción en almacén",
       status: "pending",
     },
   ]);
@@ -63,13 +63,13 @@ export const MigrationsDetails = ({ migration, id }) => {
   const [migrationStatus, setMigrationStatus] = useState();
   const [status, setStatus] = useState(migration.migration_status);
   const [message, setMessage] = useState({
-    message: null,
-    provider_id: migration.provider_id,
-    branch_id: migration.branch_id,
-    migration_id: migration.id,
-    user_id: me.role === "Master" ? me.id : null,
-    admins_id: me.role === "Admin" ? me.id : null,
-    engineer_id: me.role === "Ingeniero de Campo" ? me.id : null,
+    message: "",
+    provider_id: migration.provider_id || "",
+    branch_id: migration.branch_id || "",
+    migration_id: migration.id || "",
+    user_id: me.role === "Master" ? me.id : "",
+    admins_id: me.role === "Admin" ? me.id : "",
+    engineer_id: me.role === "Ingeniero de Campo" ? me.id : "",
   });
   const [newMigration, setNewMigration] = useState(migration);
 
@@ -88,19 +88,60 @@ export const MigrationsDetails = ({ migration, id }) => {
     });
   };
 
-  const handleReturnToWarehouse = () => {
+  const addMessage = (message) => {
+    const timestamp = getTimestamp();
+    const formattedMessage = `Sistema - ${timestamp}\n\n${message}`;
+
+    setNewMigration((prevMigration) => ({
+      ...prevMigration,
+      messages: [...prevMigration.messages, { message: formattedMessage }],
+    }));
+
+    actions.add_message(
+      formattedMessage,
+      migration.provider_id,
+      migration.branch_id,
+      migration.id,
+      me.role === "Master" ? me.id : null,
+      me.role === "Admin" ? me.id : null,
+      me.role === "Ingeniero de Campo" ? me.id : null
+    );
+  };
+
+  const handleStartReturnProcess = () => {
+    addMessage("Iniciado proceso de retorno del servidor retirado al almacén");
     setShowReturnProcess(true);
   };
 
   const handleUpdateReturnStep = (stepId, newStatus) => {
+    const stepIndex = returnSteps.findIndex((step) => step.id === stepId);
+
+    if (stepIndex > 0 && returnSteps[stepIndex - 1].status !== "completed") {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Debe completar el paso anterior antes de continuar.",
+      });
+      return;
+    }
+
     setReturnSteps((prevSteps) =>
-      prevSteps.map((step) =>
-        step.id === stepId ? { ...step, status: newStatus } : step
-      )
+      prevSteps.map((step) => {
+        if (step.id === stepId) {
+          return { ...step, status: newStatus };
+        }
+        return step;
+      })
     );
+
+    const stepDescription = returnSteps[stepIndex].description;
+    addMessage(`Paso \"${stepDescription}\" actualizado a estado: ${newStatus}`);
   };
 
+ 
+
   const handleStatusChange = (newStatus) => {
+    
     if (!id) {
       Swal.fire({
         icon: "error",
@@ -121,8 +162,30 @@ export const MigrationsDetails = ({ migration, id }) => {
   }
 
   const handleSendMenssage = () => {
+    if (!message.message?.trim()) {
+      Swal.fire({
+        icon: "warning",
+        title: "Mensaje vacío",
+        text: "Por favor, escribe un mensaje antes de enviarlo.",
+      });
+      return;
+    }
+
+    if (!message.provider_id || !message.branch_id || !message.migration_id || !message.user_id) {
+      Swal.fire({
+        icon: "error",
+        title: "Error de datos",
+        text: "Faltan datos necesarios para enviar el mensaje.",
+      });
+      return;
+    }
+
+    const timestamp = getTimestamp();
+    const userName = migration.user_name || "Sistema";
+    const formattedMessage = `${userName} - ${timestamp}\n\n${message.message}`;
+
     actions.add_message(
-      message.message,
+      formattedMessage,
       message.provider_id,
       message.branch_id,
       message.migration_id,
@@ -130,15 +193,50 @@ export const MigrationsDetails = ({ migration, id }) => {
       message.admins_id,
       message.engineer_id
     );
-    setMessage({
-      message: null,
-    });
 
-    actions.getMigrations();
-    actions.getMessages();
-    setNewMigration(store.migrations.find((migration) => migration.id === id));
-    
+    setMessage((prev) => ({ ...prev, message: "" }));
+
+    const updatedMigration = store.migrations.find((m) => m.id === id);
+    if (updatedMigration) {
+      setNewMigration(updatedMigration);
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Error de sincronización",
+        text: "No se pudo actualizar la lista de migraciones local.",
+      });
+    }
   };
+
+  function getTimestamp() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hour = String(now.getHours()).padStart(2, "0");
+    const minute = String(now.getMinutes()).padStart(2, "0");
+
+    return `${year}-${month}-${day} ${hour}:${minute}`;
+  }
+
+  if (!migration) {
+    return <p>No se encontró la Migración</p>;
+  }
+
+  
+  
+
+
+  function getTimestamp() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0"); // Meses van de 0 a 11, por eso sumamos 1
+    const day = String(now.getDate()).padStart(2, "0");
+    const hour = String(now.getHours()).padStart(2, "0");
+    const minute = String(now.getMinutes()).padStart(2, "0");
+
+    return `${year}-${month}-${day} ${hour}:${minute}`;
+  }
 
   const openModal = () => onOpen();
 
@@ -164,7 +262,7 @@ export const MigrationsDetails = ({ migration, id }) => {
       >
         <ModalContent>
           <ModalBody className="w-full">
-            <Card className="w-full max-w-4xl border-none shadow-none">
+            <Card className="w-full max-w-5xl h-[95vh] border-none shadow-none">
               <CardHeader className="w-full">
                 <div className="flex justify-between items-center w-full">
                   <div>
@@ -226,7 +324,7 @@ export const MigrationsDetails = ({ migration, id }) => {
                   </div>
                 </div>
               </CardHeader>
-              <CardBody className="w-full">
+              <CardBody className="flex-grow overflow-auto">
                 <Tabs
                   aria-label="Detalles de Migración"
                   className="flex flex-col"
@@ -251,65 +349,65 @@ export const MigrationsDetails = ({ migration, id }) => {
                   </Tab>
                   <Tab key="log" title="Bitácora">
                     <div className="flex flex-col gap-4">
-                      <form className="my-2">
+                      <div className="h-[300px] w-full rounded-md border p-4 mb-4 overflow-y-auto">
                         <div className="flex flex-col gap-2">
                           {newMigration.messages.map((message, index) => (
                             <div
                               key={index}
                               className="flex justify-between items-center mb-2"
                             >
-                              <p>
-                                {" "}
-                                {index + 1} - {message.message}
-                              </p>
+                              <p>{message.message}</p>
                             </div>
                           ))}
                         </div>
-                        <div className="flex gap-2 mb-4">
-                          <Input
-                            className="w-1/3"
-                            value={me.user_name}
-                            name="user_name"
-                          />
-                          <Textarea
-                            type="text"
-                            placeholder="Añadir entrada a la bitácora..."
-                            className="flex-grow"
-                            value={message.message}
-                            name="message"
-                            onChange={(e) =>
-                              setMessage({
-                                ...message,
-                                message: e.target.value,
-                              })
-                            }
-                          />
-                          <Button onClick={handleSendMenssage}>Añadir</Button>
-                        </div>
-                      </form>
+                      </div>
+                      <div className="flex gap-2 mb-4">
+                        <Input
+                          className="w-1/3"
+                          value={me.user_name}
+                          name="user_name"
+                          readOnly
+                        />
+                        <Textarea
+                          type="text"
+                          placeholder="Añadir entrada a la bitácora..."
+                          className="flex-grow"
+                          value={message.message || ""}
+                          name="message"
+                          onChange={(e) =>
+                            setMessage({
+                              ...message,
+                              message: e.target.value,
+                            })
+                          }
+                        />
+                        <Button onClick={handleSendMenssage}>Añadir</Button>
+                      </div>
                     </div>
                   </Tab>
 
                   <Tab key="return" title="Retorno">
-                    <div className="mt-4">
+                    <div className="mt-4 ">
                       <h3 className="text-lg font-semibold mb-2">
                         Proceso de Retorno a Almacén
                       </h3>
                       {!showReturnProcess ? (
-                        <Button onClick={handleReturnToWarehouse}>
+                       <Button
+       onClick={handleStartReturnProcess}
+      >
                           Iniciar Retorno a Almacén
                         </Button>
                       ) : (
                         returnSteps.map((step) => (
                           <div
                             key={step.id}
-                            className="mb-4 p-4 border rounded-md"
+                            className="mb-4 p-4 border rounded-md "
                           >
                             <div className="flex justify-between items-center mb-2">
                               <h4 className="font-medium">
                                 {step.description}
                               </h4>
-                              <Chip>{step.status}</Chip>
+                              <Chip color="secondary">{step.status}</Chip>
                             </div>
                             <p className="text-sm text-gray-600 mb-2">
                               Asignado a: {step.assignee}
@@ -363,7 +461,7 @@ export const MigrationsDetails = ({ migration, id }) => {
                 </Tabs>
               </CardBody>
 
-              <CardFooter className="w-full mt-2 border-t-2 flex justify-between">
+              <CardFooter className="w-full border-t-1 flex justify-between">
                 <Button auto onClick={onClose}>
                   Cerrar
                 </Button>
@@ -371,7 +469,7 @@ export const MigrationsDetails = ({ migration, id }) => {
                   <Button variant="outline">
                     <EditMigrations migration={migration} className="w-full" />
                   </Button>
-                  <Button variant="destructive">
+                  <Button variant="shadow" color="danger">
                     <XCircle className="mr-2 h-4 w-4" />
                     Cancelar Migración
                   </Button>

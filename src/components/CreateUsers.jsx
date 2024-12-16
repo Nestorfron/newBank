@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FormUsers } from "./FormUsers.jsx";
+import { PlusCircle } from "lucide-react";
 import {
   Button,
   Modal,
@@ -16,7 +17,7 @@ export const CreateUsers = () => {
   return (
     <>
       <Button auto color="primary" onClick={onOpen} size="md">
-        Agregar Usuario
+      <PlusCircle/> Agregar Usuario
       </Button>
 
       <Modal backdrop={backdrop} isOpen={isOpen} onClose={onClose}>

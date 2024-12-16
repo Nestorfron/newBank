@@ -3,7 +3,8 @@ import { Context } from "../store/appContext.jsx";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { Button } from "@nextui-org/button";
-import { MoonIcon, SunIcon, UserIcon } from "@heroicons/react/24/outline";
+import { MoonIcon, SunIcon, UserIcon} from "@heroicons/react/24/outline";
+import { User, Menu, X, Home, Users, Building2, Truck, Link as Enlaces, Box, UserPlus, GitBranch} from "lucide-react";
 import img from "../assets/drapp_logo.png";
 
 import {
@@ -72,8 +73,10 @@ export const Navbar = () => {
                   !jwt || user.role === "Ingeniero de Campo" ? "hidden" : ""
                 }
                 onClick={() => navigate("/users")}
-                variant="link"
+                variant="light"
+                size="sm"
               >
+              <UserPlus/>
                 Usuarios
               </Button>
             </NavbarItem>
@@ -83,8 +86,10 @@ export const Navbar = () => {
                   !jwt || user.role === "Ingeniero de Campo" ? "hidden" : ""
                 }
                 onClick={() => navigate("/branches")}
-                variant="link"
+                variant="light"
+                size="sm"
               >
+                <Building2/>
                 Sucursales
               </Button>
             </NavbarItem>
@@ -94,8 +99,10 @@ export const Navbar = () => {
                   !jwt || user.role === "Ingeniero de Campo" ? "hidden" : ""
                 }
                 onClick={() => navigate("/providers")}
-                variant="link"
+                variant="light"
+                size="sm"
               >
+                <Truck/>
                 Proveedores
               </Button>
             </NavbarItem>
@@ -105,8 +112,10 @@ export const Navbar = () => {
                   !jwt || user.role === "Ingeniero de Campo" ? "hidden" : ""
                 }
                 onClick={() => navigate("/links")}
-                variant="link"
+                variant="light"
+                size="sm"
               >
+                <Enlaces/>
                 Enlaces
               </Button>
             </NavbarItem>
@@ -116,8 +125,10 @@ export const Navbar = () => {
                   !jwt || user.role === "Ingeniero de Campo" ? "hidden" : ""
                 }
                 onClick={() => navigate("/assets")}
-                variant="link"
+                variant="light"
+                size="sm"
               >
+                <Box/>
                 Activos
               </Button>
             </NavbarItem>
@@ -127,8 +138,10 @@ export const Navbar = () => {
                   !jwt || user.role === "Ingeniero de Campo" ? "hidden" : ""
                 }
                 onClick={() => navigate("/usersMb")}
-                variant="link"
+                variant="light"
+                size="sm"
               >
+                <Users/>
                 Usuarios MB
               </Button>
             </NavbarItem>
@@ -138,8 +151,10 @@ export const Navbar = () => {
                   !jwt || user.role === "Ingeniero de Campo" ? "hidden" : ""
                 }
                 onClick={() => navigate("/migrations")}
-                variant="link"
+                variant="light"
+                size="sm"
               >
+                <GitBranch/>
                 Migraciones
               </Button>
             </NavbarItem>
