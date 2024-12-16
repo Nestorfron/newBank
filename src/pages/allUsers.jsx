@@ -95,7 +95,10 @@ export const AllUsers = () => {
 
   return (
     <>    
-        <div className="flex justify-center items-center mb-2 w-full mt-8 mb-8">
+    <div className="m-4">
+    <div className="container mx-auto px-4">
+      
+              <div className="flex justify-between items-center mb-2 w-full mt-8 mb-8">
           <h2 className="text-2xl font-bold">Gestor de Usuarios</h2>
           {/* <CreateUsers className="w-auto" /> */}
         </div>
@@ -162,6 +165,9 @@ export const AllUsers = () => {
               ) : null}
             </Tab>
           </Tabs>
+        </div>
+
+        </div>
         </div>
         </>
 

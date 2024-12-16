@@ -73,10 +73,10 @@ export const Admins = () => {
   useEffect(() => {}, []);
 
   return (
-    <div className="m-5">
-        <div className="flex justify-between items-center mb-2">
+    <div>
+        {/* <div className="flex justify-center items-center mb-2">
           <h2 className="text-2xl font-bold ml-2">Adminsistradores</h2>
-        </div>
+        </div> */}
 
         {/* Filtros de búsqueda y orden */}
         <Card className="mb-5 w-full">
