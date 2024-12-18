@@ -4,10 +4,14 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { CreateProviders } from "../components/CreateProviders.jsx";
 import { EditProviders } from "../components/EditProviders.jsx";
-import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
 import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
 import { EngineersList } from "../components/engineersList.jsx";
-import { ArrowUp, ArrowDown } from 'lucide-react';
+import {
+  ArrowUp,
+  ArrowDown,
+  Users2,
+  FileText,
+} from "lucide-react";
 import {
   Button,
   Input,
@@ -19,6 +23,7 @@ import {
   Chip,
 } from "@nextui-org/react";
 import { motion, AnimatePresence } from "framer-motion";
+import { p } from "framer-motion/m";
 
 export const Providers = () => {
   const { store, actions } = useContext(Context);
@@ -44,7 +49,10 @@ export const Providers = () => {
 
   const indexOfLastCard = currentPage * cardsPerPage;
   const indexOfFirstCard = indexOfLastCard - cardsPerPage;
-  const currentCards = filteredProviders.slice(indexOfFirstCard, indexOfLastCard);
+  const currentCards = filteredProviders.slice(
+    indexOfFirstCard,
+    indexOfLastCard
+  );
 
   const deleteProvider = (id) => {
     Swal.fire({
@@ -102,7 +110,9 @@ export const Providers = () => {
                 <Button
                   variant="light"
                   size="sm"
-                  onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+                  onClick={() =>
+                    setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+                  }
                   className="flex items-center space-x-2 border border-transparent hover:border-gray-300 px-3 py-2 rounded-full"
                 >
                   {sortOrder === "asc" ? (
@@ -134,57 +144,73 @@ export const Providers = () => {
                 transition={{ duration: 0.3 }}
                 layout
               >
-                <Card className="h-full w-2/2 flex flex-col hover:shadow-lg transition-shadow duration-200">
+                <Card className="overflow-hidden border-t-2 border-l-2 shadow-lg hover:shadow-xl transition-shadow duration-300">
                   <CardHeader className="flex justify-between items-start mt-2 ml-2">
                     <div>
                       <h2 className="text-xl font-bold">
-                        Proveedor #{provider.id}
-                      </h2>
-                      <p className="text-gray-600 dark:text-gray-300">
                         {provider.company_name}
-                      </p>
+                      </h2>
                     </div>
                     <div>
-                      {/* <Chip
+                      <Chip
                         color="primary"
                         variant="shadow"
                         size="sm"
                         className="mr-3"
                       >
-                        {provider.rfc}
-                      </Chip> */}
+                        {provider.service}
+                      </Chip>
                     </div>
                   </CardHeader>
                   <CardBody className="ml-2">
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                      RFC: {provider.rfc}
-                    </p>
-                    <div className="mt-2 flex items-center">
-                      <span className="text-sm font-semibold mr-2">Ingenieros de Campo:</span>
-                      {provider.engineers.length > 0 ? (
-                        <EngineersList provider={provider} />
-                      ) : (
-                        <span className="text-gray-400 cursor-not-allowed" title="Sin Ingenieros">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                            <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
-                          </svg>
-                        </span>
-                      )}
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div className="flex flex-col">
+                        <div className="flex items-center">
+                          <FileText className="h-4 w-4 text-muted-foreground text-green-500" />
+                          <span className="text-sm font-semibold truncate ml-1">
+                            RFC:
+                          </span>
+                        </div>
+                        <p className="text-gray-600 dark:text-gray-100">
+                          {provider.rfc}
+                        </p>
+                      </div>
+                      <div className="flex flex-col">
+                        <div className="flex items-center">
+                          <Users2 className="h-4 w-4 text-blue-500" />
+                          <span className="text-sm font-semibold truncate ml-1">
+                            {provider.engineers.length} {provider.engineers.length === 1 ? 'Ingeniero' : 'Ingenieros'}
+                          </span>
+                        </div>
+                        {provider.engineers.length > 0 ? (
+                          <EngineersList provider={provider} />
+                        ) : (
+                          <span
+                            className="text-gray-400 cursor-not-allowed"
+                            title="Sin Ingenieros"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                              <path
+                                fillRule="evenodd"
+                                d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </CardBody>
                   <CardFooter className="mb-2">
                     <div className="flex justify-center w-full space-x-2">
                       <EditProviders provider={provider} />
-                      <Button
-                        color="danger"
-                        variant="flat"
-                        size="sm"
-                        onClick={() => deleteProvider(provider.id)}
-                      >
-                        <DeleteIcon />
-                        Eliminar
-                      </Button>
+                     
                     </div>
                   </CardFooter>
                 </Card>
@@ -208,4 +234,3 @@ export const Providers = () => {
     </div>
   );
 };
-

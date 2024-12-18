@@ -5,7 +5,7 @@ import { MigrationsDetails } from "../components/MigrationsDetails.jsx";
 import Swal from "sweetalert2";
 import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
 import { CreateMigrations } from "../components/CreateMigration.jsx";
-import { ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowUp, ArrowDown, UserSquare, Phone, MapPin, Package   } from "lucide-react";
 import {
   Button,
   Input,
@@ -173,7 +173,7 @@ export const Migrations = () => {
         </Tabs>
 
         {/* Tarjetas filtradas y ordenadas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6  mt-3">
                     <AnimatePresence>
             {currentCards.map((migration) => (
               <motion.div
@@ -184,7 +184,7 @@ export const Migrations = () => {
               transition={{ duration: 0.3 }}        
               layout                                  
             >
-                <Card className="h-full w-2/2 flex flex-col hover:shadow-lg transition-shadow duration-200">
+                <Card className="h-full w-2/2 flex flex-col overflow-hidden border-t-2 border-l-2 shadow-lg hover:shadow-xl transition-shadow duration-300">
                   <CardHeader className="flex justify-between items-start mt-2 ml-2">
                     <div>
                       <h2 className="text-xl font-bold">
@@ -225,6 +225,7 @@ export const Migrations = () => {
             ))}
           </AnimatePresence>
         </div>
+        </div>
 
         {/* Paginación */}
         <div className="flex justify-center mt-6">
@@ -238,6 +239,5 @@ export const Migrations = () => {
           />
         </div>
       </div>
-    </div>
   );
 };

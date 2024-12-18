@@ -22,8 +22,8 @@ export const EditProviders = ({ provider }) => {
 
   return (
     <>
-      <Button variant="link" content="Edit asset" auto onClick={openModal}>
-        <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+      <Button variant="ghost" content="Edit asset" auto onClick={openModal}>
+        <span className="text-lg text-default-700 cursor-pointer active:opacity-50">
           <EditIcon />
         </span>
       </Button>

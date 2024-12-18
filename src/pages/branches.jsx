@@ -6,7 +6,20 @@ import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
 import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
 import { CreateBranches } from "../components/CreateBranches.jsx";
 import { EditBranches } from "../components/EditBranches.jsx";
-import { ArrowUp, ArrowDown } from 'lucide-react';
+import {
+  ArrowUp,
+  ArrowDown,
+  Plus,
+  Edit2,
+  Trash2,
+  ChevronDown,
+  ChevronUp,
+  Building2,
+  MapPin,
+  History,
+  Package,
+  ArrowRightLeft,
+} from "lucide-react";
 import {
   Button,
   Input,
@@ -77,7 +90,10 @@ export const Branches = () => {
 
   const indexOfLastCard = currentPage * cardsPerPage;
   const indexOfFirstCard = indexOfLastCard - cardsPerPage;
-  const currentCards = filteredBranches.slice(indexOfFirstCard, indexOfLastCard);
+  const currentCards = filteredBranches.slice(
+    indexOfFirstCard,
+    indexOfLastCard
+  );
 
   return (
     <div className="m-5">
@@ -107,7 +123,9 @@ export const Branches = () => {
                 <Button
                   variant="light"
                   size="sm"
-                  onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+                  onClick={() =>
+                    setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+                  }
                   className="flex items-center space-x-2 border border-transparent hover:border-gray-300 px-3 py-2 rounded-full"
                 >
                   {sortOrder === "asc" ? (
@@ -139,15 +157,12 @@ export const Branches = () => {
                 transition={{ duration: 0.3 }}
                 layout
               >
-                <Card className="h-full w-2/2 flex flex-col hover:shadow-lg transition-shadow duration-200">
-                  <CardHeader className="flex justify-between items-start mt-2 ml-2">
+                <Card className="overflow-hidden border-t-2 border-l-2 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                  <CardHeader className="flex justify-between items-start mt-1 ml-2">
                     <div>
                       <h2 className="text-xl font-bold">
-                        Sucursal #{branch.id}
+                        Sucursal CR- {branch.branch_cr}
                       </h2>
-                      <p className="text-gray-600 dark:text-gray-300">
-                        {branch.branch_cr}
-                      </p>
                     </div>
                     <div>
                       <Chip
@@ -161,57 +176,122 @@ export const Branches = () => {
                     </div>
                   </CardHeader>
                   <CardBody className="ml-2">
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                      SubZona: {branch.branch_subzone}
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                      Dirección: {branch.branch_address}
-                    </p>
-                    <div className="mt-2 flex-col gap-2">
-                      <div className="flex items-center">
-                        <span className="text-sm font-semibold mr-2">Activos:</span>
+                  <div className="flex gap-2">
+                      <div className="flex items-center space-x-2">
+                        <Building2 className="h-5 w-5 text-muted-foreground text-blue-500" />
+                        <span className="text-lg font-semibold truncate ml-1">
+                          {" "}
+                          Dirección:
+                        </span>
+                      </div>
+                      <div className="flex mt-1 ">
+                        <p className="text-sm text-gray-600 dark:text-gray-100">
+                          {branch.branch_address.toUpperCase()}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 mt-5">
+                      <div className="flex flex-col">
+                        <div className="flex items-center space-x-2">
+                          <MapPin className="h-5 w-5 text-muted-foreground text-green-500" />
+                          <span className="text-md font-semibold truncate ml-1">
+                            {" "}
+                            Zona:{" "}
+                          </span>
+                        </div>
+                        <div className="flex mt-1 ml-5">
+                          <p className="text-xs text-gray-600 dark:text-gray-100">
+                            {branch.branch_zone.toUpperCase()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex flex-col">
+                        <div className="flex items-center space-x-2">
+                          <MapPin className="h-5 w-5 text-muted-foreground text-green-500" />
+                          <span className="text-md font-semibold truncate ml-1">
+                            {" "}
+                            SubZona:
+                          </span>
+                        </div>
+                        <div className="flex mt-1 ml-5">
+                          <p className="text-xs text-gray-600 dark:text-gray-100">
+                            {branch.branch_subzone.toUpperCase()}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-5 flex justify-between items-center">
+                      <div className="flex flex-col">
+                        <div className="flex items-center">
+                          <Package className="h-5 w-5 text-purple-500 mr-1" />
+                          <span className="text-sm font-semibold mr-2">
+                            {branch.assets.length}{" "}
+                            {branch.assets.length === 1 ? "Activo" : "Activos"}
+                          </span>
+                        </div>
                         {branch.assets.length > 0 ? (
                           <AssetsListBranch branch={branch} />
                         ) : (
-                          <span className="text-sm font-semibold mr-2 text-gray-400 cursor-not-allowed" title="Sin Activos">
+                          <span
+                            className="text-sm font-semibold mr-2 text-gray-400 cursor-not-allowed"
+                            title="Sin Activos"
+                          >
                             <EyeIcon />
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center">
-                        <span className="text-sm font-semibold mr-2">Migraciones:</span>
+                      <div className="flex flex-col">
+                        <div className="flex items-center">
+                          <ArrowRightLeft className="h-4 w-4 text-orange-500 mr-1" />
+                          <span className="text-sm font-semibold mr-2">
+                            {branch.migrations.length}{" "}
+                            {branch.migrations.length === 1
+                              ? "Migración"
+                              : "Migraciones"}
+                          </span>
+                        </div>
                         {branch.migrations.length > 0 ? (
                           <MigrationsListBranch branch={branch} />
                         ) : (
-                          <span className="text-sm font-semibold mr-2 text-gray-400 cursor-not-allowed" title="Sin Migraciones">
+                          <span
+                            className="text-sm font-semibold mr-2 text-gray-400 cursor-not-allowed"
+                            title="Sin Migraciones"
+                          >
                             <EyeIcon />
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center">
-                        <span className="text-sm font-semibold mr-2">Historial:</span>
+                      <div className="flex flex-col">
+                        <div className="flex items-center">
+                          <History className="h-4 w-4 text-yellow-500 mr-1" />
+                          <span className="text-sm font-semibold mr-2">
+                            {branch.history.length}{" "}
+                            {branch.history.length === 1
+                              ? "Historial"
+                              : "Historiales"}
+                          </span>
+                        </div>
                         {branch.history.length > 0 ? (
                           <HistoryListBranch branch={branch} />
                         ) : (
-                          <span className="text-sm font-semibold mr-2 text-gray-400 cursor-not-allowed" title="Sin Historial">
+                          <span
+                            className="text-sm font-semibold mr-2 text-gray-400 cursor-not-allowed"
+                            title="Sin Historial"
+                          >
                             <EyeIcon />
                           </span>
                         )}
                       </div>
+
+                    
                     </div>
                   </CardBody>
-                  <CardFooter className="mb-2">
+                  <CardFooter>
                     <div className="flex justify-center w-full space-x-2">
                       <EditBranches branch={branch} />
-                      <Button
-                        color="danger"
-                        variant="flat"
-                        size="sm"
-                        onClick={() => deleteBranch(branch.id)}
-                      >
-                        <DeleteIcon />
-                        Eliminar
-                      </Button>
+                     
                     </div>
                   </CardFooter>
                 </Card>
