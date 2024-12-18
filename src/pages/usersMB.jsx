@@ -9,8 +9,9 @@ import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
 import { EyeIcon } from "../assets/icons/EyeIcon.jsx";
 import AssetsListUserMB from "../components/assetsListUserMB.jsx";
 import useTokenExpiration from "../hooks/useTokenExpitarion.jsx";
-import { ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowUp, ArrowDown, UserSquare, Phone, MapPin, Package   } from "lucide-react";
 import {
+  Avatar,
   Button,
   Input,
   Pagination,
@@ -140,13 +141,22 @@ export const UsersMB = () => {
                 transition={{ duration: 0.3 }}
                 layout
               >
-                <Card className="h-full w-2/2 flex flex-col hover:shadow-lg transition-shadow duration-200">
+                <Card className="h-full w-2/2 flex flex-col overflow-hidden border-t-2 border-l-2 shadow-lg hover:shadow-xl transition-shadow duration-300">
                   <CardHeader className="flex justify-between items-start mt-2 ml-2">
+                    <div className="flex items-center space-x-4">
+                      <Avatar
+                        src={`https://api.dicebear.com/6.x/initials/svg?seed=${userMB.names} ${userMB.last_names}`}
+                        name={`${userMB.names} ${userMB.last_names}`}
+                      />
                     <div>
-                      <h2 className="text-xl font-bold">
-                        UsuarioMB #{userMB.id}
-                      </h2>
-                    </div>
+                    <span className="text-xl font-bold truncate">
+                      {userMB.names} {userMB.last_names}
+                    </span>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      {userMB.role}
+                      </p>
+                      </div>
+                      </div>
                     <div>
                       <Chip
                         color="primary"
@@ -157,80 +167,71 @@ export const UsersMB = () => {
                         {userMB.is_active ? "Activo" : "Inactivo"}
                       </Chip>
                     </div>
+                
                   </CardHeader>
-                  <CardBody className="ml-2 flex flex-col gap-1">
-                    <div className="flex items-center">
+                  <CardBody className="ml-2 ">
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="flex flex-col">
+                      <div className="flex items-center">
+                        <UserSquare className="h-5 w-5 text-green-500 mr-1" />
                       <span className="text-sm font-semibold mr-2">
-                        Nombres:
+                        Empleado:
                       </span>
-                      <span className="text-gray-400" title="Nombres">
-                        {userMB.names}
-                      </span>
-                    </div>
-                    <div className="flex items-center">
-                      <span className="text-sm font-semibold mr-2">
-                        Apellidos:
-                      </span>
-                      <span className="text-gray-400" title="Apellidos">
-                        {userMB.last_names}
-                      </span>
-                    </div>
-                    <div className="flex items-center">
-                      <span className="text-sm font-semibold mr-2">
-                        Número de Empleado:
-                      </span>
-                      <span
-                        className="text-gray-400"
+                      </div>
+                      <p
+                        className="text-gray-600 dark:text-gray-100 ml-6"
                         title="Número de Empleado"
                       >
-                        {userMB.employee_number}
-                      </span>
+                        {userMB.employee_number.toUpperCase()}
+                      </p>
                     </div>
-                    <div className="flex items-center">
-                      <span className="text-sm font-semibold mr-2">Rol:</span>
-                      <span className="text-gray-400" title="Admin">
-                        {userMB.role}
-                      </span>
-                    </div>
-                    <div className="flex items-center">
+                  
+                    <div className="flex flex-col">
+                      <div className="flex items-center">
+                        <Phone className="h-5 w-5 text-blue-500 mr-2" />
                       <span className="text-sm font-semibold mr-2">
-                        Número de Teléfono:
+                        Teléfono:
                       </span>
-                      <span className="text-gray-400" title="Extension Phone">
+                      </div>
+                      <p className="text-gray-600 dark:text-gray-100 ml-7" title="Extension Phone">
                         {userMB.extension_phone}
-                      </span>
+                      </p>
                     </div>
-                    <div className="flex items-center">
+                    <div className="flex flex-col mt-2">
+                      <div className="flex items-center">
+                        <MapPin className="h-5 w-5 text-orange-500 mr-1" />
                       <span className="text-sm font-semibold mr-2">
-                        Branch ID:
+                        Sucursal :
                       </span>
-                      <span className="text-gray-400" title="Branch ID">
-                        {userMB.branch_id}
-                      </span>
+                      </div>
+                      <p className="text-gray-600 dark:text-gray-100 ml-7" title="Branch ID">
+                        {userMB.branch_id ? store.branchs.find(branch => branch.id === userMB.branch_id).branch_cr : "Sucursal no encontrada"}
+                      </p>
                     </div>
-                    <div className="flex items-center">
-                        <span className="text-sm font-semibold mr-2">Activos:</span>
-                        {userMB.assets.length > 0 ? (
-                          <AssetsListUserMB userMB={userMB} />
-                        ) : (
-                          <span className="text-sm font-semibold mr-2 text-gray-400 cursor-not-allowed" title="Sin Activos">
-                            <EyeIcon />
-                          </span>
-                        )}
-                      </div>                    
+                    <div className="flex flex-col mt-2">
+                      <div className="flex items-center">
+                        <Package className="h-5 w-5 text-purple-500 mr-1" />
+                      <span className="text-sm font-semibold mr-2">
+                        Activos:
+                      </span>
+                      </div>
+                      {userMB.assets.length > 0 ? (
+                        <AssetsListUserMB userMB={userMB}/>
+                      ) : (
+                        <span
+                          className="text-sm font-semibold text-gray-400 cursor-not-allowed ml-7"
+                          title="Sin Activos"
+                        >
+                          <EyeIcon className/>
+                        </span>
+                      )}
+                    </div>
+                    </div>
                   </CardBody>
                   <CardFooter className="mb-2">
                     <div className="flex justify-center w-full space-x-2">
                       <EditUsersMB userMB={userMB} />
-                      <Button
-                        color="danger"
-                        variant="flat"
-                        size="sm"
-                        onClick={() => deleteUserMB(userMB.id)}
-                      >
-                        <DeleteIcon />
-                        Eliminar
-                      </Button>
+                      
                     </div>
                   </CardFooter>
                 </Card>

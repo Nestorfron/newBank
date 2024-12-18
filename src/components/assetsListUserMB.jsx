@@ -32,7 +32,7 @@ export default function AssetsListUserMB({ userMB }) {
 
   return (
     <>
-      <Button variant="link" color="primary" onPress={onOpen}>
+      <Button variant="link" color="primary" onPress={onOpen} className="w-[10px] flex justify-start ">
         <EyeIcon />
       </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior="inside">

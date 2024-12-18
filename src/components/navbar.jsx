@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { Button } from "@nextui-org/button";
 import { MoonIcon, SunIcon, UserIcon} from "@heroicons/react/24/outline";
-import { User, Menu, X, Home, Users, Building2, Truck, Link as Enlaces, Box, UserPlus, GitBranch} from "lucide-react";
+import { User, Menu, X, Home, Users, Building2, Truck, Link as Enlaces, Box, UserPlus, ArrowRightLeft} from "lucide-react";
 import img from "../assets/drapp_logo.png";
 
 import {
@@ -154,7 +154,7 @@ export const Navbar = () => {
                 variant="light"
                 size="sm"
               >
-                <GitBranch/>
+                <ArrowRightLeft/>
                 Migraciones
               </Button>
             </NavbarItem>
