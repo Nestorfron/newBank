@@ -22,6 +22,11 @@ import {
   Printer,
   Server,
   Ticket,
+  LayoutGrid,
+  Tag,
+  Layers,
+  Hash,
+  Calendar,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
@@ -247,34 +252,46 @@ export const Assets = () => {
                   <CardBody className="ml-2">
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       <div className="flex flex-col">
+                        <div className="flex items-center">
+                          <LayoutGrid className="h-5 w-5 text-muted-foreground text-green-500 mr-1" />
                         <span className="font-semibold text-gray-500">
                           Modelo:
                         </span>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                        </div>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 ml-6">
                           {asset.asset_model}
                         </p>
                       </div>
                       <div className="flex flex-col">
+                        <div className="flex items-center">
+                          <Tag className="h-5 w-5 text-muted-foreground text-purple-500 mr-1" />
                         <span className="font-semibold text-gray-500">
                           Marca:
                         </span>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                        </div>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 ml-6">
                           {asset.asset_brand}
                         </p>
                       </div>
                       <div className="flex flex-col">
+                        <div className="flex items-center">
+                          <Layers className="h-5 w-5 text-muted-foreground text-blue-500 mr-1" />
                         <span className="font-semibold text-gray-500">
                           Tipo:
                         </span>
-                        <p className="text-gray-600 dark:text-gray-300">
+                        </div>
+                        <p className="text-gray-600 dark:text-gray-300 ml-6">
                           {asset.asset_type}
                         </p>
                       </div>
                       <div className="flex flex-col">
+                        <div className="flex items-center">
+                          <Hash className="h-5 w-5 text-muted-foreground text-orange-500 mr-1" />
                         <span className="font-semibold text-gray-500">
                           Serie:
                         </span>
-                        <p className="text-gray-600 dark:text-gray-300">
+                        </div>
+                        <p className="text-gray-600 dark:text-gray-300 ml-6">
                           {asset.asset_serial}
                         </p>
                       </div>
@@ -282,10 +299,13 @@ export const Assets = () => {
                       
 
                       <div className="flex flex-col">
+                        <div className="flex items-center">
+                          <Calendar className="h-5 w-5 text-muted-foreground text-yellow-500 mr-1" />
                         <span className="font-semibold text-gray-500">
                           Fecha de Migración:
                         </span>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                        </div>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 ml-6">
                           {formatDate(
                             asset.migrations.length > 0
                               ? asset.migrations[0].migration_date
