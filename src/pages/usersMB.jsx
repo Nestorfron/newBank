@@ -83,7 +83,7 @@ export const UsersMB = () => {
     <div className="m-5">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold ml-2">Gestor de Usuarios</h2>
+          <h2 className="text-2xl font-bold ml-2">Gestor de Usuarios MB</h2>
           <CreateUsersMB className="w-full" />
         </div>
 
@@ -212,7 +212,7 @@ export const UsersMB = () => {
                       <div className="flex items-center">
                         <Package className="h-5 w-5 text-purple-500 mr-1" />
                       <span className="text-sm font-semibold mr-2">
-                        Activos:
+                       {userMB.assets.length} {userMB.assets.length === 1 ? 'Activo' : 'Activos'}
                       </span>
                       </div>
                       {userMB.assets.length > 0 ? (

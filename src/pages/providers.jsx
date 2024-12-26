@@ -171,7 +171,7 @@ export const Providers = () => {
                             RFC:
                           </span>
                         </div>
-                        <p className="text-gray-600 dark:text-gray-100">
+                        <p className="text-gray-600 dark:text-gray-100 ml-5">
                           {provider.rfc}
                         </p>
                       </div>
