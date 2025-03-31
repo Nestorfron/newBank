@@ -9,7 +9,6 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { EditIcon } from "../assets/icons/EditIcon.jsx";
-
 export const EditUsers = ({ user }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [backdrop, setBackdrop] = React.useState("blur");
@@ -21,9 +20,9 @@ export const EditUsers = ({ user }) => {
 
   return (
     <>
-      <Button variant="link" content="Edit asset" auto onClick={openModal}>
-        <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-          <EditIcon />
+      <Button variant="ghost" content="Edit user" auto onClick={openModal}>
+        <span className="text-lg text-default-700 cursor-pointer active:opacity-50">
+          <EditIcon className="h-5 w-5" />
         </span>
       </Button>
 

@@ -24,13 +24,12 @@ export const FormEngineers = ({ id, btnEngineer, engineer: initialEngineer }) =>
     subzone: "",
     provider_id: null,
     is_active: "",
-    role: "",
+    role: "Ingeniero de Campo",
     user_id: null,
     admin_id: null,
   });
   const [provider, setProvider] = useState("");
 
-  const role = ["Ingeniero de Campo"]
 
   const [loading, setLoading] = useState(false);
 
@@ -217,20 +216,6 @@ export const FormEngineers = ({ id, btnEngineer, engineer: initialEngineer }) =>
           {store.providers.map((provider) => (
             <SelectItem key={provider.id} value={provider.id}>
               {provider.company_name}
-            </SelectItem>
-          ))}
-        </Select>
-        <Select
-          label="Rol"
-          placeholder={engineer.role}
-          name="role"
-          required
-          value={engineer.role}
-          onChange={handleChange}
-        >
-          {role.map((role) => (
-            <SelectItem key={role} value={role}>
-              {role}
             </SelectItem>
           ))}
         </Select>

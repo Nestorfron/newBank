@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FormAdmins } from "./FormAdmins.jsx";
+import { PlusCircle } from "lucide-react";
 import {
   Button,
   Modal,
@@ -16,7 +17,7 @@ export const CreateAdmins = () => {
   return (
     <>
       <Button auto color="primary" onClick={onOpen} size="md">
-        Agregar Admins
+      <PlusCircle/> Agregar Admins
       </Button>
 
       <Modal backdrop={backdrop} isOpen={isOpen} onClose={onClose}>

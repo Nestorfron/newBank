@@ -3,11 +3,9 @@ import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
 import { MigrationsDetails } from "../components/MigrationsDetails.jsx";
 import Swal from "sweetalert2";
-import { DeleteIcon } from "../assets/icons/DeleteIcon.jsx";
 import { SearchIcon } from "../assets/icons/SearchIcon.jsx";
 import { CreateMigrations } from "../components/CreateMigration.jsx";
-import { EditMigrations } from "../components/EditMigrations.jsx";
-import { ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowUp, ArrowDown, UserSquare, Phone, MapPin, Package   } from "lucide-react";
 import {
   Button,
   Input,
@@ -61,6 +59,7 @@ export const Migrations = () => {
   };
 
   const statusColor = {
+    all : "secondary",
     Ordered: "primary",
     In_progress: "warning",
     Completed: "success",
@@ -165,6 +164,7 @@ export const Migrations = () => {
           selectedKey={activeTab}
           onSelectionChange={setActiveTab}
           variant="bordered"
+          color={statusColor[activeTab]}
         >
           <Tab key="all" title="Todos" />
           <Tab key="Ordered" title="Ordenadas" />
@@ -173,7 +173,7 @@ export const Migrations = () => {
         </Tabs>
 
         {/* Tarjetas filtradas y ordenadas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6  mt-3">
                     <AnimatePresence>
             {currentCards.map((migration) => (
               <motion.div
@@ -184,8 +184,8 @@ export const Migrations = () => {
               transition={{ duration: 0.3 }}        
               layout                                  
             >
-                <Card className="h-full w-2/2 flex flex-col hover:shadow-lg transition-shadow duration-200">
-                  <CardHeader className="flex justify-between items-start">
+                <Card className="h-full w-2/2 flex flex-col overflow-hidden border-t-2 border-l-2 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                  <CardHeader className="flex justify-between items-start mt-2 ml-2">
                     <div>
                       <h2 className="text-xl font-bold">
                         Migración #{migration.id}
@@ -199,12 +199,14 @@ export const Migrations = () => {
                         color={statusColor[migration.migration_status]}
                         status={migration.migration_status}
                         variant="shadow"
+                        size="sm"
+                        className="mr-3"
                       >
-                        {migration.migration_status}
+                        {migration.migration_status === "Ordered" ? "Ordenada" : migration.migration_status === "In_progress" ? "En Progreso" : "Completada"}
                       </Chip>
                     </div>
                   </CardHeader>
-                  <CardBody>
+                  <CardBody className="ml-2">
                     <p className="text-sm text-gray-600 dark:text-gray-300">
                       Fecha de Instalación:{" "}
                       {formatDate(migration.installation_date)}
@@ -213,7 +215,7 @@ export const Migrations = () => {
                       Fecha de Migración: {formatDate(migration.migration_date)}
                     </p>
                   </CardBody>
-                  <CardFooter>
+                  <CardFooter className="mb-2">
                     <div className="flex justify-center w-full">
                       <MigrationsDetails migration={migration} id={migration.id} />
                     </div>
@@ -222,6 +224,7 @@ export const Migrations = () => {
               </motion.div>
             ))}
           </AnimatePresence>
+        </div>
         </div>
 
         {/* Paginación */}
@@ -236,6 +239,5 @@ export const Migrations = () => {
           />
         </div>
       </div>
-    </div>
   );
 };

@@ -22,11 +22,10 @@ export const FormUsers = ({ id, btnUser, user: initialUser }) => {
     last_names: "",
     employee_number: "",
     subzone: "",
-    role: "",
+    role: "Master",
     is_active: false,
   });
 
-  const role = ["Master"]
 
   const [loading, setLoading] = useState(false);
 
@@ -167,20 +166,6 @@ export const FormUsers = ({ id, btnUser, user: initialUser }) => {
           onChange={handleChange}
           required
         />
-        <Select
-          label="Rol"
-          placeholder={user.role}
-          name="role"
-          required
-          value={user.role}
-          onChange={handleChange}
-        >
-          {role.map((role) => (
-            <SelectItem key={role} value={role}>
-              {role}
-            </SelectItem>
-          ))}
-        </Select>
         <div className="flex items-center">
           <Switch
             name="is_active"

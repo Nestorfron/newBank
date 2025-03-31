@@ -23,9 +23,10 @@ export const EditAssets = ({ asset }) => {
 
   return (
     <>
-      <Button variant="link" content="Edit asset" auto onClick={openModal}>
-        <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-          <EditIcon />
+      <Button variant="ghost" content="Edit asset" auto onClick={openModal} className="w-[50px]">
+      <EditIcon className="h-5 w-5" /> 
+        <span className="text-lg text-default-700 cursor-pointer active:opacity-50">
+       
         </span>
       </Button>
 

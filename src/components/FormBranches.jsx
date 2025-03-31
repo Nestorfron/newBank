@@ -21,10 +21,10 @@ export const FormBranches = ({ id, btnBranch, branch: initialBranch }) => {
   });
 
   const me = store.me;
-
   const [loading, setLoading] = useState(false);
 
-  const addId = ()  => {
+  // Función para asignar el ID según el rol del usuario
+  const addId = () => {
     if (me.role === "Master") {
       setBranch({ ...branch, user_id: me.id });
     } else if (me.role === "Admin") {
@@ -32,25 +32,21 @@ export const FormBranches = ({ id, btnBranch, branch: initialBranch }) => {
     } else if (me.role === "Ingeniero de Campo") {
       setBranch({ ...branch, engineer_id: me.id });
     }
-  }
-  
+  };
 
   const handleChange = (e) => {
     setBranch({ ...branch, [e.target.name]: e.target.value });
+    console.log(branch);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     Swal.fire({
       title: "Cargando...",
-      text: id
-        ? "Espere mientras se actualiza la sucursal"
-        : "Espere mientras se crea la sucursal",
+      text: id ? "Espere mientras se actualiza la sucursal" : "Espere mientras se crea la sucursal",
       allowOutsideClick: false,
       showConfirmButton: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
+      didOpen: () => Swal.showLoading(),
       customClass: {
         container: "custom-container",
         popup: "custom-popup",
@@ -60,7 +56,6 @@ export const FormBranches = ({ id, btnBranch, branch: initialBranch }) => {
       },
     });
     try {
-      console.log(branch);
       const response = id
         ? await actions.editBranch(
             id,
@@ -74,7 +69,6 @@ export const FormBranches = ({ id, btnBranch, branch: initialBranch }) => {
             branch.user_id,
             branch.admins_id,
             branch.engineer_id
-            
           )
         : await actions.add_branch(
             branch.branch_cr,
@@ -86,8 +80,7 @@ export const FormBranches = ({ id, btnBranch, branch: initialBranch }) => {
             branch.branch_saturday,
             branch.user_id,
             branch.admins_id,
-            branch.engineer_id,
-           
+            branch.engineer_id
           );
       Swal.fire({
         position: "center",
@@ -158,6 +151,32 @@ export const FormBranches = ({ id, btnBranch, branch: initialBranch }) => {
         engineer_id: initialBranch.engineer_id || null,
       });
     }
+
+    // Cargar el script de Google Places API y configurar el autocompletado
+    const loadScript = () => {
+      const script = document.createElement("script");
+      script.src = `https://maps.googleapis.com/maps/api/js?key=` + import.meta.env.VITE_PLACES_KEY + `&libraries=places`;
+      script.async = true;
+      script.onload = () => initAutocomplete();
+      document.body.appendChild(script);
+    };
+
+    const initAutocomplete = () => {
+      const input = document.getElementById("branch_address");
+      if (input) {
+        const autocomplete = new window.google.maps.places.Autocomplete(input);
+        autocomplete.setFields(["formatted_address"]);
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          setBranch((prev) => ({
+            ...prev,
+            branch_address: place.formatted_address || "",
+          }));
+        });
+      }
+    };
+
+    loadScript();
   }, []);
 
   return (
@@ -173,8 +192,8 @@ export const FormBranches = ({ id, btnBranch, branch: initialBranch }) => {
         <Input
           label="Dirección de la Sucursal"
           name="branch_address"
+          id="branch_address" // Importante para el autocompletado
           value={branch.branch_address}
-          onChange={handleChange}
           required
         />
         <Input

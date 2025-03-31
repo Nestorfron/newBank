@@ -22,7 +22,7 @@ export const EngineersList = ({provider}) => {
 
   return (
     <>
-      <Button variant="link" color="primary" onPress={onOpen}>
+      <Button variant="link" color="primary" onPress={onOpen} className="w-[10px] flex justify-center ">
         <EyeIcon />
       </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
